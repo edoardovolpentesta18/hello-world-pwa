@@ -3,13 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World PWA</title>
+    <title>Higher or Lower</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2196f3">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+    </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
+    <h1>Higher or Lower</h1>
+    <p>Numero attuale: <span id="current-number"></span></p>
+    <button onclick="guess('higher')">Più Alto</button>
+    <button onclick="guess('lower')">Più Basso</button>
+    <p>Punteggio: <span id="score">0</span></p>
     <script>
+        let currentNumber = Math.floor(Math.random() * 100) + 1;
+        let score = 0;
+        document.getElementById('current-number').innerText = currentNumber;
+
+        function guess(choice) {
+            let nextNumber = Math.floor(Math.random() * 100) + 1;
+            if ((choice === 'higher' && nextNumber > currentNumber) ||
+                (choice === 'lower' && nextNumber < currentNumber)) {
+                score++;
+            } else {
+                alert('Hai perso! Il numero era ' + nextNumber);
+                score = 0;
+            }
+            currentNumber = nextNumber;
+            document.getElementById('current-number').innerText = currentNumber;
+            document.getElementById('score').innerText = score;
+        }
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')

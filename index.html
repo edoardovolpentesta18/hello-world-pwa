@@ -19,10 +19,26 @@
 <button onclick="toggleMenu()">☰ Menu</button>
 <div id="menu" style="display: none; position: absolute; top: 50px; left: 10px; background: #93D2F4; border: 1px solid #000; padding: 10px;">
     <button onclick="window.location.href='index.html'">Higher or Lower</button>
-    <button onclick="window.location.href='ranking.html'">Classifica</button>
+    
+<!-- Sezione Statistiche con sottomenù -->
+    <div style="position: relative;">
+        <button onclick="toggleSubmenu()">Statistiche ▼</button>
+        <div id="submenu" style="display: none; position: absolute; top: 0; left: 100%; background: #93D2F4; border: 1px solid #000; padding: 10px;">
+            <button onclick="window.location.href='trofei.html'">Trofei</button>
+            <button onclick="window.location.href='ranking.html'">Ranking</button>
+        </div>
+    </div>
+
     <button onclick="window.location.href='Gioco.html'">Gioco2</button>
 </div>
 
+	<!-- Script per gestire il sottomenù -->
+<script>
+function toggleSubmenu() {
+    const submenu = document.getElementById('submenu');
+    submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+}
+</script>
 	
     <div class="card-container">
         <div class="card" id="card1">

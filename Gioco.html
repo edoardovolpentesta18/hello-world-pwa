@@ -110,21 +110,7 @@
 
 
 
-	<!-- Crediti -->	
-	<div id="crediti-container" style="text-align: right; margin-top: 20px;">
-		<h3 style="color: #93D2F4;">
-			Crediti:
-		</h3>
-
-		<div id="crediti-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
-			<span id="crediti-count">0</span>
-		</div>
-	</div>
-
-
-
-
-	<div id="found-players-container" style="text-align: left; margin-top: 20px;">
+	<div id="found-players-container" style="margin-top: 20px;">
 		<h3 style="color: #93D2F4;">
 			Giocatori trovati:
 		</h3>
@@ -132,13 +118,8 @@
 		<div id="found-players-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
 		</div>
 	</div>
-	
-	
-	
+	<!-- Contenitore per il campo di calcio -->
 
-	
-	
-<!-- Contenitore per il campo di calcio -->
 	<div id="football-field" style="
 		width: 90vw; /* Usa il 90% della larghezza dello schermo */
 		height: calc(90vw * 1.55); /* Altezza proporzionata */
@@ -269,7 +250,6 @@
 		const randomImage = document.getElementById('random-image');
 			const fuochigif = document.getElementById('fuochi-gif');
 		const foundPlayersList = document.getElementById('found-players-list');
-		const CreditiList = document.getElementById('crediti-list');
 			const positionDisplay = document.getElementById('position-display');
 		const ratingDisplay = document.getElementById('rating-display');
 		const teamDisplay = document.getElementById('team-display');
@@ -282,8 +262,6 @@
 			const playerCountElement = document.getElementById('found-players-count');
 		const totalPlayersCountElement = document.getElementById('total-players-count');
 		const packageCountDisplay = document.createElement('div');
-		
-		
 
 		const images = [
 			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/icafa424b24135632/version/1730412605/image.png", name: "Davide Cattaneo", rarity: "Gold", rating: 84, team: "Aston Birra", position: "CEN", chemistry: 0 },
@@ -567,9 +545,6 @@
 			return existingPlayer && existingPlayer.name === player.name;
 		});
 	}
-	
-	let totalCredits = parseInt(localStorage.getItem('totalCredits')) || 0;  // Se non ci sono, inizializza con 0
-CreditiList.textContent = totalCredits;  // Mostra i crediti nel contatore
 		
 		// Funzione per filtrare i giocatori per squadra
 	function filterPlayersByTeam() {
@@ -638,7 +613,7 @@ CreditiList.textContent = totalCredits;  // Mostra i crediti nel contatore
 				packageData.count = 0;
 			}
 
-			if (packageData.count >= 70) {   //da modificare per apertura giornaliera
+			if (packageData.count >= 7) {   //da modificare per apertura giornaliera
 				return false;
 			}
 
@@ -650,9 +625,6 @@ CreditiList.textContent = totalCredits;  // Mostra i crediti nel contatore
 
 		// Inizializza il display del conteggio
 		updatePackageCountDisplay();
-		
-		
-	
 		
 		
 		
@@ -1146,25 +1118,6 @@ CreditiList.textContent = totalCredits;  // Mostra i crediti nel contatore
 				return ultraRari[Math.floor(Math.random() * ultraRari.length)];
 			}
 		}
-		
-		
-		function getRandomPlayerrare() {
-			// Filtra i giocatori in base al rating
-			const comuni = images.filter(image => image.rating <= 77);
-			const medioRari = images.filter(image => image.rating >= 78 && image.rating <= 84);
-			const rari = images.filter(image => image.rating > 84 && image.rating <= 87);
-			const ultraRari = images.filter(image => image.rating > 87);
-
-			// Genera un numero casuale tra 0 e 1
-			const random = Math.random();
-
-			// Seleziona la categoria in base alle probabilità specificate
-			if (random < 0.99) {  // 9% per Rari (94% + 5% = 99%)
-				return rari[Math.floor(Math.random() * rari.length)];
-			} else {  // Restante 1% per UltraRari
-				return ultraRari[Math.floor(Math.random() * ultraRari.length)];
-			}
-		}
 
 
 		// Mostra l'immagine casuale al clic del pulsante "Apri pacchetto"
@@ -1173,28 +1126,8 @@ CreditiList.textContent = totalCredits;  // Mostra i crediti nel contatore
 				alert('Hai raggiunto il limite giornaliero di pacchetti (7). Torna domani per aprirne altri!');
 				return;
 			}	
-			
-			
-			
-			// Chiedi all'utente se vuole usare i crediti o aprirlo gratis
-        let usaCrediti = confirm("Vuoi aprire il pacchetto usando 450 crediti? (OK per usare i crediti, Annulla per aprirlo gratis)");
 		
-		if (usaCrediti) {
-            //let crediti = parseInt(creditiCountElement.textContent, 10);
-
-            if (totalCredits >= 127) {
-                totalCredits -= 127;
-                //creditiCountElement.textContent = crediti;
-            } else {
-                alert("Non hai abbastanza crediti per aprire questo pacchetto!");
-                return;
-            }
-        }
-		
-		
-			// Assegna il giocatore in base alla scelta
-    const player = usaCrediti ? getRandomPlayerrare() : getRandomPlayer();	
-					
+			const player = getRandomPlayer();  // Ottieni un giocatore basato sulle probabilità
 					// Invia l'email quando viene trovato un nuovo giocatore forte
 					if (player.rating > 92) {
 						sendEmail(player);
@@ -1321,19 +1254,7 @@ CreditiList.textContent = totalCredits;  // Mostra i crediti nel contatore
 			});
 
 	setTimeout(() => {
-			// Aggiungi il giocatore trovato alla lista dei giocatori trovati	
-			
-			// 3. Quando un giocatore viene trovato, aggiorna i crediti
-    const player = getRandomPlayer();  // Ottieni il giocatore casuale
-
-    // Somma il rating del giocatore ai crediti
-    totalCredits += player.rating;  
-    CreditiList.textContent = totalCredits;  // Aggiorna la visualizzazione dei crediti
-
-    // Salva i crediti nel localStorage
-    localStorage.setItem('totalCredits', totalCredits);
-
-			
+			// Aggiungi il giocatore trovato alla lista dei giocatori trovati
 			const foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
 			if (!foundPlayers.some(p => p.src === player.src)) {
 				foundPlayers.push(player);
@@ -1358,11 +1279,6 @@ CreditiList.textContent = totalCredits;  // Mostra i crediti nel contatore
 			
 			// Simula un evento change per nascondere/mostrare le dropzone corrette
 		formationSelect.dispatchEvent(new Event('change'));
-		
-		
-		
-		
-		
 	});
 	/* ]]> */
 	</script>

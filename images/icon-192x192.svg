@@ -1,0 +1,9 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sfondo -->
+  <rect width="512" height="512" rx="128" fill="#2196f3"/>
+  
+  <!-- Lettera H stilizzata -->
+  <path d="M160 128h53.33v256H160z" fill="white"/>
+  <path d="M298.67 128H352v256h-53.33z" fill="white"/>
+  <path d="M160 256h192v53.33H160z" fill="white"/>
+</svg>

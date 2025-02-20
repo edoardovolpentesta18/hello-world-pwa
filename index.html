@@ -16,6 +16,13 @@
 </head>
 <body>
     <h1>Higher or Lower - Cards</h1>
+<button onclick="toggleMenu()">☰ Menu</button>
+<div id="menu" style="display: none; position: absolute; top: 50px; left: 10px; background: white; border: 1px solid #000; padding: 10px;">
+    <button onclick="window.location.href='index.html'">Gioco</button>
+    <button onclick="window.location.href='ranking.html'">Classifica</button>
+</div>
+
+	
     <div class="card-container">
         <div class="card" id="card1">
             <img id="img1" src="" alt="Player 1">
@@ -238,5 +245,14 @@
             });
         }
     </script>
+
+
+	<script>
+function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+}
+</script>
+
 </body>
 </html>

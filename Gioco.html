@@ -1,0 +1,1368 @@
+	<style>
+	<![CDATA[
+	.firework {
+		position: absolute;
+		border-radius: 50%;
+		animation: explode 1s ease-out forwards;
+	}
+
+	@keyframes explode {
+		0% {
+			transform: scale(0);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(1.5);
+			opacity: 0;
+		}
+	}
+	]]>
+	</style><!-- Inizio del Widget -->
+
+	<div id="alert-banner" style="display: none; position: fixed; top: 60px; left: 50%; transform: translateX(-50%); padding: 20px; background-color: #333; color: #fff; border: 2px solid #444; border-radius: 8px; text-align: center; display: none; flex-direction: column; align-items: center; max-width: 300px;">
+		<p>Questo giocatore non può essere posizionato in questa zona.</p>
+		<img src="https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i07e4c6c29efda2d2/version/1730465891/image.gif" alt="GIF di avviso" style="width: 100px; height: auto; margin-bottom: 10px;">
+		<button onclick="document.getElementById('alert-banner').style.display='none'" style="padding: 8px 16px; margin-top: 10px; background-color: #555; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+			Chiudi
+		</button>
+	</div>
+
+
+
+
+	<div id="player-count" style="text-align: center; margin-top: 20px; font-size: 20px; color: #93D2F4;">
+		Giocatori trovati: <span id="found-players-count">0</span> / <span id="total-players-count">0</span>
+	</div>
+
+	<div style="text-align: center; margin-top: 20px;">
+		<button id="show-button" style=
+		"background: url('https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i35573c1b28290768/version/1737755579/image.jpg') no-repeat center center; padding: 160px 38px; font-size: 20px; cursor: pointer; background-color: #f1c40f; color: white; border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.3s; position: relative; overflow: hidden;">
+		<span style="background-color: rgba(0, 0, 0, 0.6); padding: 5px 10px; border-radius: 5px;">Apri pacchetto</span></button>
+		<div id="image-container" style="display: none; margin-top: 20px; opacity: 0; transition: opacity 0.5s ease-in-out; text-align: center;">
+			<div id="position-display" style="display: none; font-size: 24px; color: #93D2F4; font-weight: bold;">
+				Posizione
+			</div>
+
+			<div id="rating-display" style="display: none; font-size: 24px; color: #93D2F4; font-weight: bold;">
+				Rating
+			</div>
+
+			<div id="team-display" style="display: none; font-size: 24px; color: #8e44ad; font-weight: bold;">
+				Squadra
+			</div>
+			<img id="random-image" alt="Test Image" style=
+			"max-width: 100%; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); transition: transform 0.3s ease; display: block; margin: 0 auto;" name="random-image" /> <img id="fuochi-gif"
+			alt="Test Image" style=
+			"background: url('background: url('https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i05f816ba0d27d097/version/1721060306/image.png') no-repeat center center') no-repeat center center ; max-width: 100%; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); transition: transform 0.3s ease; display: block; margin: 0 auto;"
+			name="fuochi-gif" /> <button id="hide-button" style=
+			"display: none; padding: 15px 30px; font-size: 20px; cursor: pointer; background-color: #93D2F4; color: white; border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.3s; margin-top: 20px;">
+			Apri un altro pacchetto</button>
+		</div>
+	</div>
+
+	<div id="timer-container" style="display: none; margin-top: 20px; font-size: 20px; color: #e74c3c;">
+		Prossimo pacchetto disponibile in: <span id="timer"></span>
+	</div>
+
+
+	<div style="text-align: left; margin-top: 20px;">
+		<label for="team-filter">Filtra per squadra:</label>
+		<select id="team-filter" style="font-size: 16px; padding: 5px; border-radius: 5px;">
+			<option value="all">Tutte le squadre</option>
+			<option value="Aston Birra">Aston Birra</option>
+			<option value="Big Lentate">Big Lentate</option>
+			<option value="Bomber Team">Bomber Team</option>
+			<option value="Ceppi Imbiancature">Ceppi Imbiancature</option>
+			<option value="Coprenaghen">Coprenaghen</option>
+			<option value="Dos Santos Casa Blanca">Dos Santos Casa Blanca</option>
+			<option value="Equipe Blanc">Equipe Blanc</option>
+			<option value="I Galacticos">I Galacticos</option>
+			<option value="Ignoranti Team">Ignoranti Team</option>
+			<option value="Indifferente F.C.">Indifferente F.C.</option>
+			<option value="I pupi al guinzaglio">I pupi al guinzaglio</option>
+			<option value="Napoletano Dream Team">Napoletano Dream Team</option>
+			<option value="Olimpia Grisoni">Olimpia Grisoni</option>
+			<option value="Real Cenacolo">Real Cenacolo</option>
+			<option value="Trivellas Team">Trivellas Team</option>
+			<option value="#FreeSimoMartino">#FreeSimoMartino</option>		
+			<!-- Aggiungi altre squadre qui -->
+		</select>
+	</div>
+
+
+
+	<!-- Selettore di Formazione -->
+
+	<div style="text-align: left; margin-top: 20px;">
+		<label for="formation-select">Seleziona Formazione:</label> <select id="formation-select" style="font-size: 20px; padding: 10px; border-radius: 5px;">
+			<option value="4-3-3">
+				4-3-3
+			</option>
+			<option value="4-4-2">
+				4-4-2
+			</option>
+			<option value="3-4-3">
+				3-4-3
+			</option>
+		</select>
+	</div>
+
+
+
+
+	<!-- Crediti -->	
+	<div id="crediti-container" style="text-align: right; margin-top: 20px;">
+		<h3 style="color: #93D2F4;">
+			Crediti:
+		</h3>
+
+		<div id="crediti-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
+			<span id="crediti-count">0</span>
+		</div>
+	</div>
+
+
+
+
+	<div id="found-players-container" style="text-align: left; margin-top: 20px;">
+		<h3 style="color: #93D2F4;">
+			Giocatori trovati:
+		</h3>
+
+		<div id="found-players-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
+		</div>
+	</div>
+	
+	
+	
+
+	
+	
+<!-- Contenitore per il campo di calcio -->
+	<div id="football-field" style="
+		width: 90vw; /* Usa il 90% della larghezza dello schermo */
+		height: calc(90vw * 1.55); /* Altezza proporzionata */
+		max-width: 450px; /* Limite massimo per schermi più grandi */
+		max-height: 700px;
+		margin: 20px auto;
+		border: 2px solid #27ae60;
+		background: url('https://cdn1.vectorstock.com/i/1000x1000/54/30/football-field-vertical-isolated-vector-2005430.jpg') no-repeat center center;
+		background-size: cover;
+		position: relative;
+	">
+		<!-- Aggiungi delle posizioni dove i giocatori possono essere rilasciati -->
+
+		<div id="ATTC" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 10%; left: 50%; transform: translateX(-50%);">
+		</div>
+
+		<div id="ATTD" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 10%; left: 65%; transform: translateX(-50%);">
+		</div>
+
+		<div id="ATTS" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 10%; left: 35%; transform: translateX(-50%);">
+		</div>
+
+		<div id="ATTAS" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 15%; left: 25%; transform: translateX(-50%);">
+		</div>
+
+		<div id="ATTAD" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 15%; left: 75%; transform: translateX(-50%);">
+		</div>
+
+		<div id="CENES" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 30%; left: 15%; transform: translateX(-50%);">
+		</div>
+
+		<div id="CENED" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 30%; left: 85%; transform: translateX(-50%);">
+		</div>
+
+		<div id="CENCCS3" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 35%; left: 25%; transform: translateX(-50%);">
+		</div>
+
+		<div id="CENCCC3" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 35%; left: 50%; transform: translateX(-50%);">
+		</div>
+
+		<div id="CENCCD3" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 35%; left: 75%; transform: translateX(-50%);">
+		</div>
+
+		<div id="CENCCS2" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 35%; left: 40%; transform: translateX(-50%);">
+		</div>
+
+		<div id="CENCCD2" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 35%; left: 60%; transform: translateX(-50%);">
+		</div>
+
+		<div id="DIFDCS3" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 55%; left: 30%; transform: translateX(-50%);">
+		</div>
+
+		<div id="DIFDCD3" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 55%; left: 50%; transform: translateX(-50%);">
+		</div>
+
+		<div id="DIFDCC3" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 55%; left: 70%; transform: translateX(-50%);">
+		</div>
+
+		<div id="DIFDCS" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 55%; left: 40%; transform: translateX(-50%);">
+		</div>
+
+		<div id="DIFDCD" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 55%; left: 60%; transform: translateX(-50%);">
+		</div>
+
+		<div id="DIFTS" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 52%; left: 20%; transform: translateX(-50%);">
+		</div>
+
+		<div id="DIFTD" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 52%; left: 80%; transform: translateX(-50%);">
+		</div>
+
+		<div id="POR" class="dropzone" style="position: absolute; width: 70px; height: 100px; border: 1px dashed #fff; top: 73%; left: 50%; transform: translateX(-50%);">
+		</div>
+	</div>
+	<!-- Contenitore per i fuochi d'artificio -->
+
+	<div id="fireworks-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;">
+	</div>
+	<!-- Contenitore per la valutazione media -->
+
+	<div id="average-rating-container" style="text-align: center; margin-top: 20px; font-size: 20px; color: #ffffff;">
+		Valutazione media dei giocatori: <span id="average-rating">0</span>
+	</div>
+
+	<div id="chemistry-rating-container" style="text-align: center; margin-top: 10px; font-size: 20px; color: #ffffff;">
+		Intesa squadra: <span id="chemistry-rating">0</span>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script> 
+	<script>
+
+	/* <![CDATA[ */
+
+	console.log("EmailJS caricato:", typeof emailjs !== 'undefined');
+	/*]]>*/
+	</script> 
+	<script>
+
+
+	/* <![CDATA[ */
+	document.addEventListener('DOMContentLoaded', function() {
+
+	// Inizializza EmailJS con il tuo User ID
+	(function(){
+		emailjs.init("_JQGUe_Ski8lAhNsq"); // Sostituisci con il tuo User ID di EmailJS
+			console.log("EmailJS inizializzato");
+	})();
+
+	// Funzione per inviare l'email
+	function sendEmail(player) {
+			console.log("Tentativo di invio email per:", player);
+		emailjs.send("service_925rsti", "template_95j4q58", {
+			player_name: player.name,
+			player_rating: player.rating,
+			player_team: player.team,
+			player_position: player.position
+		}).then(function(response) {
+			console.log('Email inviata con successo', response.status, response.text);
+		}, function(error) {
+			console.log('Errore nell\'invio dell\'email', error);
+		});
+	}
+
+		// Aggiungi un event listener al selettore del team
+	const teamFilter = document.getElementById('team-filter');
+	teamFilter.addEventListener('change', filterPlayersByTeam);
+		const showButton = document.getElementById('show-button');
+		const hideButton = document.getElementById('hide-button');
+		const imageContainer = document.getElementById('image-container');
+		const randomImage = document.getElementById('random-image');
+			const fuochigif = document.getElementById('fuochi-gif');
+		const foundPlayersList = document.getElementById('found-players-list');
+		const CreditiList = document.getElementById('crediti-list');
+			const positionDisplay = document.getElementById('position-display');
+		const ratingDisplay = document.getElementById('rating-display');
+		const teamDisplay = document.getElementById('team-display');
+		const congratulationsMessage = document.getElementById('congratulations-message');
+		const fireworksContainer = document.getElementById('fireworks-container');
+		const timerContainer = document.getElementById('timer-container');
+		const timerElement = document.getElementById('timer');
+		const averageRatingElement = document.getElementById('average-rating');
+			const totalChemistryElement = document.getElementById('chemistry-rating');
+			const playerCountElement = document.getElementById('found-players-count');
+		const totalPlayersCountElement = document.getElementById('total-players-count');
+		const packageCountDisplay = document.createElement('div');
+		
+		
+
+		const images = [
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/icafa424b24135632/version/1730412605/image.png", name: "Davide Cattaneo", rarity: "Gold", rating: 84, team: "Aston Birra", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i110dd7873bc1c749/version/1730412483/image.png", name: "Thomas Basilico", rarity: "Gold", rating: 83, team: "Aston Birra", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ie17512820e275308/version/1730412499/image.png", name: "Samuel Oderinde", rarity: "Gold", rating: 82, team: "Aston Birra", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/if25ffbfdb7cebd53/version/1730412524/image.png", name: "Scorpinti", rarity: "Gold", rating: 80, team: "Aston Birra", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic543c2f7d31dbf5a/version/1730412538/image.png", name: "Sormani", rarity: "Gold", rating: 77, team: "Aston Birra", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i89fe095162319ee5/version/1730412553/image.png", name: "Viola", rarity: "Gold", rating: 76, team: "Aston Birra", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ifc8226bd80d2ecc2/version/1730412578/image.png", name: "Paleardi", rarity: "Gold", rating: 75, team: "Aston Birra", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/if576ac41efb2bc6f/version/1730412594/image.png", name: "Cattaneo Alessio", rarity: "Gold", rating: 74, team: "Aston Birra", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i1584fc3a4b4fcef3/version/1733264045/image.png", name: "Cri Peverelli", rarity: "Gold", rating: 88, team: "Aston Birra", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i7b1b30303147e290/version/1730412830/image.png", name: "Iguermadou", rarity: "Gold", rating: 81, team: "Big Lentate", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6f61422cf5053c7a/version/1730412816/image.png", name: "Simone Zanella", rarity: "Gold", rating: 81, team: "Big Lentate", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i882af5ef12b38980/version/1730412852/image.png", name: "Pansera", rarity: "Gold", rating: 80, team: "Big Lentate", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iab10da3e7b5d8ee5/version/1730412869/image.png", name: "Metallo", rarity: "Gold", rating: 79, team: "Big Lentate", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ibc4375b4f74ce8cf/version/1730412884/image.png", name: "Folino", rarity: "Gold", rating: 78, team: "Big Lentate", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i01d7be90d6fdc97a/version/1730412903/image.png", name: "Arnaboldi", rarity: "Gold", rating: 77, team: "Big Lentate", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i06dba0284c925466/version/1730412921/image.png", name: "Deangelis", rarity: "Gold", rating: 77, team: "Big Lentate", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ide50b1d44352ccbe/version/1733264065/image.png", name: "Bianchi", rarity: "Gold", rating: 82, team: "Big Lentate", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i18a4dd06352c4bd8/version/1730452087/image.png", name: "Laponi", rarity: "Gold", rating: 82, team: "Bomber Team", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i75f0458f514b9eaa/version/1730452093/image.png", name: "Davide Bragonzi", rarity: "Gold", rating: 81, team: "Bomber Team", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i3185cc695fe2bbed/version/1730452098/image.png", name: "Roncen", rarity: "Gold", rating: 80, team: "Bomber Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iff9fdc495e2b1942/version/1730452119/image.png", name: "Meroni", rarity: "Gold", rating: 80, team: "Bomber Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i7cf9288d336d36f6/version/1730452125/image.png", name: "Giacomo Prada", rarity: "Gold", rating: 78, team: "Bomber Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i45f60d4e24ea2bb8/version/1730452130/image.png", name: "Basilico", rarity: "Gold", rating: 78, team: "Bomber Team", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i166fad42e52a64dc/version/1733264087/image.png", name: "Ciliberto", rarity: "Gold", rating: 83, team: "Bomber Team", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i25bbcfdc056105fe/version/1733259403/image.png", name: "Parravicini A", rarity: "Gold", rating: 86, team: "Ceppi Imbiancature", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/icdfd030cde185b7e/version/1733259418/image.png", name: "DeA", rarity: "Gold", rating: 85, team: "Ceppi Imbiancature", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i85939d54ce56b243/version/1733259431/image.png", name: "Ceppi", rarity: "Gold", rating: 85, team: "Ceppi Imbiancature", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic54f65d7db3d6d37/version/1733259516/image.png", name: "Ronzoni", rarity: "Gold", rating: 84, team: "Ceppi Imbiancature", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic57fa2dd6aa8b161/version/1733259533/image.png", name: "Elia Lamberti", rarity: "Gold", rating: 83, team: "Ceppi Imbiancature", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic025f8f03347e1c3/version/1733259548/image.png", name: "Parravicini B", rarity: "Gold", rating: 78, team: "Ceppi Imbiancature", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/idd411fa6f44e1eca/version/1733259563/image.png", name: "Boga", rarity: "Gold", rating: 76, team: "Ceppi Imbiancature", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i8ac5dbe9e344b43c/version/1734818754/image.png", name: "Ceppi senior", rarity: "Gold", rating: 87, team: "Ceppi Imbiancature", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ifb575cd781b6c592/version/1733123677/image.png", name: "Dade Cavallin", rarity: "Gold", rating: 92, team: "Coprenaghen", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i5ad3447bf4bb3e6c/version/1737980581/image.png", name: "Younes Safine", rarity: "Gold", rating: 91, team: "Coprenaghen", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ie54975201bc5ab6f/version/1733123705/image.png", name: "Zubani", rarity: "Gold", rating: 90, team: "Coprenaghen", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i8fdfc96eecf9b4f8/version/1737981050/image.png", name: "Cesana", rarity: "Gold", rating: 89, team: "Coprenaghen", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i16b99836ec444d80/version/1733123732/image.png", name: "Tommy Balestrini", rarity: "Gold", rating: 85, team: "Coprenaghen", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ifac7f04b4f7b0018/version/1733123746/image.png", name: "Ste Cavallin", rarity: "Gold", rating: 84, team: "Coprenaghen", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i144eb14c46b12719/version/1734818734/image.png", name: "Amelio", rarity: "Gold", rating: 90, team: "Coprenaghen", position: "POR", chemistry: 0 },
+			
+				
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i0ba0c6ad2168461d/version/1730453975/image.png", name: "Pil Cappelletti", rarity: "Gold", rating: 87, team: "Dos Santos Casa Blanca", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia0e44c65ff90ef1d/version/1730453984/image.png", name: "Baldo", rarity: "Gold", rating: 86, team: "Dos Santos Casa Blanca", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i3e7f53ca271d688d/version/1730453992/image.png", name: "El Issi", rarity: "Gold", rating: 85, team: "Dos Santos Casa Blanca", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i7096da922341cc79/version/1730454002/image.png", name: "El Idrissi", rarity: "Gold", rating: 85, team: "Dos Santos Casa Blanca", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ifa68b79d1bd7c9e3/version/1730454011/image.png", name: "Rigo", rarity: "Gold", rating: 84, team: "Dos Santos Casa Blanca", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i67f9ee30baba8b69/version/1730454019/image.png", name: "Zanella jr", rarity: "Gold", rating: 83, team: "Dos Santos Casa Blanca", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ice4b0bed0879f397/version/1733264111/image.png", name: "Scattolin", rarity: "Gold", rating: 84, team: "Dos Santos Casa Blanca", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ica69ebc8d83b5dcc/version/1733121807/image.png", name: "Edoardo Crusco", rarity: "Gold", rating: 86, team: "Equipe Blanc", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/id3ff2343aa7c125e/version/1733121817/image.png", name: "Makhlouf", rarity: "Gold", rating: 85, team: "Equipe Blanc", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic936dc27d4555693/version/1733121834/image.png", name: "Pallavicini", rarity: "Gold", rating: 83, team: "Equipe Blanc", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/if2540035085ca966/version/1733121897/image.png", name: "Salvini", rarity: "Gold", rating: 82, team: "Equipe Blanc", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/ib9994f151ec3b946/version/1737980784/image.png", name: "Pinese", rarity: "Gold", rating: 84, team: "Equipe Blanc", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i3432705cfff42ffa/version/1733121933/image.png", name: "Gioia", rarity: "Gold", rating: 81, team: "Equipe Blanc", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i7d02a8c6c72f34af/version/1733264136/image.png", name: "Bardella", rarity: "Gold", rating: 85, team: "Equipe Blanc", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i632a87f394d0c3ae/version/1733258913/image.png", name: "Rovelli", rarity: "Gold", rating: 90, team: "I Galacticos", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i50b1f9bf23c97e6e/version/1737980621/image.png", name: "Biginato A", rarity: "Gold", rating: 89, team: "I Galacticos", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i73468224465a7740/version/1733258942/image.png", name: "Romeo", rarity: "Gold", rating: 86, team: "I Galacticos", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/if51ebe51483e9711/version/1733258957/image.png", name: "Crippa", rarity: "Gold", rating: 85, team: "I Galacticos", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i78fa90656b185646/version/1733258971/image.png", name: "Chindamo", rarity: "Gold", rating: 85, team: "I Galacticos", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ib2def7a375dec0bf/version/1733258986/image.png", name: "Raimondi", rarity: "Gold", rating: 84, team: "I Galacticos", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6d993fbef70983ed/version/1733264173/image.png", name: "Biginato B", rarity: "Gold", rating: 92, team: "I Galacticos", position: "POR", chemistry: 0 },
+			
+					
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i63a9392fe0932c1a/version/1730452033/image.png", name: "Bussandri", rarity: "Gold", rating: 88, team: "Ignoranti Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i457cc759adf0c792/version/1730452038/image.png", name: "Speed", rarity: "Gold", rating: 86, team: "Ignoranti Team", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ib0ca26c5964acfaf/version/1730452043/image.png", name: "Locatelli", rarity: "Gold", rating: 82, team: "Ignoranti Team", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ice3a16783b5031ff/version/1730452054/image.png", name: "Romagnolo", rarity: "Gold", rating: 81, team: "Ignoranti Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia2c4e51ec04e2310/version/1730452060/image.png", name: "Proserpio", rarity: "Gold", rating: 80, team: "Ignoranti Team", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i325e69be3c8b6c9d/version/1730452065/image.png", name: "Impiombato", rarity: "Gold", rating: 80, team: "Ignoranti Team", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i4def54e98b8f1cb3/version/1733264195/image.png", name: "Gio Soriano", rarity: "Gold", rating: 86, team: "Ignoranti Team", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i0733493e04296af6/version/1730453417/image.png", name: "Simone Vavassori", rarity: "Gold", rating: 84, team: "Indifferente F.C.", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i564a35f9371eec19/version/1730453425/image.png", name: "Riboldi", rarity: "Gold", rating: 83, team: "Indifferente F.C.", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i16a4254109c4db8c/version/1730453433/image.png", name: "Fabrizio Folla", rarity: "Gold", rating: 83, team: "Indifferente F.C.", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ibb119e05db64459c/version/1730453441/image.png", name: "Mimmo Stellitano", rarity: "Gold", rating: 82, team: "Indifferente F.C.", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i40ddc6a2c4c51eb7/version/1730453456/image.png", name: "Davide Troise", rarity: "Gold", rating: 81, team: "Indifferente F.C.", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i2cb883e3197de9fd/version/1730453466/image.png", name: "Galliardi", rarity: "Gold", rating: 80, team: "Indifferente F.C.", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/icb1784288baba930/version/1730453478/image.png", name: "Cattaneo", rarity: "Gold", rating: 79, team: "Indifferente F.C.", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ie5b24484b38637a6/version/1733264219/image.png", name: "Papandrea", rarity: "Gold", rating: 83, team: "Indifferente F.C.", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i681f458f0508c7ad/version/1733259012/image.png", name: "Molteni", rarity: "Gold", rating: 87, team: "I pupi al guinzaglio", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i2dfd88f4a3358ff8/version/1737980645/image.png", name: "Cappanera", rarity: "Gold", rating: 85, team: "I pupi al guinzaglio", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/id3b37a956cf88de6/version/1733259040/image.png", name: "Crusco jr", rarity: "Gold", rating: 83, team: "I pupi al guinzaglio", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i0b91254c186385fa/version/1733259055/image.png", name: "Rocatello", rarity: "Gold", rating: 82, team: "I pupi al guinzaglio", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i0374014587bcc0df/version/1733259078/image.png", name: "Pirola", rarity: "Gold", rating: 82, team: "I pupi al guinzaglio", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i033c931023e11c4a/version/1733264240/image.png", name: "Drago", rarity: "Gold", rating: 84, team: "I pupi al guinzaglio", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/if08bdcbc5ac0d5af/version/1737980680/image.png", name: "Treffiletti", rarity: "Gold", rating: 90, team: "Napoletano Dream Team", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6a02504f8e368c5e/version/1733122750/image.png", name: "Cassina", rarity: "Gold", rating: 89, team: "Napoletano Dream Team", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i82e4bdd9ec9de720/version/1733122765/image.png", name: "Kamal", rarity: "Gold", rating: 86, team: "Napoletano Dream Team", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iaac27b835df1bf13/version/1733122846/image.png", name: "Polara", rarity: "Gold", rating: 84, team: "Napoletano Dream Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6621eecf69f20323/version/1733122796/image.png", name: "Bullari", rarity: "Gold", rating: 84, team: "Napoletano Dream Team", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i8bb906d5fabaa5ed/version/1733122815/image.png", name: "Rizzi", rarity: "Gold", rating: 83, team: "Napoletano Dream Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i86dd6dbe545a0934/version/1733122831/image.png", name: "Maicol D'Arpa", rarity: "Gold", rating: 83, team: "Napoletano Dream Team", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i9df1698785b1e1b7/version/1734818695/image.png", name: "Picone", rarity: "Gold", rating: 85, team: "Napoletano Dream Team", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i91142f4188b3a792/version/1733259283/image.png", name: "Mario Verga", rarity: "Gold", rating: 91, team: "Olimpia Grisoni", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ib98ffac966ab3959/version/1733259298/image.png", name: "Morotti", rarity: "Gold", rating: 89, team: "Olimpia Grisoni", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iba28c603f88bcb3a/version/1733259312/image.png", name: "Tranquillini", rarity: "Gold", rating: 88, team: "Olimpia Grisoni", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i1793f052ecf679b2/version/1733259341/image.png", name: "Zatti", rarity: "Gold", rating: 87, team: "Olimpia Grisoni", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/id1521b0ea2fb57c4/version/1733259355/image.png", name: "Boccardo", rarity: "Gold", rating: 86, team: "Olimpia Grisoni", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i38f07de9bb73381a/version/1737980712/image.png", name: "Ste Gianotti", rarity: "Gold", rating: 80, team: "Olimpia Grisoni", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i75f712c5455f5094/version/1734818653/image.png", name: "Romano", rarity: "Gold", rating: 88, team: "Olimpia Grisoni", position: "POR", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia6f3f0e01db96b6f/version/1734818639/image.png", name: "Mauri", rarity: "Gold", rating: 87, team: "Olimpia Grisoni", position: "CEN", chemistry: 0 },
+				
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ib856986eeb12096c/version/1730413096/image.png", name: "Tito Belnome", rarity: "Gold", rating: 92, team: "#FreeSimoMartino", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i89c01ba5748bda85/version/1730413112/image.png", name: "Cappelletti Leonardo", rarity: "Gold", rating: 88, team: "#FreeSimoMartino", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia9adfd68b356c3a1/version/1730413127/image.png", name: "De Valerio Daniele", rarity: "Gold", rating: 86, team: "#FreeSimoMartino", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i576af8ff58884811/version/1737980735/image.png", name: "Samuele Capici", rarity: "Gold", rating: 84, team: "#FreeSimoMartino", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic5924a70c9ce1e9e/version/1730413162/image.png", name: "Mattia Lineo", rarity: "Gold", rating: 79, team: "#FreeSimoMartino", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i416df6519905ec8c/version/1730413176/image.png", name: "Pietro Parravicini", rarity: "Gold", rating: 69, team: "#FreeSimoMartino", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i85474e7843110f89/version/1733264307/image.png", name: "Simone Martino", rarity: "Gold", rating: 91, team: "#FreeSimoMartino", position: "POR", chemistry: 0 },
+			
+			
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i9740771dfec9d843/version/1733261201/image.png", name: "Bongiovanni", rarity: "Gold", rating: 81, team: "Trivellas Team", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i62cc15db1dfb4f64/version/1733261215/image.png", name: "Di Lorenzo", rarity: "Gold", rating: 80, team: "Trivellas Team", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6aead4019ffe950d/version/1733261230/image.png", name: "Tramonti", rarity: "Gold", rating: 79, team: "Trivellas Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ie5f6901045ba372f/version/1733261244/image.png", name: "Randal", rarity: "Gold", rating: 79, team: "Trivellas Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia7f427e9fc6a16ae/version/1733261261/image.png", name: "Beggio", rarity: "Gold", rating: 78, team: "Trivellas Team", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i8300801e5d2d8a90/version/1733261275/image.png", name: "Federico Pellegatta", rarity: "Gold", rating: 77, team: "Trivellas Team", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i849105bfd55d9c7c/version/1733264287/image.png", name: "David Oderinde", rarity: "Gold", rating: 84, team: "Trivellas Team", position: "POR", chemistry: 0 },
+		
+		
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i957518051d8601c9/version/1730456107/image.png", name: "Curci", rarity: "Gold", rating: 84, team: "Real Cenacolo", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i7904c60979b4e2fc/version/1730456116/image.png", name: "Tonin", rarity: "Gold", rating: 83, team: "Real Cenacolo", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i4fe9ac0d2a01b2a6/version/1730456125/image.png", name: "Betti", rarity: "Gold", rating: 83, team: "Real Cenacolo", position: "ATT", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/ib0ca2e656fea3f1f/version/1730456134/image.png", name: "Visentin", rarity: "Gold", rating: 82, team: "Real Cenacolo", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i4c4ac01cf8f61fd5/version/1730456144/image.png", name: "Ferrario", rarity: "Gold", rating: 82, team: "Real Cenacolo", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i90e2bc4c2389f151/version/1730456154/image.png", name: "Moscardo", rarity: "Gold", rating: 80, team: "Real Cenacolo", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/icb37dd358eed2191/version/1730456167/image.png", name: "DellOca", rarity: "Gold", rating: 80, team: "Real Cenacolo", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/id3b3e15cc2942643/version/1730456176/image.png", name: "Moscardo", rarity: "Gold", rating: 79, team: "Real Cenacolo", position: "DIF", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i553f6a8f982c7731/version/1730456186/image.png", name: "Parravicini C", rarity: "Gold", rating: 77, team: "Real Cenacolo", position: "CEN", chemistry: 0 },
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ice63bb6870cdc27a/version/1733264268/image.png", name: "De Francesco", rarity: "Gold", rating: 85, team: "Real Cenacolo", position: "POR", chemistry: 0 }
+			
+		];
+			
+			
+			const formationSelect = document.getElementById('formation-select');
+			const tsDropzone = document.getElementById('DIFTS');
+			const tdDropzone = document.getElementById('DIFTD');
+			const attsDropzone = document.getElementById('ATTS');
+			const attcDropzone = document.getElementById('ATTC');
+			const attdDropzone = document.getElementById('ATTD');
+			const asDropzone = document.getElementById('ATTAS');
+			const adDropzone = document.getElementById('ATTAD');
+			const esDropzone = document.getElementById('CENES');
+			const edDropzone = document.getElementById('CENED');
+			const ccc3Dropzone = document.getElementById('CENCCC3');
+			const ccd3Dropzone = document.getElementById('CENCCD3');
+			const ccs3Dropzone = document.getElementById('CENCCS3');
+			const ccd2Dropzone = document.getElementById('CENCCD2');
+			const ccs2Dropzone = document.getElementById('CENCCS2');
+			const dcs3Dropzone = document.getElementById('DIFDCS3');
+			const dcd3Dropzone = document.getElementById('DIFDCD3');
+			const dcc3Dropzone = document.getElementById('DIFDCC3');
+			const dcsDropzone = document.getElementById('DIFDCS');
+			const dcdDropzone = document.getElementById('DIFDCD');
+			
+
+
+			formationSelect.addEventListener('change', function() {
+					if (this.value === '4-4-2') {
+							attcDropzone.style.display = 'none';
+							asDropzone.style.display = 'none';
+							adDropzone.style.display = 'none';
+							ccc3Dropzone.style.display = 'none';
+							ccd3Dropzone.style.display = 'none';
+							ccs3Dropzone.style.display = 'none';
+							dcd3Dropzone.style.display = 'none';
+							dcs3Dropzone.style.display = 'none';
+							dcc3Dropzone.style.display = 'none';
+							
+							tsDropzone.style.display = 'block';
+							tdDropzone.style.display = 'block';
+							edDropzone.style.display = 'block';
+							attdDropzone.style.display = 'block';
+							attsDropzone.style.display = 'block';
+							esDropzone.style.display = 'block';
+							ccs2Dropzone.style.display = 'block';
+							ccd2Dropzone.style.display = 'block';
+							dcsDropzone.style.display = 'block';
+							dcdDropzone.style.display = 'block';
+							
+					} else if (this.value === '4-3-3'){
+							attcDropzone.style.display = 'block';
+							asDropzone.style.display = 'block';
+							adDropzone.style.display = 'block';
+							ccc3Dropzone.style.display = 'block';
+							ccd3Dropzone.style.display = 'block';
+							ccs3Dropzone.style.display = 'block';
+							dcsDropzone.style.display = 'block';
+							dcdDropzone.style.display = 'block';
+							tsDropzone.style.display = 'block';
+							tdDropzone.style.display = 'block';
+							
+							dcd3Dropzone.style.display = 'none';
+							dcs3Dropzone.style.display = 'none';
+							dcc3Dropzone.style.display = 'none';
+							edDropzone.style.display = 'none';
+							attdDropzone.style.display = 'none';
+							attsDropzone.style.display = 'none';
+							esDropzone.style.display = 'none';
+							ccs2Dropzone.style.display = 'none';
+							ccd2Dropzone.style.display = 'none';
+					} else if (this.value === '3-4-3'){
+							attcDropzone.style.display = 'block';
+							asDropzone.style.display = 'block';
+							adDropzone.style.display = 'block';
+							esDropzone.style.display = 'block';
+							ccs2Dropzone.style.display = 'block';
+							ccd2Dropzone.style.display = 'block';
+							edDropzone.style.display = 'block';
+							dcd3Dropzone.style.display = 'block';
+							dcs3Dropzone.style.display = 'block';
+							dcc3Dropzone.style.display = 'block';
+							
+							ccc3Dropzone.style.display = 'none';
+							ccd3Dropzone.style.display = 'none';
+							ccs3Dropzone.style.display = 'none';
+							dcsDropzone.style.display = 'none';
+							dcdDropzone.style.display = 'none';
+							tsDropzone.style.display = 'none';
+							tdDropzone.style.display = 'none';
+							attdDropzone.style.display = 'none';
+							attsDropzone.style.display = 'none';
+							
+					}
+					
+					// Ricalcola e aggiorna la valutazione media e l'intesa
+					updateAverageRating();
+					updateChemistryRating();
+					
+					// Svuota tutte le dropzone
+					clearAllDropzones();
+					
+					// Salva lo stato delle dropzones
+					saveDropzones();
+			});
+
+			// Esegui il controllo anche all'avvio per impostare lo stato iniziale corretto
+			if (formationSelect.value === '4-4-2') {
+					tsDropzone.style.display = 'none';
+			}
+			
+			
+			totalPlayersCountElement.textContent = images.length;
+
+		// Funzione per ottenere la data corrente in formato YYYY-MM-DD
+		function getCurrentDate() {
+			const date = new Date();
+			return date.toISOString().split('T')[0];
+		}
+		
+		function isPlayerAlreadyInField(player) {
+		const dropzones = document.querySelectorAll('.dropzone');
+		return Array.from(dropzones).some(dropzone => {
+			const img = dropzone.querySelector('img');
+			// Trova il player corrispondente all'immagine se esiste
+			const existingPlayer = img ? images.find(image => image.src === img.dataset.src) : null;
+			// Confronta i nomi invece delle src
+			return existingPlayer && existingPlayer.name === player.name;
+		});
+	}
+	
+	let totalCredits = parseInt(localStorage.getItem('totalCredits')) || 0;  // Se non ci sono, inizializza con 0
+CreditiList.textContent = totalCredits;  // Mostra i crediti nel contatore
+		
+		// Funzione per filtrare i giocatori per squadra
+	function filterPlayersByTeam() {
+		const selectedTeam = teamFilter.value;
+		const foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
+		const foundPlayersList = document.getElementById('found-players-list');
+		
+		// Pulisci la lista dei giocatori
+		foundPlayersList.innerHTML = '';
+		
+		// Filtra i giocatori
+		const filteredPlayers = selectedTeam === 'all' 
+			? foundPlayers 
+			: foundPlayers.filter(player => player.team === selectedTeam);
+		
+		// Ordina i giocatori filtrati per rating decrescente
+		filteredPlayers.sort((a, b) => b.rating - a.rating);
+		
+		// Ricrea la lista dei giocatori filtrati
+		filteredPlayers.forEach(player => {
+			const imgElement = document.createElement('img');
+			imgElement.src = player.src;
+			imgElement.alt = player.name;
+			imgElement.style.maxWidth = '100px';
+			imgElement.style.borderRadius = '15px';
+			imgElement.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
+			imgElement.style.cursor = 'pointer';
+			imgElement.draggable = false;
+			imgElement.addEventListener('dragstart', handleDragStart);
+			imgElement.addEventListener('click', () => handlePlayerClick(player));
+			foundPlayersList.appendChild(imgElement);
+		});
+		
+		// Aggiorna il conteggio dei giocatori trovati
+		document.getElementById('found-players-count').textContent = filteredPlayers.length;
+	}
+		
+		// Funzione per gestire il conteggio dei pacchetti
+		function getPackageCount() {
+			const currentDate = getCurrentDate();
+			const packageData = JSON.parse(localStorage.getItem('packageData') || '{}');
+			
+			if (packageData.date !== currentDate) {
+				packageData.date = currentDate;
+				packageData.count = 0;
+				localStorage.setItem('packageData', JSON.stringify(packageData));
+			}
+			
+			return packageData.count || 0;
+		}
+		
+		// Funzione per aggiornare il display del conteggio
+		function updatePackageCountDisplay() {
+			const count = getPackageCount();
+			const remaining = 7 - count; //da modificare per apertura giornaliera
+			packageCountDisplay.textContent = `Pacchetti rimanenti oggi: ${remaining}`;
+		}
+		
+		// Funzione per incrementare il conteggio
+		function incrementPackageCount() {
+			const currentDate = getCurrentDate();
+			const packageData = JSON.parse(localStorage.getItem('packageData') || '{}');
+			
+			if (packageData.date !== currentDate) {
+				packageData.date = currentDate;
+				packageData.count = 0;
+			}
+
+			if (packageData.count >= 70) {   //da modificare per apertura giornaliera
+				return false;
+			}
+
+			packageData.count = (packageData.count || 0) + 1;
+			localStorage.setItem('packageData', JSON.stringify(packageData));
+			updatePackageCountDisplay();
+			return true;
+		}
+
+		// Inizializza il display del conteggio
+		updatePackageCountDisplay();
+		
+		
+	
+		
+		
+		
+
+		// Funzione per aggiornare l'elenco dei giocatori trovati
+		function updateFoundPlayersList() {
+			const foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
+			// Salva i giocatori trovati per il filtraggio
+		localStorage.setItem('foundPlayersBackup', JSON.stringify(foundPlayers));
+		
+		// Chiama la funzione di filtraggio per mostrare tutti i giocatori
+		teamFilter.value = 'all';
+		filterPlayersByTeam();
+			foundPlayersList.innerHTML = '';
+					
+					// Ordina i giocatori trovati per rating decrescente
+			foundPlayers.sort((a, b) => b.rating - a.rating);
+					
+			foundPlayers.forEach(player => {
+				const imgElement = document.createElement('img');
+				imgElement.src = player.src;
+				imgElement.alt = player.name;
+				imgElement.style.maxWidth = '100px';
+				imgElement.style.borderRadius = '15px';
+				imgElement.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
+				imgElement.style.cursor = 'pointer'; // Aggiunto cursore pointer
+				imgElement.draggable = false;
+				imgElement.addEventListener('dragstart', handleDragStart);
+				
+				// Aggiungi click handler
+				imgElement.addEventListener('click', () => handlePlayerClick(player));
+				foundPlayersList.appendChild(imgElement);
+			});
+					// Aggiorna il conteggio dei giocatori trovati
+			playerCountElement.textContent = foundPlayers.length;
+		}
+		
+			// Nuova funzione per gestire il click sul giocatore
+		function handlePlayerClick(player) {
+		// Verifica se il giocatore è già in campo
+		if (isPlayerAlreadyInField(player)) {
+			alert('Questo giocatore è già in campo!');
+			return; // Interrompe l'esecuzione se il giocatore è già presente
+		}
+				// Prima rimuovi eventuali highlight precedenti su tutte le carte
+				document.querySelectorAll('#found-players-list img').forEach(img => {
+					img.style.border = 'none';
+					img.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
+				});
+				
+				/// Riabilita tutte le dropzone e i giocatori
+		document.querySelectorAll('.dropzone').forEach(zone => {
+			zone.classList.remove('disabled-dropzone');
+			zone.style.opacity = '1';
+			zone.style.pointerEvents = 'auto';
+		});
+
+		// Trova l'immagine del giocatore cliccato
+		const clickedImg = document.querySelector(`#found-players-list img[src="${player.src}"]`);
+		
+		// Evidenzia la carta selezionata
+		if (clickedImg) {
+			clickedImg.style.border = '3px solid #3498db'; // Bordo blu
+			clickedImg.style.boxShadow = '0 0 10px rgba(52, 152, 219, 0.7)'; // Ombra blu
+		}
+		
+		
+			// Prima rimuovi eventuali highlight precedenti
+			removeAllHighlights();
+
+			
+			// Trova tutte le dropzones valide per la posizione del giocatore
+			const validDropzones = Array.from(document.querySelectorAll('.dropzone'))
+				.filter(dropzone => {
+					// Verifica se la dropzone è vuota e se corrisponde alla posizione del giocatore
+					return !dropzone.querySelector('img') && dropzone.id.includes(player.position);
+				});
+			
+			// Verifica se il giocatore è già in campo
+	if (isPlayerAlreadyInField(player)) {
+		alert('Questo giocatore è già in campo!');
+		return;
+	}
+			
+			// Evidenzia le dropzones valide
+			validDropzones.forEach(dropzone => {
+				dropzone.style.backgroundColor = 'rgba(46, 204, 113, 0.3)'; // Verde semi-trasparente
+				dropzone.style.transition = 'background-color 0.3s ease';
+				
+				// Aggiungi click handler alla dropzone
+				const clickHandler = () => {
+					placePlayerInDropzone(player, dropzone);
+					
+	const nonEmptyDropzones = Array.from(document.querySelectorAll('.dropzone'))
+		.filter(dropzone => dropzone.querySelector('img')).length;
+
+
+
+					removeAllHighlights();
+					// Rimuovi tutti i click handler temporanei
+					validDropzones.forEach(dz => {
+						dz.removeEventListener('click', clickHandler);
+						dz.style.cursor = 'default';
+					});
+				};
+				
+				dropzone.addEventListener('click', clickHandler);
+				dropzone.style.cursor = 'pointer';
+			});
+		}
+
+		// Funzione per rimuovere tutti gli highlight
+		function removeAllHighlights() {
+			document.querySelectorAll('.dropzone').forEach(dropzone => {
+				dropzone.style.backgroundColor = '';
+				dropzone.style.cursor = 'default';
+			});
+		}
+		
+		
+		// Funzione per posizionare il giocatore nella dropzone
+		function placePlayerInDropzone(player, dropzone) {
+			// Crea l'immagine
+			const img = document.createElement('img');
+			img.src = player.src;
+			img.style.width = '100%';
+			img.style.height = '100%';
+			img.style.borderRadius = '15px';
+			img.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
+			img.dataset.src = player.src;
+			
+			
+		// Rendi l'immagine non trascinabile
+		img.setAttribute('draggable', 'false');
+
+			// Pulisci la dropzone e aggiungi l'immagine
+			dropzone.innerHTML = '';
+			dropzone.appendChild(img);
+
+			// Aggiungi il pulsante di rimozione
+			const removeButton = document.createElement('button');
+			removeButton.classList.add('remove-button');
+			removeButton.style.position = 'absolute';
+			removeButton.style.top = '5px';
+			removeButton.style.right = '5px';
+			removeButton.style.padding = '5px';
+			removeButton.style.backgroundColor = '#e74c3c';
+			removeButton.style.color = 'white';
+			removeButton.style.border = 'none';
+			removeButton.style.borderRadius = '5px';
+			removeButton.style.cursor = 'pointer';
+			removeButton.textContent = 'X';
+			dropzone.appendChild(removeButton);
+			
+				// Disabilita tutte le altre dropzone tranne il pulsante di rimozione
+		document.querySelectorAll('.dropzone').forEach(zone => {
+			if (zone !== dropzone) {
+				zone.classList.add('disabled-dropzone');
+				zone.style.opacity = '1';
+				zone.style.pointerEvents = 'none';
+			}
+		});
+
+		// Disabilita tutti i giocatori tranne il pulsante di rimozione
+		const foundPlayersList = document.getElementById('found-players-list');
+		foundPlayersList.querySelectorAll('img').forEach(playerImg => {
+			playerImg.style.pointerEvents = 'none';
+			playerImg.style.opacity = '1';
+		});
+
+
+
+			// Aggiorna tutto
+			updateFoundPlayersList();
+			updateAverageRating();
+			updateChemistryRating();
+			saveDropzones();
+		}
+
+		// Funzione per calcolare e aggiornare la valutazione media
+		function updateAverageRating() {
+			const dropzones = document.querySelectorAll('.dropzone img');
+			let totalRating = 0;
+			dropzones.forEach(dropzone => {
+				const player = images.find(image => image.src === dropzone.dataset.src);
+				if (player) {
+					totalRating += player.rating;
+				}
+			});
+			const averageRating = dropzones.length ? (totalRating / dropzones.length).toFixed(2) : 0;
+			averageRatingElement.textContent = averageRating;
+		}
+			
+			// Funzione per calcolare e aggiornare l'intesa della squadra
+			function updateChemistryRating() {
+					const dropzones = document.querySelectorAll('.dropzone img');
+					let totalChemistry = 0;
+
+					// Crea una mappa per contare il numero di giocatori per ogni team
+					const teamCounts = {};
+
+					dropzones.forEach(dropzone => {
+							const playerSrc = dropzone.dataset.src;
+							const player = images.find(image => image.src === playerSrc);
+							if (player && player.rarity !== 'Icon') {
+									if (!teamCounts[player.team]) {
+											teamCounts[player.team] = 0;
+									}
+									teamCounts[player.team]++;
+							}
+					});
+
+					dropzones.forEach(dropzone => {
+							const playerSrc = dropzone.dataset.src;
+							const player = images.find(image => image.src === playerSrc);
+							if (player && player.rarity !== 'Icon') {
+									// La formula per l'intesa è il numero di giocatori del suo team meno 1
+									const teammates = teamCounts[player.team] - 1; // Escludi se stesso
+									const playerChemistry = Math.min(teammates, 3); // Massimo di 3
+									totalChemistry += playerChemistry;
+							}
+							if (player && player.rarity === 'Icon') {
+									// La formula per l'intesa è il numero di giocatori del suo team meno 1
+									totalChemistry += 3;
+							}
+					});
+
+					totalChemistryElement.textContent = Math.round((totalChemistry * 100)/33);
+					
+						const chemistryPercentage = Math.round((totalChemistry * 100)/33);
+		totalChemistryElement.textContent = chemistryPercentage;
+
+					// Aggiungi questo blocco:
+					const chemistryRatingElement = document.getElementById('chemistry-rating');
+					if (chemistryPercentage > 70) {
+						chemistryRatingElement.style.color = '#2ecc71'; // Verde
+					} else {
+						chemistryRatingElement.style.color = '#e74c3c'; // Rosso originale
+					}
+
+			}
+
+			
+
+		// Funzione per salvare le immagini nelle dropzones nello storage
+		function saveDropzones() {
+			const dropzones = document.querySelectorAll('.dropzone');
+			const dropzoneData = Array.from(dropzones).map(dropzone => {
+				const img = dropzone.querySelector('img');
+				return img ? dropzone.querySelector('img').dataset.src : null;
+			});
+			localStorage.setItem('dropzoneData', JSON.stringify(dropzoneData));
+		}
+
+		// Funzione per caricare le immagini nelle dropzones dallo storage
+		function loadDropzones() {
+			const dropzoneData = JSON.parse(localStorage.getItem('dropzoneData')) || [];
+			const dropzones = document.querySelectorAll('.dropzone');
+			dropzones.forEach((dropzone, index) => {
+				if (dropzoneData[index]) {
+					const player = images.find(img => img.src === dropzoneData[index]);
+					if (player) {
+						dropzone.innerHTML = `
+							<img src="${player.src}" style="width: 100%; height: 100%; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);" data-src="${player.src}"/>
+							<button class="remove-button" style="position: absolute; top: 5px; right: 5px; padding: 5px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">X<\/button>
+						`;
+					}
+				}
+			});
+		}
+		
+		// Funzione per svuotare tutte le dropzone e aggiornare lo storage
+		function clearAllDropzones() {
+		// Ottieni tutte le dropzone
+		const dropzones = document.querySelectorAll('.dropzone');
+		
+		// Per ogni dropzone
+		dropzones.forEach(dropzone => {
+			// Se c'è un'immagine nella dropzone
+			if (dropzone.querySelector('img')) {
+				const img = dropzone.querySelector('img');
+				const src = img.dataset.src;
+				
+				// Trova il giocatore associato all'immagine
+				const player = images.find(p => p.src === src);
+				if (player) {
+					// Aggiungi il giocatore alla lista dei giocatori trovati
+					let foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
+					if (!foundPlayers.some(p => p.src === player.src)) {
+						foundPlayers.push(player);
+						localStorage.setItem('foundPlayers', JSON.stringify(foundPlayers));
+					}
+				}
+			}
+			// Svuota la dropzone
+			dropzone.innerHTML = '';
+		});
+		
+		// Aggiorna l'interfaccia
+		updateFoundPlayersList();
+		updateAverageRating();
+		updateChemistryRating();
+		
+		// Salva lo stato vuoto delle dropzone
+		saveDropzones();
+	}
+		
+
+		// Funzione per gestire il click sul pulsante di rimozione
+		function handleRemoveClick(e) {
+			if (e.target.classList.contains('remove-button')) {
+				const src = e.target.parentElement.querySelector('img').dataset.src;
+
+				// Aggiungi il giocatore alla lista dei giocatori trovati
+				const player = images.find(img => img.src === src);
+				if (player) {
+					let foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
+					if (!foundPlayers.some(p => p.src === player.src)) {
+						foundPlayers.push(player);
+						localStorage.setItem('foundPlayers', JSON.stringify(foundPlayers));
+					}
+					
+					
+					// Riabilita tutte le dropzone e i giocatori
+				document.querySelectorAll('.dropzone').forEach(zone => {
+					zone.classList.remove('disabled-dropzone');
+					zone.style.opacity = '1';
+					zone.style.pointerEvents = 'auto';
+				});
+
+				const foundPlayersList = document.getElementById('found-players-list');
+				foundPlayersList.querySelectorAll('img').forEach(playerImg => {
+					playerImg.style.pointerEvents = 'auto';
+					playerImg.style.opacity = '1';
+				});
+
+					// Rimuovi il giocatore dal box
+					e.target.parentElement.innerHTML = '';
+
+					// Aggiorna l'elenco dei giocatori trovati
+					updateFoundPlayersList();
+					// Aggiorna la valutazione media
+					updateAverageRating();
+									// Aggiorna l'intesa totale
+									updateChemistryRating();
+					// Salva lo stato delle dropzones nello storage
+					saveDropzones();
+				}
+			}
+		}
+
+		// Funzioni di gestione del drag and drop
+		function handleDragStart(e) {
+			e.dataTransfer.setData('text/plain', e.target.src);
+			setTimeout(() => {
+				e.target.style.display = 'none';
+			}, 0);
+		}
+
+	// Funzione per gestire il drop
+	function handleDrop(e) {
+		e.preventDefault();
+		
+		const src = e.dataTransfer.getData('text/plain');
+		const targetDropzone = e.target;
+
+		// Trova l'immagine da posizionare
+		const img = document.createElement('img');
+		img.src = src;
+		img.style.width = '100%';
+		img.style.height = '100%';
+		img.style.borderRadius = '15px';
+		img.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
+		img.dataset.src = src;
+		
+		
+		// Rendi l'immagine non trascinabile
+		img.setAttribute('draggable', 'false');
+
+		// Trova il giocatore associato all'immagine
+		const player = images.find(img => img.src === src);
+		
+		
+		// Verifica se il giocatore è già in campo
+	if (isPlayerAlreadyInField(player)) {
+		document.getElementById('alert-banner').style.display = 'flex';
+		alert('Questo giocatore è già in campo!');
+		return;
+	}
+
+		// Verifica se il giocatore ha una posizione valida e se l'ID della dropzone corrisponde alla posizione
+		if (player && targetDropzone.id.includes(player.position)) {
+			if (!targetDropzone.querySelector('img')) {
+				targetDropzone.innerHTML = '';
+				targetDropzone.appendChild(img);
+
+				// Aggiungi il pulsante di rimozione
+				const removeButton = document.createElement('button');
+				removeButton.classList.add('remove-button');
+				removeButton.style.position = 'absolute';
+				removeButton.style.top = '5px';
+				removeButton.style.right = '5px';
+				removeButton.style.padding = '5px';
+				removeButton.style.backgroundColor = '#e74c3c';
+				removeButton.style.color = 'white';
+				removeButton.style.border = 'none';
+				removeButton.style.borderRadius = '5px';
+				removeButton.style.cursor = 'pointer';
+				removeButton.textContent = 'X';
+				targetDropzone.appendChild(removeButton);
+
+				// Rimuovi il giocatore dalla lista dei giocatori trovati
+				let foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
+				foundPlayers = foundPlayers.filter(player => player.src !== src);
+				localStorage.setItem('foundPlayers', JSON.stringify(foundPlayers));
+
+				// Aggiorna l'elenco dei giocatori trovati
+				updateFoundPlayersList();
+				// Aggiorna la valutazione media
+				updateAverageRating();
+				// Aggiorna l'intesa totale
+				updateChemistryRating();
+				// Salva lo stato delle dropzones nello storage
+				saveDropzones();
+			}
+		} else {
+			document.getElementById('alert-banner').style.display = 'flex';
+		}
+	}
+
+
+		function handleDragOver(e) {
+			e.preventDefault();
+		}
+
+		function handleDragEnd(e) {
+			e.target.style.display = 'block';
+		}
+
+		// Assegna eventi di drop alle zone droppable
+		document.querySelectorAll('.dropzone').forEach(dropzone => {
+			dropzone.addEventListener('drop', handleDrop);
+			dropzone.addEventListener('dragover', handleDragOver);
+		});
+
+		// Aggiungi l'event listener per il click del pulsante di rimozione
+		document.addEventListener('click', handleRemoveClick);
+
+		// Carica le immagini nelle dropzones dallo storage
+		loadDropzones();
+		// Aggiorna l'elenco dei giocatori trovati al caricamento della pagina
+		updateFoundPlayersList();
+		// Aggiorna la valutazione media
+		updateAverageRating();
+			// Aggiorna l'intesa totale
+			updateChemistryRating();
+
+		// Timer per il prossimo pacchetto
+		const startTime = Date.now();
+		const nextPackageTime = 30 * 60 * 1000; // 30 minuti in millisecondi
+
+		function updateTimer() {
+			const elapsed = Date.now() - startTime;
+			const remaining = nextPackageTime - (elapsed % nextPackageTime);
+			const minutes = Math.floor(remaining / 60000);
+			const seconds = Math.floor((remaining % 60000) / 1000);
+			timerElement.textContent = `${minutes}m ${seconds}s`;
+		}
+
+		setInterval(updateTimer, 1000);
+		updateTimer();
+
+		function getRandomPlayer() {
+			// Filtra i giocatori in base al rating
+			const comuni = images.filter(image => image.rating <= 77);
+			const medioRari = images.filter(image => image.rating >= 78 && image.rating <= 84);
+			const rari = images.filter(image => image.rating > 84 && image.rating <= 87);
+			const ultraRari = images.filter(image => image.rating > 87);
+
+			// Genera un numero casuale tra 0 e 1
+			const random = Math.random();
+
+			// Seleziona la categoria in base alle probabilità specificate
+			if (random < 0.69) {  // 69% per Comuni
+				return comuni[Math.floor(Math.random() * comuni.length)];
+			} else if (random < 0.90) {  // 21% per MedioRari (74% + 20% = 94%)
+				return medioRari[Math.floor(Math.random() * medioRari.length)];
+			} else if (random < 0.99) {  // 9% per Rari (94% + 5% = 99%)
+				return rari[Math.floor(Math.random() * rari.length)];
+			} else {  // Restante 1% per UltraRari
+				return ultraRari[Math.floor(Math.random() * ultraRari.length)];
+			}
+		}
+		
+		
+		function getRandomPlayerrare() {
+			// Filtra i giocatori in base al rating
+			const comuni = images.filter(image => image.rating <= 77);
+			const medioRari = images.filter(image => image.rating >= 78 && image.rating <= 84);
+			const rari = images.filter(image => image.rating > 84 && image.rating <= 87);
+			const ultraRari = images.filter(image => image.rating > 87);
+
+			// Genera un numero casuale tra 0 e 1
+			const random = Math.random();
+
+			// Seleziona la categoria in base alle probabilità specificate
+			if (random < 0.99) {  // 9% per Rari (94% + 5% = 99%)
+				return rari[Math.floor(Math.random() * rari.length)];
+			} else {  // Restante 1% per UltraRari
+				return ultraRari[Math.floor(Math.random() * ultraRari.length)];
+			}
+		}
+
+
+		// Mostra l'immagine casuale al clic del pulsante "Apri pacchetto"
+		showButton.addEventListener('click', () => {
+			if (!incrementPackageCount()) {
+				alert('Hai raggiunto il limite giornaliero di pacchetti (7). Torna domani per aprirne altri!');
+				return;
+			}	
+			
+			
+			
+			// Chiedi all'utente se vuole usare i crediti o aprirlo gratis
+        let usaCrediti = confirm("Vuoi aprire il pacchetto usando 450 crediti? (OK per usare i crediti, Annulla per aprirlo gratis)");
+		
+		if (usaCrediti) {
+            //let crediti = parseInt(creditiCountElement.textContent, 10);
+
+            if (totalCredits >= 127) {
+                totalCredits -= 127;
+                //creditiCountElement.textContent = crediti;
+            } else {
+                alert("Non hai abbastanza crediti per aprire questo pacchetto!");
+                return;
+            }
+        }
+		
+		
+			// Assegna il giocatore in base alla scelta
+    const player = usaCrediti ? getRandomPlayerrare() : getRandomPlayer();	
+					
+					// Invia l'email quando viene trovato un nuovo giocatore forte
+					if (player.rating > 92) {
+						sendEmail(player);
+					}
+					
+					// Crea uno spazio vuoto per il contenuto
+
+			imageContainer.style.minHeight = '500px'; // Altezza minima dello spazio
+			imageContainer.style.display = 'flex';
+			imageContainer.style.flexDirection = 'column';
+			imageContainer.style.alignItems = 'center';
+			imageContainer.style.justifyContent = 'space-between';
+			imageContainer.style.padding = '20px 0';
+					
+					// Nascondi inizialmente tutti gli elementi
+					positionDisplay.style.display = 'none';
+					ratingDisplay.style.display = 'none';
+					randomImage.style.display = 'none';
+					fuochigif.style.display = 'none';
+
+						// Mostra prima la preview della carta (fuochigif)
+		setTimeout(() => {
+			if (player.rating < 85) {
+				fuochigif.src = 'https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i549fe7ea442ca0f8/version/1734821672/image.png';
+			} else if (player.rating < 89) {
+				fuochigif.src = 'https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/icecedcaad835313c/version/1735483368/image.png';
+			} else {
+				fuochigif.src = 'https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/ia36806e7f582d95d/version/1735483461/image.png';
+			}
+			
+			fuochigif.style.opacity = '0';
+			fuochigif.style.transition = 'opacity 0.8s ease-in';
+			fuochigif.style.display = 'block';
+			
+			setTimeout(() => {
+				fuochigif.style.opacity = '1';
+			}, 50);
+
+			// Gestione della transizione per position
+		setTimeout(() => {
+			// Fade out del fuochigif
+			fuochigif.style.opacity = '0';
+			setTimeout(() => {
+				fuochigif.style.display = 'none';
+				
+				// Setup per position
+				positionDisplay.style.opacity = '0';
+				positionDisplay.style.transition = 'opacity 0.8s ease-in';
+				positionDisplay.textContent = player.position;
+				positionDisplay.style.display = 'block';
+				
+				// Fade in position
+				setTimeout(() => {
+					positionDisplay.style.opacity = '1';
+				}, 50);
+
+				// Gestione della transizione per rating
+				setTimeout(() => {
+					// Setup per rating
+					ratingDisplay.style.opacity = '0';
+					ratingDisplay.style.transition = 'opacity 0.8s ease-in';
+					ratingDisplay.textContent = player.rating;
+					ratingDisplay.style.display = 'block';
+					
+					// Fade in rating
+					setTimeout(() => {
+						ratingDisplay.style.opacity = '1';
+					}, 50);
+
+					// Transizione finale
+					setTimeout(() => {
+						// Fade out di position e rating
+						positionDisplay.style.opacity = '0';
+						ratingDisplay.style.opacity = '0';
+						
+						setTimeout(() => {
+							positionDisplay.style.display = 'none';
+							ratingDisplay.style.display = 'none';
+							
+							// Setup immagine finale
+							randomImage.style.opacity = '0';
+							randomImage.style.transition = 'opacity 0.8s ease-in';
+							randomImage.src = player.src;
+							randomImage.alt = player.name;
+							randomImage.style.display = 'block';
+							
+							// Fade in immagine finale
+							setTimeout(() => {
+								randomImage.style.opacity = '1';
+								hideButton.style.display = 'block';
+							}, 50);
+						}, 800); // Attendi che il fade out sia completato
+					}, 1000);
+				}, 1000);
+			}, 800); // Attendi che il fade out del fuochigif sia completato
+		}, 2000);
+	}, 1000);
+					
+			
+			fuochigif.style.width = '35%';  // Modifica questa percentuale per cambiare la larghezza dell'immagine
+					fuochigif.style.height = 'auto';  // Mantieni l'aspetto proporzionato
+					fuochigif.style.maxWidth = '150px';  // Imposta una larghezza massima
+			
+			
+			
+			
+			
+			// Modifica la grandezza dell'immagine qui
+					randomImage.style.width = '35%';  // Modifica questa percentuale per cambiare la larghezza dell'immagine
+					randomImage.style.height = 'auto';  // Mantieni l'aspetto proporzionato
+					randomImage.style.maxWidth = '150px';  // Imposta una larghezza massima
+
+
+			// Nascondi immediatamente il pulsante "Apri pacchetto" quando viene cliccato
+			showButton.style.display = 'none';
+			imageContainer.style.display = 'block';
+			imageContainer.style.opacity = 1;
+
+			// Aggiungi l'event listener per il pulsante "Apri altro Pacchetto"
+			hideButton.addEventListener('click', () => {
+				showButton.style.display = 'block';
+				hideButton.style.display = 'none';
+				imageContainer.style.display = 'none';
+			});
+
+	setTimeout(() => {
+			// Aggiungi il giocatore trovato alla lista dei giocatori trovati	
+			
+			// 3. Quando un giocatore viene trovato, aggiorna i crediti
+    const player = getRandomPlayer();  // Ottieni il giocatore casuale
+
+    // Somma il rating del giocatore ai crediti
+    totalCredits += player.rating;  
+    CreditiList.textContent = totalCredits;  // Aggiorna la visualizzazione dei crediti
+
+    // Salva i crediti nel localStorage
+    localStorage.setItem('totalCredits', totalCredits);
+
+			
+			const foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
+			if (!foundPlayers.some(p => p.src === player.src)) {
+				foundPlayers.push(player);
+				localStorage.setItem('foundPlayers', JSON.stringify(foundPlayers));
+			}
+
+			// Aggiorna l'elenco dei giocatori trovati
+			updateFoundPlayersList();
+			// Aggiorna la valutazione media
+			updateAverageRating();
+					// Aggiorna l'intesa totale
+					updateChemistryRating();
+			// Salva lo stato delle dropzones nello storage
+			saveDropzones();
+			
+			}, 7000);
+		});
+		
+		
+			// Imposta di default il modulo 4-3-3
+			formationSelect.value = '4-3-3';
+			
+			// Simula un evento change per nascondere/mostrare le dropzone corrette
+		formationSelect.dispatchEvent(new Event('change'));
+		
+		
+		
+		
+		
+	});
+	/* ]]> */
+	</script>

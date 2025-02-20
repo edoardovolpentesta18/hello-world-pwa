@@ -1,6 +1,6 @@
 {
-    "name": "Hello World PWA",
-    "short_name": "Hello PWA",
+    "name": "12oreCalcioLentate",
+    "short_name": "12oreLentate",
     "start_url": "index.html",
     "display": "standalone",
     "background_color": "#ffffff",

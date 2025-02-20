@@ -16,14 +16,15 @@
         }
         .container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             width: 90vw;
             max-width: 400px;
         }
         .button {
             background-color: #222;
-            color: white;
+            color: black;
+            background: white; /* Mini sfondo bianco */
             text-align: center;
             padding: 20px;
             font-size: 1.2em;
@@ -38,13 +39,13 @@
             background-color: #444;
         }
         .button.pack {
-            grid-column: span 2;
+            grid-column: span 3;
             background-image: url('https://image.jimcdn.com/app/cms/image/transf/dimension=1920x400:format=png/path/sae3b384a102b7ba9/image/if8723666e0d42dff/version/1734995993/image.png'); /* Sostituisci con il tuo sfondo */
             background-size: contain;
             background-position: center;
         }
         .button.box {
-            grid-column: span 0.5;
+            grid-column: span 1;
             background-image: url('https://image.jimcdn.com/app/cms/image/transf/dimension=1920x400:format=png/path/sae3b384a102b7ba9/image/if8723666e0d42dff/version/1734995993/image.png'); /* Sostituisci con il tuo sfondo */
             background-size: contain;
             background-position: center;

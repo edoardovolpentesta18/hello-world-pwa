@@ -57,8 +57,8 @@
         }
         
         function guess(choice) {
-            let correct = (choice === 'higher' && players[nextIndex].rating > players[currentIndex].rating) ||
-                          (choice === 'lower' && players[nextIndex].rating < players[currentIndex].rating);
+            let correct = (choice === 'higher' && players[nextIndex].rating >= players[currentIndex].rating) ||
+                          (choice === 'lower' && players[nextIndex].rating <= players[currentIndex].rating);
             
             if (correct) {
                 score++;

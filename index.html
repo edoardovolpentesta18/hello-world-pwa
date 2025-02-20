@@ -3,39 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Higher or Lower</title>
+    <title>Higher or Lower - Cards</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2196f3">
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .card-container { display: flex; justify-content: center; align-items: center; gap: 20px; }
+        .card { border: 2px solid #000; padding: 10px; text-align: center; }
+        .card img { width: 100px; }
         button { padding: 10px 20px; margin: 10px; font-size: 16px; }
     </style>
 </head>
 <body>
-    <h1>Higher or Lower</h1>
-    <p>Numero attuale: <span id="current-number"></span></p>
+    <h1>Higher or Lower - Cards</h1>
+    <div class="card-container">
+        <div class="card" id="card1">
+            <img id="img1" src="" alt="Player 1">
+            <p id="name1"></p>
+            <p>Rating: <span id="rating1"></span></p>
+        </div>
+        <div class="card" id="card2">
+            <img id="img2" src="" alt="Player 2">
+            <p id="name2"></p>
+            <p>Rating: <span id="rating2">?</span></p>
+        </div>
+    </div>
     <button onclick="guess('higher')">Più Alto</button>
     <button onclick="guess('lower')">Più Basso</button>
     <p>Punteggio: <span id="score">0</span></p>
+    
     <script>
-        let currentNumber = Math.floor(Math.random() * 100) + 1;
+        const players = [
+            { src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/icafa424b24135632/version/1730412605/image.png", name: "Davide Cattaneo", rarity: "Gold", rating: 84, team: "Aston Birra", position: "CEN", chemistry: 0 },
+            { src: "https://via.placeholder.com/134", name: "Marco Rossi", rarity: "Silver", rating: 78, team: "Birra FC", position: "ATT", chemistry: 0 },
+            { src: "https://via.placeholder.com/134", name: "Luca Bianchi", rarity: "Bronze", rating: 65, team: "Beer United", position: "DEF", chemistry: 0 }
+        ];
+        
         let score = 0;
-        document.getElementById('current-number').innerText = currentNumber;
-
+        let currentIndex = Math.floor(Math.random() * players.length);
+        let nextIndex = Math.floor(Math.random() * players.length);
+        
+        function updateCards() {
+            document.getElementById('img1').src = players[currentIndex].src;
+            document.getElementById('name1').innerText = players[currentIndex].name;
+            document.getElementById('rating1').innerText = players[currentIndex].rating;
+            
+            document.getElementById('img2').src = players[nextIndex].src;
+            document.getElementById('name2').innerText = players[nextIndex].name;
+        }
+        
         function guess(choice) {
-            let nextNumber = Math.floor(Math.random() * 100) + 1;
-            if ((choice === 'higher' && nextNumber > currentNumber) ||
-                (choice === 'lower' && nextNumber < currentNumber)) {
+            let correct = (choice === 'higher' && players[nextIndex].rating > players[currentIndex].rating) ||
+                          (choice === 'lower' && players[nextIndex].rating < players[currentIndex].rating);
+            
+            if (correct) {
                 score++;
             } else {
-                alert('Hai perso! Il numero era ' + nextNumber);
+                alert(`Hai perso! ${players[nextIndex].name} ha un rating di ${players[nextIndex].rating}.`);
                 score = 0;
             }
-            currentNumber = nextNumber;
-            document.getElementById('current-number').innerText = currentNumber;
+            
+            currentIndex = nextIndex;
+            nextIndex = Math.floor(Math.random() * players.length);
+            
+            updateCards();
+            document.getElementById('rating2').innerText = '?';
             document.getElementById('score').innerText = score;
         }
-
+        
+        updateCards();
+        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')

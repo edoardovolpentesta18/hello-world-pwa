@@ -31,6 +31,7 @@
     <button onclick="guess('higher')">Più Alto</button>
     <button onclick="guess('lower')">Più Basso</button>
     <p>Punteggio: <span id="score">0</span></p>
+    <p>Record: <span id="highscore">0</span></p>
     
     <script>
         const players = [
@@ -40,6 +41,9 @@
         ];
         
         let score = 0;
+        let highscore = localStorage.getItem('highscore') || 0;
+        document.getElementById('highscore').innerText = highscore;
+        
         let currentIndex = Math.floor(Math.random() * players.length);
         let nextIndex = Math.floor(Math.random() * players.length);
         
@@ -58,6 +62,11 @@
             
             if (correct) {
                 score++;
+                if (score > highscore) {
+                    highscore = score;
+                    localStorage.setItem('highscore', highscore);
+                    document.getElementById('highscore').innerText = highscore;
+                }
             } else {
                 alert(`Hai perso! ${players[nextIndex].name} ha un rating di ${players[nextIndex].rating}.`);
                 score = 0;

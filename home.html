@@ -30,16 +30,25 @@
             border-radius: 10px;
             cursor: pointer;
             transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .button:hover {
             background-color: #444;
+        }
+        .button.pack {
+            grid-column: span 2;
+            background-image: url('your-image.jpg'); /* Sostituisci con il tuo sfondo */
+            background-size: cover;
+            background-position: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <a href="your-page.html" class="button pack">PACK</a>
         <div class="button">DRAFT</div>
-        <div class="button">PACK</div>
         <div class="button">FATAL</div>
         <div class="button">PACKS</div>
         <div class="button">LATEST CARDS</div>

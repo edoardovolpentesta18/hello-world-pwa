@@ -3,273 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Higher or Lower</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#3C3C3B">
+    <title>Madfut UI Clone</title>
     <style>
-        body { background-color: #3C3C3B; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .card-container { display: flex; justify-content: center; align-items: center; gap: 20px; }
-        .card { border: 2px solid #000; padding: 10px; text-align: center; }
-        .card img { width: 100px; }
-        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        body {
+            background-color: black;
+            background-image: url('https://image.jimcdn.com/app/cms/image/transf/dimension=1920x400:format=png/path/sae3b384a102b7ba9/image/if8723666e0d42dff/version/1734995993/image.png');
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 90vw;
+            max-width: 400px;
+        }
+        .button {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .button:hover {
+            background-color: #444;
+        }
+        .button.pack {
+            grid-column: span 3;
+            background-image: url('https://image.jimcdn.com/app/cms/image/transf/dimension=1920x400:format=png/path/sae3b384a102b7ba9/image/if8723666e0d42dff/version/1734995993/image.png'); /* Sostituisci con il tuo sfondo */
+            background-size: contain;
+            background-position: center;
+        }
+        .button.box {
+            grid-column: span 1;
+            background-image: url('https://image.jimcdn.com/app/cms/image/transf/dimension=1920x400:format=png/path/sae3b384a102b7ba9/image/if8723666e0d42dff/version/1734995993/image.png'); /* Sostituisci con il tuo sfondo */
+            background-size: contain;
+            background-position: center;
+        }
     </style>
 </head>
 <body>
-    <h1>Higher or Lower</h1>
-<button onclick="toggleMenu()">☰ Menu</button>
-<div id="menu" style="display: none; position: absolute; top: 50px; left: 10px; background: #93D2F4; border: 1px solid #000; padding: 10px;">
-    <button onclick="window.location.href='index.html'">Higher or Lower</button>
-    
-<!-- Sezione Statistiche con sottomenù -->
-    <div style="position: relative;">
-        <button onclick="toggleSubmenu()">Statistiche ▼</button>
-        <div id="submenu" style="display: none; position: absolute; top: 0; left: 100%; background: #93D2F4; border: 1px solid #000; padding: 10px;">
-            <button onclick="window.location.href='home.html'">Trofei</button>
-            <button onclick="window.location.href='ranking.html'">Ranking</button>
-        </div>
+    <div class="container">
+        <button onclick="window.location.href='Gioco.html'" class = "button pack">GIOCO</button>
+        <button onclick="window.location.href='ranking.html'" class = "button pack">RANKING</button>
+        <button onclick="window.location.href='trofei.html'" class = "button box">TROFEI</button>
+        <div class="button">FOTO</div>
+        <div class="button">LATEST CARDS</div>
+        <div class="button">SPONSOR</div>
+        <div class="button">GIOCO2</div>
+        <div class="button">MOMENTI</div>
+        <div class="button">TORNEO 12H</div>
     </div>
-
-    <button onclick="window.location.href='Gioco.html'">Gioco2</button>
-</div>
-
-	<!-- Script per gestire il sottomenù -->
-<script>
-function toggleSubmenu() {
-    const submenu = document.getElementById('submenu');
-    submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
-}
-</script>
-	
-    <div class="card-container">
-        <div class="card" id="card1">
-            <img id="img1" src="" alt="Player 1">
-            <p id="name1"></p>
-            <p>Rating: <span id="rating1"></span></p>
-        </div>
-        <div class="card" id="card2">
-            <img id="img2" src="" alt="Player 2">
-            <p id="name2"></p>
-            <p>Rating: <span id="rating2">?</span></p>
-        </div>
-    </div>
-    <button onclick="guess('higher')">Più Alto</button>
-    <button onclick="guess('lower')">Più Basso</button>
-    <p>Punteggio: <span id="score">0</span></p>
-    <p>Record: <span id="highscore">0</span></p>
-    
-    <script>
-        const players = [
-            { src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/icafa424b24135632/version/1730412605/image.png", name: "Davide Cattaneo", rarity: "Gold", rating: 84, team: "Aston Birra", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i110dd7873bc1c749/version/1730412483/image.png", name: "Thomas Basilico", rarity: "Gold", rating: 83, team: "Aston Birra", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ie17512820e275308/version/1730412499/image.png", name: "Samuel Oderinde", rarity: "Gold", rating: 82, team: "Aston Birra", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/if25ffbfdb7cebd53/version/1730412524/image.png", name: "Scorpinti", rarity: "Gold", rating: 80, team: "Aston Birra", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic543c2f7d31dbf5a/version/1730412538/image.png", name: "Sormani", rarity: "Gold", rating: 77, team: "Aston Birra", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i89fe095162319ee5/version/1730412553/image.png", name: "Viola", rarity: "Gold", rating: 76, team: "Aston Birra", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ifc8226bd80d2ecc2/version/1730412578/image.png", name: "Paleardi", rarity: "Gold", rating: 75, team: "Aston Birra", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/if576ac41efb2bc6f/version/1730412594/image.png", name: "Cattaneo Alessio", rarity: "Gold", rating: 74, team: "Aston Birra", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i1584fc3a4b4fcef3/version/1733264045/image.png", name: "Cri Peverelli", rarity: "Gold", rating: 88, team: "Aston Birra", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i7b1b30303147e290/version/1730412830/image.png", name: "Iguermadou", rarity: "Gold", rating: 81, team: "Big Lentate", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6f61422cf5053c7a/version/1730412816/image.png", name: "Simone Zanella", rarity: "Gold", rating: 81, team: "Big Lentate", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i882af5ef12b38980/version/1730412852/image.png", name: "Pansera", rarity: "Gold", rating: 80, team: "Big Lentate", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iab10da3e7b5d8ee5/version/1730412869/image.png", name: "Metallo", rarity: "Gold", rating: 79, team: "Big Lentate", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ibc4375b4f74ce8cf/version/1730412884/image.png", name: "Folino", rarity: "Gold", rating: 78, team: "Big Lentate", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i01d7be90d6fdc97a/version/1730412903/image.png", name: "Arnaboldi", rarity: "Gold", rating: 77, team: "Big Lentate", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i06dba0284c925466/version/1730412921/image.png", name: "Deangelis", rarity: "Gold", rating: 77, team: "Big Lentate", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ide50b1d44352ccbe/version/1733264065/image.png", name: "Bianchi", rarity: "Gold", rating: 82, team: "Big Lentate", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i18a4dd06352c4bd8/version/1730452087/image.png", name: "Laponi", rarity: "Gold", rating: 82, team: "Bomber Team", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i75f0458f514b9eaa/version/1730452093/image.png", name: "Davide Bragonzi", rarity: "Gold", rating: 81, team: "Bomber Team", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i3185cc695fe2bbed/version/1730452098/image.png", name: "Roncen", rarity: "Gold", rating: 80, team: "Bomber Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iff9fdc495e2b1942/version/1730452119/image.png", name: "Meroni", rarity: "Gold", rating: 80, team: "Bomber Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i7cf9288d336d36f6/version/1730452125/image.png", name: "Giacomo Prada", rarity: "Gold", rating: 78, team: "Bomber Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i45f60d4e24ea2bb8/version/1730452130/image.png", name: "Basilico", rarity: "Gold", rating: 78, team: "Bomber Team", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i166fad42e52a64dc/version/1733264087/image.png", name: "Ciliberto", rarity: "Gold", rating: 83, team: "Bomber Team", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i25bbcfdc056105fe/version/1733259403/image.png", name: "Parravicini A", rarity: "Gold", rating: 86, team: "Ceppi Imbiancature", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/icdfd030cde185b7e/version/1733259418/image.png", name: "DeA", rarity: "Gold", rating: 85, team: "Ceppi Imbiancature", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i85939d54ce56b243/version/1733259431/image.png", name: "Ceppi", rarity: "Gold", rating: 85, team: "Ceppi Imbiancature", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic54f65d7db3d6d37/version/1733259516/image.png", name: "Ronzoni", rarity: "Gold", rating: 84, team: "Ceppi Imbiancature", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic57fa2dd6aa8b161/version/1733259533/image.png", name: "Elia Lamberti", rarity: "Gold", rating: 83, team: "Ceppi Imbiancature", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic025f8f03347e1c3/version/1733259548/image.png", name: "Parravicini B", rarity: "Gold", rating: 78, team: "Ceppi Imbiancature", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/idd411fa6f44e1eca/version/1733259563/image.png", name: "Boga", rarity: "Gold", rating: 76, team: "Ceppi Imbiancature", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i8ac5dbe9e344b43c/version/1734818754/image.png", name: "Ceppi senior", rarity: "Gold", rating: 87, team: "Ceppi Imbiancature", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ifb575cd781b6c592/version/1733123677/image.png", name: "Dade Cavallin", rarity: "Gold", rating: 92, team: "Coprenaghen", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i5ad3447bf4bb3e6c/version/1737980581/image.png", name: "Younes Safine", rarity: "Gold", rating: 91, team: "Coprenaghen", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ie54975201bc5ab6f/version/1733123705/image.png", name: "Zubani", rarity: "Gold", rating: 90, team: "Coprenaghen", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i8fdfc96eecf9b4f8/version/1737981050/image.png", name: "Cesana", rarity: "Gold", rating: 89, team: "Coprenaghen", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i16b99836ec444d80/version/1733123732/image.png", name: "Tommy Balestrini", rarity: "Gold", rating: 85, team: "Coprenaghen", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ifac7f04b4f7b0018/version/1733123746/image.png", name: "Ste Cavallin", rarity: "Gold", rating: 84, team: "Coprenaghen", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i144eb14c46b12719/version/1734818734/image.png", name: "Amelio", rarity: "Gold", rating: 90, team: "Coprenaghen", position: "POR", chemistry: 0 },
-			
-				
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i0ba0c6ad2168461d/version/1730453975/image.png", name: "Pil Cappelletti", rarity: "Gold", rating: 87, team: "Dos Santos Casa Blanca", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia0e44c65ff90ef1d/version/1730453984/image.png", name: "Baldo", rarity: "Gold", rating: 86, team: "Dos Santos Casa Blanca", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i3e7f53ca271d688d/version/1730453992/image.png", name: "El Issi", rarity: "Gold", rating: 85, team: "Dos Santos Casa Blanca", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i7096da922341cc79/version/1730454002/image.png", name: "El Idrissi", rarity: "Gold", rating: 85, team: "Dos Santos Casa Blanca", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ifa68b79d1bd7c9e3/version/1730454011/image.png", name: "Rigo", rarity: "Gold", rating: 84, team: "Dos Santos Casa Blanca", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i67f9ee30baba8b69/version/1730454019/image.png", name: "Zanella jr", rarity: "Gold", rating: 83, team: "Dos Santos Casa Blanca", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ice4b0bed0879f397/version/1733264111/image.png", name: "Scattolin", rarity: "Gold", rating: 84, team: "Dos Santos Casa Blanca", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ica69ebc8d83b5dcc/version/1733121807/image.png", name: "Edoardo Crusco", rarity: "Gold", rating: 86, team: "Equipe Blanc", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/id3ff2343aa7c125e/version/1733121817/image.png", name: "Makhlouf", rarity: "Gold", rating: 85, team: "Equipe Blanc", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic936dc27d4555693/version/1733121834/image.png", name: "Pallavicini", rarity: "Gold", rating: 83, team: "Equipe Blanc", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/if2540035085ca966/version/1733121897/image.png", name: "Salvini", rarity: "Gold", rating: 82, team: "Equipe Blanc", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/ib9994f151ec3b946/version/1737980784/image.png", name: "Pinese", rarity: "Gold", rating: 84, team: "Equipe Blanc", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i3432705cfff42ffa/version/1733121933/image.png", name: "Gioia", rarity: "Gold", rating: 81, team: "Equipe Blanc", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i7d02a8c6c72f34af/version/1733264136/image.png", name: "Bardella", rarity: "Gold", rating: 85, team: "Equipe Blanc", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i632a87f394d0c3ae/version/1733258913/image.png", name: "Rovelli", rarity: "Gold", rating: 90, team: "I Galacticos", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i50b1f9bf23c97e6e/version/1737980621/image.png", name: "Biginato A", rarity: "Gold", rating: 89, team: "I Galacticos", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i73468224465a7740/version/1733258942/image.png", name: "Romeo", rarity: "Gold", rating: 86, team: "I Galacticos", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/if51ebe51483e9711/version/1733258957/image.png", name: "Crippa", rarity: "Gold", rating: 85, team: "I Galacticos", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i78fa90656b185646/version/1733258971/image.png", name: "Chindamo", rarity: "Gold", rating: 85, team: "I Galacticos", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ib2def7a375dec0bf/version/1733258986/image.png", name: "Raimondi", rarity: "Gold", rating: 84, team: "I Galacticos", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6d993fbef70983ed/version/1733264173/image.png", name: "Biginato B", rarity: "Gold", rating: 92, team: "I Galacticos", position: "POR", chemistry: 0 },
-			
-					
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i63a9392fe0932c1a/version/1730452033/image.png", name: "Bussandri", rarity: "Gold", rating: 88, team: "Ignoranti Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i457cc759adf0c792/version/1730452038/image.png", name: "Speed", rarity: "Gold", rating: 86, team: "Ignoranti Team", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ib0ca26c5964acfaf/version/1730452043/image.png", name: "Locatelli", rarity: "Gold", rating: 82, team: "Ignoranti Team", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ice3a16783b5031ff/version/1730452054/image.png", name: "Romagnolo", rarity: "Gold", rating: 81, team: "Ignoranti Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia2c4e51ec04e2310/version/1730452060/image.png", name: "Proserpio", rarity: "Gold", rating: 80, team: "Ignoranti Team", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i325e69be3c8b6c9d/version/1730452065/image.png", name: "Impiombato", rarity: "Gold", rating: 80, team: "Ignoranti Team", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i4def54e98b8f1cb3/version/1733264195/image.png", name: "Gio Soriano", rarity: "Gold", rating: 86, team: "Ignoranti Team", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i0733493e04296af6/version/1730453417/image.png", name: "Simone Vavassori", rarity: "Gold", rating: 84, team: "Indifferente F.C.", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i564a35f9371eec19/version/1730453425/image.png", name: "Riboldi", rarity: "Gold", rating: 83, team: "Indifferente F.C.", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i16a4254109c4db8c/version/1730453433/image.png", name: "Fabrizio Folla", rarity: "Gold", rating: 83, team: "Indifferente F.C.", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ibb119e05db64459c/version/1730453441/image.png", name: "Mimmo Stellitano", rarity: "Gold", rating: 82, team: "Indifferente F.C.", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i40ddc6a2c4c51eb7/version/1730453456/image.png", name: "Davide Troise", rarity: "Gold", rating: 81, team: "Indifferente F.C.", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i2cb883e3197de9fd/version/1730453466/image.png", name: "Galliardi", rarity: "Gold", rating: 80, team: "Indifferente F.C.", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/icb1784288baba930/version/1730453478/image.png", name: "Cattaneo", rarity: "Gold", rating: 79, team: "Indifferente F.C.", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ie5b24484b38637a6/version/1733264219/image.png", name: "Papandrea", rarity: "Gold", rating: 83, team: "Indifferente F.C.", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i681f458f0508c7ad/version/1733259012/image.png", name: "Molteni", rarity: "Gold", rating: 87, team: "I pupi al guinzaglio", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i2dfd88f4a3358ff8/version/1737980645/image.png", name: "Cappanera", rarity: "Gold", rating: 85, team: "I pupi al guinzaglio", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/id3b37a956cf88de6/version/1733259040/image.png", name: "Crusco jr", rarity: "Gold", rating: 83, team: "I pupi al guinzaglio", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i0b91254c186385fa/version/1733259055/image.png", name: "Rocatello", rarity: "Gold", rating: 82, team: "I pupi al guinzaglio", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i0374014587bcc0df/version/1733259078/image.png", name: "Pirola", rarity: "Gold", rating: 82, team: "I pupi al guinzaglio", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i033c931023e11c4a/version/1733264240/image.png", name: "Drago", rarity: "Gold", rating: 84, team: "I pupi al guinzaglio", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/if08bdcbc5ac0d5af/version/1737980680/image.png", name: "Treffiletti", rarity: "Gold", rating: 90, team: "Napoletano Dream Team", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6a02504f8e368c5e/version/1733122750/image.png", name: "Cassina", rarity: "Gold", rating: 89, team: "Napoletano Dream Team", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i82e4bdd9ec9de720/version/1733122765/image.png", name: "Kamal", rarity: "Gold", rating: 86, team: "Napoletano Dream Team", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iaac27b835df1bf13/version/1733122846/image.png", name: "Polara", rarity: "Gold", rating: 84, team: "Napoletano Dream Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6621eecf69f20323/version/1733122796/image.png", name: "Bullari", rarity: "Gold", rating: 84, team: "Napoletano Dream Team", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i8bb906d5fabaa5ed/version/1733122815/image.png", name: "Rizzi", rarity: "Gold", rating: 83, team: "Napoletano Dream Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i86dd6dbe545a0934/version/1733122831/image.png", name: "Maicol D'Arpa", rarity: "Gold", rating: 83, team: "Napoletano Dream Team", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i9df1698785b1e1b7/version/1734818695/image.png", name: "Picone", rarity: "Gold", rating: 85, team: "Napoletano Dream Team", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i91142f4188b3a792/version/1733259283/image.png", name: "Mario Verga", rarity: "Gold", rating: 91, team: "Olimpia Grisoni", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ib98ffac966ab3959/version/1733259298/image.png", name: "Morotti", rarity: "Gold", rating: 89, team: "Olimpia Grisoni", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iba28c603f88bcb3a/version/1733259312/image.png", name: "Tranquillini", rarity: "Gold", rating: 88, team: "Olimpia Grisoni", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i1793f052ecf679b2/version/1733259341/image.png", name: "Zatti", rarity: "Gold", rating: 87, team: "Olimpia Grisoni", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/id1521b0ea2fb57c4/version/1733259355/image.png", name: "Boccardo", rarity: "Gold", rating: 86, team: "Olimpia Grisoni", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i38f07de9bb73381a/version/1737980712/image.png", name: "Ste Gianotti", rarity: "Gold", rating: 80, team: "Olimpia Grisoni", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i75f712c5455f5094/version/1734818653/image.png", name: "Romano", rarity: "Gold", rating: 88, team: "Olimpia Grisoni", position: "POR", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia6f3f0e01db96b6f/version/1734818639/image.png", name: "Mauri", rarity: "Gold", rating: 87, team: "Olimpia Grisoni", position: "CEN", chemistry: 0 },
-				
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ib856986eeb12096c/version/1730413096/image.png", name: "Tito Belnome", rarity: "Gold", rating: 92, team: "#FreeSimoMartino", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i89c01ba5748bda85/version/1730413112/image.png", name: "Cappelletti Leonardo", rarity: "Gold", rating: 88, team: "#FreeSimoMartino", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia9adfd68b356c3a1/version/1730413127/image.png", name: "De Valerio Daniele", rarity: "Gold", rating: 86, team: "#FreeSimoMartino", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i576af8ff58884811/version/1737980735/image.png", name: "Samuele Capici", rarity: "Gold", rating: 84, team: "#FreeSimoMartino", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic5924a70c9ce1e9e/version/1730413162/image.png", name: "Mattia Lineo", rarity: "Gold", rating: 79, team: "#FreeSimoMartino", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i416df6519905ec8c/version/1730413176/image.png", name: "Pietro Parravicini", rarity: "Gold", rating: 69, team: "#FreeSimoMartino", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i85474e7843110f89/version/1733264307/image.png", name: "Simone Martino", rarity: "Gold", rating: 91, team: "#FreeSimoMartino", position: "POR", chemistry: 0 },
-			
-			
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i9740771dfec9d843/version/1733261201/image.png", name: "Bongiovanni", rarity: "Gold", rating: 81, team: "Trivellas Team", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i62cc15db1dfb4f64/version/1733261215/image.png", name: "Di Lorenzo", rarity: "Gold", rating: 80, team: "Trivellas Team", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i6aead4019ffe950d/version/1733261230/image.png", name: "Tramonti", rarity: "Gold", rating: 79, team: "Trivellas Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ie5f6901045ba372f/version/1733261244/image.png", name: "Randal", rarity: "Gold", rating: 79, team: "Trivellas Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ia7f427e9fc6a16ae/version/1733261261/image.png", name: "Beggio", rarity: "Gold", rating: 78, team: "Trivellas Team", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i8300801e5d2d8a90/version/1733261275/image.png", name: "Federico Pellegatta", rarity: "Gold", rating: 77, team: "Trivellas Team", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i849105bfd55d9c7c/version/1733264287/image.png", name: "David Oderinde", rarity: "Gold", rating: 84, team: "Trivellas Team", position: "POR", chemistry: 0 },
-		
-		
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i957518051d8601c9/version/1730456107/image.png", name: "Curci", rarity: "Gold", rating: 84, team: "Real Cenacolo", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i7904c60979b4e2fc/version/1730456116/image.png", name: "Tonin", rarity: "Gold", rating: 83, team: "Real Cenacolo", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i4fe9ac0d2a01b2a6/version/1730456125/image.png", name: "Betti", rarity: "Gold", rating: 83, team: "Real Cenacolo", position: "ATT", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/ib0ca2e656fea3f1f/version/1730456134/image.png", name: "Visentin", rarity: "Gold", rating: 82, team: "Real Cenacolo", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i4c4ac01cf8f61fd5/version/1730456144/image.png", name: "Ferrario", rarity: "Gold", rating: 82, team: "Real Cenacolo", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i90e2bc4c2389f151/version/1730456154/image.png", name: "Moscardo", rarity: "Gold", rating: 80, team: "Real Cenacolo", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/icb37dd358eed2191/version/1730456167/image.png", name: "DellOca", rarity: "Gold", rating: 80, team: "Real Cenacolo", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/id3b3e15cc2942643/version/1730456176/image.png", name: "Moscardo", rarity: "Gold", rating: 79, team: "Real Cenacolo", position: "DIF", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i553f6a8f982c7731/version/1730456186/image.png", name: "Parravicini C", rarity: "Gold", rating: 77, team: "Real Cenacolo", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ice63bb6870cdc27a/version/1733264268/image.png", name: "De Francesco", rarity: "Gold", rating: 85, team: "Real Cenacolo", position: "POR", chemistry: 0 }
-        ];
-        
-        let score = 0;
-        let highscore = localStorage.getItem('highscore') || 0;
-        document.getElementById('highscore').innerText = highscore;
-        
-        let currentIndex = Math.floor(Math.random() * players.length);
-        let nextIndex = Math.floor(Math.random() * players.length);
-        
-        function updateCards() {
-            document.getElementById('img1').src = players[currentIndex].src;
-            document.getElementById('name1').innerText = players[currentIndex].name;
-            document.getElementById('rating1').innerText = players[currentIndex].rating;
-            
-            //document.getElementById('img2').src = players[nextIndex].src;
-            document.getElementById('name2').innerText = players[nextIndex].name;
-        }
-        
-        function guess(choice) {
-            let correct = (choice === 'higher' && players[nextIndex].rating >= players[currentIndex].rating) ||
-                          (choice === 'lower' && players[nextIndex].rating <= players[currentIndex].rating);
-            
-            if (correct) {
-                score++;
-                if (score > highscore) {
-                    highscore = score;
-                    localStorage.setItem('highscore', highscore);
-                    document.getElementById('highscore').innerText = highscore;
-                }
-            } else {
-                alert(`Hai perso! ${players[nextIndex].name} ha un rating di ${players[nextIndex].rating}.`);
-                score = 0;
-            }
-            
-            currentIndex = nextIndex;
-            nextIndex = Math.floor(Math.random() * players.length);
-            
-            updateCards();
-            document.getElementById('rating2').innerText = '?';
-            document.getElementById('score').innerText = score;
-        }
-        
-        updateCards();
-        
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker registrato'))
-                    .catch(err => console.log('Service Worker non registrato', err));
-            });
-        }
-    </script>
-
-
-	<script>
-function toggleMenu() {
-    const menu = document.getElementById('menu');
-    menu.style.display = menu.style.display === "none" ? "block" : "none";
-}
-</script>
-
 </body>
 </html>

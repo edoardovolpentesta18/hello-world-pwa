@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Risultati Partite</title>
-</head>
-<body>
-    <h1>Risultati Partite</h1>
-    <div id="results"></div>
-
+    <title>Partite</title>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         // Configura Firebase
         const firebaseConfig = {
@@ -26,16 +22,38 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        // Leggi i risultati in tempo reale
-        const resultsList = document.getElementById("results");
-        onSnapshot(collection(db, "matches"), (snapshot) => {
-            resultsList.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                resultsList.innerHTML += `<p>${data.squadra1} ${data.gol1} - ${data.gol2} ${data.squadra2}</p>`;
+
+        // Funzione per CARICARE le partite dal database
+        async function caricaPartite() {
+            const girone = document.getElementById("girone").value;
+            const partiteContainer = document.getElementById("listaPartite");
+            partiteContainer.innerHTML = ""; // Pulisce la lista
+
+            const querySnapshot = await getDocs(collection(db, "partite", girone, "partite"));
+            querySnapshot.forEach((doc) => {
+                const partita = doc.data();
+                const partitaElement = document.createElement("div");
+                partitaElement.innerHTML = `
+                    ${partita.squadra1} vs ${partita.squadra2} → <b>${partita.risultato}</b>
+                `;
+                partiteContainer.appendChild(partitaElement);
             });
-        });
+        }
+
+        // Espone la funzione globalmente
+        window.caricaPartite = caricaPartite;
     </script>
+</head>
+<body onload="caricaPartite()">
+    <h1>Risultati Partite</h1>
+
+    <label for="girone">Scegli il girone:</label>
+    <select id="girone" onchange="caricaPartite()">
+        <option value="girone_A">Girone A</option>
+        <option value="girone_B">Girone B</option>
+    </select>
+
+    <h2>Partite Registrate</h2>
+    <div id="listaPartite"></div>
 </body>
 </html>

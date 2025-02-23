@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partite e Classifica</title>
+    <title>Partite, Classifica e Playoff</title>
     <style>
         .container {
             display: flex;
@@ -33,13 +33,46 @@
             padding: 8px;
             border-bottom: 1px solid #eee;
         }
+        .playoff-bracket {
+            display: flex;
+            gap: 50px;
+            padding: 20px;
+        }
+        .round-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+        .match {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            width: 200px;
+            background-color: white;
+        }
+        .match-wrapper {
+            position: relative;
+            margin: 20px 0;
+        }
+        .match-connector-horizontal {
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            width: 50px;
+            border-top: 2px solid #ccc;
+        }
+        .gironi-view, .playoff-view {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
     </style>
     <script type="module">
         // Import Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         
-        // Configura Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyApJJvOyDRxJLgbWMiLJmDEnR-4jSeVDVc",
           authDomain: "ore2025-a18f7.firebaseapp.com",
@@ -53,11 +86,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        let classificaGironeA = [];
+        let classificaGironeB = [];
+
         // Funzione per calcolare la classifica
         function calcolaClassifica(partite) {
             const classifica = {};
 
-            // Inizializza le statistiche per ogni squadra
             partite.forEach(partita => {
                 [partita.squadra1, partita.squadra2].forEach(squadra => {
                     if (!classifica[squadra]) {
@@ -71,20 +106,16 @@
                     }
                 });
 
-                // Estrae i gol dalla stringa risultato
                 const [gol1, gol2] = partita.risultato.split("-").map(Number);
 
-                // Aggiorna le statistiche della squadra 1
                 classifica[partita.squadra1].golFatti += gol1;
                 classifica[partita.squadra1].golSubiti += gol2;
                 classifica[partita.squadra1].partiteGiocate++;
 
-                // Aggiorna le statistiche della squadra 2
                 classifica[partita.squadra2].golFatti += gol2;
                 classifica[partita.squadra2].golSubiti += gol1;
                 classifica[partita.squadra2].partiteGiocate++;
 
-                // Assegna i punti
                 if (gol1 > gol2) {
                     classifica[partita.squadra1].punti += 3;
                 } else if (gol2 > gol1) {
@@ -95,7 +126,6 @@
                 }
             });
 
-            // Converte l'oggetto in array e ordina
             return Object.values(classifica).sort((a, b) => {
                 if (a.punti !== b.punti) return b.punti - a.punti;
                 if (a.golFatti !== b.golFatti) return b.golFatti - a.golFatti;
@@ -103,12 +133,28 @@
             });
         }
 
-        // Funzione per CARICARE le partite dal database
-        async function caricaPartite() {
-            const girone = document.getElementById("girone").value;
+        // Funzione per caricare e visualizzare il contenuto appropriato
+        async function caricaContenuto() {
+            const selection = document.getElementById("visualizza").value;
+            const gironiView = document.querySelector('.gironi-view');
+            const playoffView = document.querySelector('.playoff-view');
+
+            if (selection === "playoff") {
+                gironiView.classList.remove('active');
+                playoffView.classList.add('active');
+                await caricaPlayoff();
+            } else {
+                gironiView.classList.add('active');
+                playoffView.classList.remove('active');
+                await caricaGirone(selection);
+            }
+        }
+
+        // Funzione per caricare le partite del girone
+        async function caricaGirone(girone) {
             const partiteContainer = document.getElementById("listaPartite");
             const classificaContainer = document.getElementById("classificaTable");
-            partiteContainer.innerHTML = ""; // Pulisce la lista
+            partiteContainer.innerHTML = "";
             
             const partite = [];
             const querySnapshot = await getDocs(collection(db, "partite", girone, "partite"));
@@ -125,10 +171,14 @@
                 partiteContainer.appendChild(partitaElement);
             });
 
-            // Calcola e mostra la classifica
             const classifica = calcolaClassifica(partite);
             
-            // Genera la tabella della classifica
+            if (girone === "girone_A") {
+                classificaGironeA = classifica;
+            } else if (girone === "girone_B") {
+                classificaGironeB = classifica;
+            }
+
             let classificaHTML = `
                 <tr>
                     <th>Pos</th>
@@ -158,29 +208,105 @@
             classificaContainer.innerHTML = classificaHTML;
         }
 
-        // Espone la funzione globalmente
-        window.caricaPartite = caricaPartite;
+        // Funzione per caricare il tabellone playoff
+        async function caricaPlayoff() {
+            // Prima carica entrambi i gironi se non sono già caricati
+            if (classificaGironeA.length === 0) {
+                await caricaGirone("girone_A");
+            }
+            if (classificaGironeB.length === 0) {
+                await caricaGirone("girone_B");
+            }
+
+            const playoffContainer = document.getElementById("playoffBracket");
+            
+            // Definizione degli accoppiamenti
+            const quarti = [
+                { home: classificaGironeA[0], away: classificaGironeB[3] },
+                { home: classificaGironeA[1], away: classificaGironeB[2] },
+                { home: classificaGironeB[1], away: classificaGironeA[2] },
+                { home: classificaGironeB[0], away: classificaGironeA[3] }
+            ];
+
+            let html = `
+                <div class="playoff-bracket">
+                    <div class="round-column">
+                        <h3>Quarti di Finale</h3>
+                        ${quarti.map((match, i) => `
+                            <div class="match-wrapper">
+                                <div class="match">
+                                    <div>${match.home?.nome || 'TBD'}</div>
+                                    <div>vs</div>
+                                    <div>${match.away?.nome || 'TBD'}</div>
+                                </div>
+                                <div class="match-connector-horizontal"></div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="round-column">
+                        <h3>Semifinali</h3>
+                        <div class="match-wrapper">
+                            <div class="match">
+                                <div>TBD</div>
+                                <div>vs</div>
+                                <div>TBD</div>
+                            </div>
+                            <div class="match-connector-horizontal"></div>
+                        </div>
+                        <div class="match-wrapper">
+                            <div class="match">
+                                <div>TBD</div>
+                                <div>vs</div>
+                                <div>TBD</div>
+                            </div>
+                            <div class="match-connector-horizontal"></div>
+                        </div>
+                    </div>
+                    <div class="round-column">
+                        <h3>Finale</h3>
+                        <div class="match">
+                            <div>TBD</div>
+                            <div>vs</div>
+                            <div>TBD</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            playoffContainer.innerHTML = html;
+        }
+
+        // Espone le funzioni globalmente
+        window.caricaContenuto = caricaContenuto;
     </script>
 </head>
-<body onload="caricaPartite()">
-    <h1>Risultati e Classifica</h1>
+<body onload="caricaContenuto()">
+    <h1>Torneo</h1>
     
-    <label for="girone">Scegli il girone:</label>
-    <select id="girone" onchange="caricaPartite()">
+    <label for="visualizza">Visualizza:</label>
+    <select id="visualizza" onchange="caricaContenuto()">
         <option value="girone_A">Girone A</option>
         <option value="girone_B">Girone B</option>
+        <option value="playoff">Fase Finale</option>
     </select>
 
-    <div class="container">
-        <div class="partite">
-            <h2>Partite Registrate</h2>
-            <div id="listaPartite"></div>
+    <div class="gironi-view">
+        <div class="container">
+            <div class="partite">
+                <h2>Partite Registrate</h2>
+                <div id="listaPartite"></div>
+            </div>
+            
+            <div class="classifica">
+                <h2>Classifica</h2>
+                <table id="classificaTable"></table>
+            </div>
         </div>
-        
-        <div class="classifica">
-            <h2>Classifica</h2>
-            <table id="classificaTable"></table>
-        </div>
+    </div>
+
+    <div class="playoff-view">
+        <h2>Tabellone Playoff</h2>
+        <div id="playoffBracket"></div>
     </div>
 </body>
 </html>

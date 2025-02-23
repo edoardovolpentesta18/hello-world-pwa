@@ -3,12 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partite</title>
+    <title>Partite e Classifica</title>
+    <style>
+        .container {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        .partite, .classifica {
+            flex: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .partita-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
     <script type="module">
         // Import Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
+        
         // Configura Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyApJJvOyDRxJLgbWMiLJmDEnR-4jSeVDVc",
@@ -19,25 +49,113 @@
           appId: "1:324736325409:web:2fc2868c25b253c8815060",
           measurementId: "G-5D4EEB1C9M"
         };
-
+        
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // Funzione per calcolare la classifica
+        function calcolaClassifica(partite) {
+            const classifica = {};
+
+            // Inizializza le statistiche per ogni squadra
+            partite.forEach(partita => {
+                [partita.squadra1, partita.squadra2].forEach(squadra => {
+                    if (!classifica[squadra]) {
+                        classifica[squadra] = {
+                            nome: squadra,
+                            punti: 0,
+                            golFatti: 0,
+                            golSubiti: 0,
+                            partiteGiocate: 0
+                        };
+                    }
+                });
+
+                // Estrae i gol dalla stringa risultato
+                const [gol1, gol2] = partita.risultato.split("-").map(Number);
+
+                // Aggiorna le statistiche della squadra 1
+                classifica[partita.squadra1].golFatti += gol1;
+                classifica[partita.squadra1].golSubiti += gol2;
+                classifica[partita.squadra1].partiteGiocate++;
+
+                // Aggiorna le statistiche della squadra 2
+                classifica[partita.squadra2].golFatti += gol2;
+                classifica[partita.squadra2].golSubiti += gol1;
+                classifica[partita.squadra2].partiteGiocate++;
+
+                // Assegna i punti
+                if (gol1 > gol2) {
+                    classifica[partita.squadra1].punti += 3;
+                } else if (gol2 > gol1) {
+                    classifica[partita.squadra2].punti += 3;
+                } else {
+                    classifica[partita.squadra1].punti += 1;
+                    classifica[partita.squadra2].punti += 1;
+                }
+            });
+
+            // Converte l'oggetto in array e ordina
+            return Object.values(classifica).sort((a, b) => {
+                if (a.punti !== b.punti) return b.punti - a.punti;
+                if (a.golFatti !== b.golFatti) return b.golFatti - a.golFatti;
+                return b.golSubiti - a.golSubiti;
+            });
+        }
 
         // Funzione per CARICARE le partite dal database
         async function caricaPartite() {
             const girone = document.getElementById("girone").value;
             const partiteContainer = document.getElementById("listaPartite");
+            const classificaContainer = document.getElementById("classificaTable");
             partiteContainer.innerHTML = ""; // Pulisce la lista
-
+            
+            const partite = [];
             const querySnapshot = await getDocs(collection(db, "partite", girone, "partite"));
+            
             querySnapshot.forEach((doc) => {
                 const partita = doc.data();
+                partite.push(partita);
+                
                 const partitaElement = document.createElement("div");
+                partitaElement.className = "partita-item";
                 partitaElement.innerHTML = `
                     ${partita.squadra1} vs ${partita.squadra2} → <b>${partita.risultato}</b>
                 `;
                 partiteContainer.appendChild(partitaElement);
             });
+
+            // Calcola e mostra la classifica
+            const classifica = calcolaClassifica(partite);
+            
+            // Genera la tabella della classifica
+            let classificaHTML = `
+                <tr>
+                    <th>Pos</th>
+                    <th>Squadra</th>
+                    <th>Punti</th>
+                    <th>GF</th>
+                    <th>GS</th>
+                    <th>DR</th>
+                    <th>Partite</th>
+                </tr>
+            `;
+
+            classifica.forEach((squadra, index) => {
+                classificaHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${squadra.nome}</td>
+                        <td>${squadra.punti}</td>
+                        <td>${squadra.golFatti}</td>
+                        <td>${squadra.golSubiti}</td>
+                        <td>${squadra.golFatti - squadra.golSubiti}</td>
+                        <td>${squadra.partiteGiocate}</td>
+                    </tr>
+                `;
+            });
+
+            classificaContainer.innerHTML = classificaHTML;
         }
 
         // Espone la funzione globalmente
@@ -45,15 +163,24 @@
     </script>
 </head>
 <body onload="caricaPartite()">
-    <h1>Risultati Partite</h1>
-
+    <h1>Risultati e Classifica</h1>
+    
     <label for="girone">Scegli il girone:</label>
     <select id="girone" onchange="caricaPartite()">
         <option value="girone_A">Girone A</option>
         <option value="girone_B">Girone B</option>
     </select>
 
-    <h2>Partite Registrate</h2>
-    <div id="listaPartite"></div>
+    <div class="container">
+        <div class="partite">
+            <h2>Partite Registrate</h2>
+            <div id="listaPartite"></div>
+        </div>
+        
+        <div class="classifica">
+            <h2>Classifica</h2>
+            <table id="classificaTable"></table>
+        </div>
+    </div>
 </body>
 </html>

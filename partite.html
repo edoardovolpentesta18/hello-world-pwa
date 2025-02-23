@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risultati Partite</title>
+</head>
+<body>
+    <h1>Risultati Partite</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        // Configura Firebase
+        const firebaseConfig = {
+            apiKey: "TUO_API_KEY",
+            authDomain: "TUO_PROJECT_ID.firebaseapp.com",
+            projectId: "TUO_PROJECT_ID",
+            storageBucket: "TUO_PROJECT_ID.appspot.com",
+            messagingSenderId: "TUO_SENDER_ID",
+            appId: "TUO_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Leggi i risultati in tempo reale
+        const resultsList = document.getElementById("results");
+        onSnapshot(collection(db, "matches"), (snapshot) => {
+            resultsList.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                resultsList.innerHTML += `<p>${data.squadra1} ${data.gol1} - ${data.gol2} ${data.squadra2}</p>`;
+            });
+        });
+    </script>
+</body>
+</html>

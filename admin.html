@@ -3,19 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Inserisci Risultati</title>
-</head>
-<body>
-    <h1>Inserisci Risultati</h1>
-    <input type="text" id="squadra1" placeholder="Squadra 1">
-    <input type="number" id="gol1" placeholder="Gol 1">
-    <input type="number" id="gol2" placeholder="Gol 2">
-    <input type="text" id="squadra2" placeholder="Squadra 2">
-    <button id="saveResult">Salva</button>
-
+    <title>Admin - Gestione Risultati</title>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Configura Firebase
         const firebaseConfig = {
@@ -30,25 +21,86 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        document.getElementById("saveResult").addEventListener("click", async () => {
-            const squadra1 = document.getElementById("squadra1").value;
-            const gol1 = document.getElementById("gol1").value;
-            const gol2 = document.getElementById("gol2").value;
-            const squadra2 = document.getElementById("squadra2").value;
 
-            if (squadra1 && squadra2 && gol1 !== "" && gol2 !== "") {
-                await addDoc(collection(db, "matches"), {
-                    squadra1,
-                    gol1: parseInt(gol1),
-                    gol2: parseInt(gol2),
-                    squadra2
-                });
-                alert("Risultato salvato!");
-            } else {
-                alert("Compila tutti i campi!");
+        // Funzione per caricare i risultati in base al girone selezionato
+        async function loadResults() {
+            const gironeSelezionato = document.getElementById("girone").value;
+            const resultsList = document.getElementById("results-list");
+            resultsList.innerHTML = "";
+
+            const querySnapshot = await getDocs(collection(db, "partite"));
+            querySnapshot.forEach((doc) => {
+                const match = doc.data();
+                if (match.girone === gironeSelezionato) {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                        ${match.squadra1} ${match.gol1} - ${match.gol2} ${match.squadra2}
+                        <button onclick="editResult('${doc.id}', '${match.squadra1}', '${match.squadra2}', ${match.gol1}, ${match.gol2})">Modifica</button>
+                    `;
+                    resultsList.appendChild(li);
+                }
+            });
+        }
+
+        // Funzione per modificare un risultato
+        window.editResult = async function (id, squadra1, squadra2, gol1, gol2) {
+            const newGol1 = prompt(`Nuovo punteggio per ${squadra1}:`, gol1);
+            const newGol2 = prompt(`Nuovo punteggio per ${squadra2}:`, gol2);
+
+            if (newGol1 !== null && newGol2 !== null) {
+                const matchRef = doc(db, "partite", id);
+                await updateDoc(matchRef, { gol1: parseInt(newGol1), gol2: parseInt(newGol2) });
+                alert("Risultato aggiornato!");
+                loadResults();
             }
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("girone").addEventListener("change", loadResults);
         });
+
+    </script>
+</head>
+<body>
+    <!-- Form di Login -->
+    <div id="login-form">
+        <h2>Accesso Admin</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Accedi</button>
+    </div>
+
+    <!-- Contenuto Admin (nascosto di default) -->
+    <div id="admin-content" style="display:none;">
+        <h1>Benvenuto nell'area Admin</h1>
+
+        <!-- Selettore Girone -->
+        <label for="girone">Seleziona Girone:</label>
+        <select id="girone">
+            <option value="A">Girone A</option>
+            <option value="B">Girone B</option>
+            <option value="C">Girone C</option>
+        </select>
+
+        <!-- Lista Risultati -->
+        <div id="match-results">
+            <h2>Modifica Risultati</h2>
+            <ul id="results-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const user = document.getElementById("username").value;
+            const pass = document.getElementById("password").value;
+
+            if (user === "edovolpe" && pass === "Spanish0.") {
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("admin-content").style.display = "block";
+            } else {
+                alert("Credenziali errate!");
+            }
+        }
     </script>
 </body>
 </html>

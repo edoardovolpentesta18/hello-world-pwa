@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Inserisci Risultati</title>
+</head>
+<body>
+    <h1>Inserisci Risultati</h1>
+    <input type="text" id="squadra1" placeholder="Squadra 1">
+    <input type="number" id="gol1" placeholder="Gol 1">
+    <input type="number" id="gol2" placeholder="Gol 2">
+    <input type="text" id="squadra2" placeholder="Squadra 2">
+    <button id="saveResult">Salva</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        // Configura Firebase
+        const firebaseConfig = {
+            apiKey: "TUO_API_KEY",
+            authDomain: "TUO_PROJECT_ID.firebaseapp.com",
+            projectId: "TUO_PROJECT_ID",
+            storageBucket: "TUO_PROJECT_ID.appspot.com",
+            messagingSenderId: "TUO_SENDER_ID",
+            appId: "TUO_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        document.getElementById("saveResult").addEventListener("click", async () => {
+            const squadra1 = document.getElementById("squadra1").value;
+            const gol1 = document.getElementById("gol1").value;
+            const gol2 = document.getElementById("gol2").value;
+            const squadra2 = document.getElementById("squadra2").value;
+
+            if (squadra1 && squadra2 && gol1 !== "" && gol2 !== "") {
+                await addDoc(collection(db, "matches"), {
+                    squadra1,
+                    gol1: parseInt(gol1),
+                    gol2: parseInt(gol2),
+                    squadra2
+                });
+                alert("Risultato salvato!");
+            } else {
+                alert("Compila tutti i campi!");
+            }
+        });
+    </script>
+</body>
+</html>

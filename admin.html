@@ -4,6 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Partite</title>
+    <style>
+        .partita-form {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .partita-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .gol-input {
+            width: 50px;
+            text-align: center;
+        }
+        .squadra-input {
+            width: 150px;
+            margin: 0 5px;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        .btn-modifica {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+    </style>
     <script type="module">
         // Import Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
@@ -28,9 +62,11 @@
             const girone = document.getElementById("girone").value;
             const squadra1 = document.getElementById("squadra1").value;
             const squadra2 = document.getElementById("squadra2").value;
-            const risultato = document.getElementById("risultato").value;
+            const gol1 = document.getElementById("gol1").value;
+            const gol2 = document.getElementById("gol2").value;
 
-            if (girone && squadra1 && squadra2 && risultato) {
+            if (girone && squadra1 && squadra2 && gol1 != "" && gol2 != "") {
+                const risultato = `${gol1}-${gol2}`;
                 await addDoc(collection(db, "partite", girone, "partite"), {
                     squadra1,
                     squadra2,
@@ -38,19 +74,36 @@
                 });
                 alert("Partita inserita!");
                 caricaPartite(); // Aggiorna la lista
+                // Pulisce i campi
+                document.getElementById("squadra1").value = "";
+                document.getElementById("squadra2").value = "";
+                document.getElementById("gol1").value = "";
+                document.getElementById("gol2").value = "";
             } else {
                 alert("Compila tutti i campi!");
             }
         }
 
-        // Funzione per MODIFICARE un risultato
+        // Funzione per MODIFICARE una partita
         async function modificaPartita(id, girone) {
-            const nuovoRisultato = prompt("Inserisci il nuovo risultato:");
-            if (nuovoRisultato) {
+            const partitaDiv = document.getElementById(`partita-${id}`);
+            const squadra1 = partitaDiv.querySelector(`.squadra1-edit`).value;
+            const squadra2 = partitaDiv.querySelector(`.squadra2-edit`).value;
+            const gol1 = partitaDiv.querySelector(`.gol1-edit`).value;
+            const gol2 = partitaDiv.querySelector(`.gol2-edit`).value;
+
+            if (squadra1 && squadra2 && gol1 != "" && gol2 != "") {
+                const risultato = `${gol1}-${gol2}`;
                 const partitaRef = doc(db, "partite", girone, "partite", id);
-                await updateDoc(partitaRef, { risultato: nuovoRisultato });
-                alert("Risultato aggiornato!");
+                await updateDoc(partitaRef, { 
+                    squadra1,
+                    squadra2,
+                    risultato 
+                });
+                alert("Partita aggiornata!");
                 caricaPartite(); // Aggiorna la lista
+            } else {
+                alert("Compila tutti i campi!");
             }
         }
 
@@ -63,10 +116,20 @@
             const querySnapshot = await getDocs(collection(db, "partite", girone, "partite"));
             querySnapshot.forEach((doc) => {
                 const partita = doc.data();
+                const [gol1, gol2] = partita.risultato.split("-");
+                
                 const partitaElement = document.createElement("div");
+                partitaElement.className = "partita-item";
+                partitaElement.id = `partita-${doc.id}`;
                 partitaElement.innerHTML = `
-                    ${partita.squadra1} vs ${partita.squadra2} → <b>${partita.risultato}</b>
-                    <button onclick="modificaPartita('${doc.id}', '${girone}')">Modifica</button>
+                    <input type="text" class="squadra-input squadra1-edit" value="${partita.squadra1}">
+                    <input type="number" class="gol-input gol1-edit" value="${gol1}" min="0">
+                    -
+                    <input type="number" class="gol-input gol2-edit" value="${gol2}" min="0">
+                    <input type="text" class="squadra-input squadra2-edit" value="${partita.squadra2}">
+                    <button class="btn-modifica" onclick="modificaPartita('${doc.id}', '${girone}')">
+                        Salva Modifiche
+                    </button>
                 `;
                 partiteContainer.appendChild(partitaElement);
             });
@@ -78,7 +141,7 @@
         window.caricaPartite = caricaPartite;
     </script>
 </head>
-<body>
+<body onload="caricaPartite()">
     <h1>Admin - Risultati Partite</h1>
 
     <label for="girone">Scegli il girone:</label>
@@ -87,11 +150,15 @@
         <option value="girone_B">Girone B</option>
     </select>
 
-    <h2>Inserisci Partita</h2>
-    <input type="text" id="squadra1" placeholder="Squadra 1">
-    <input type="text" id="squadra2" placeholder="Squadra 2">
-    <input type="text" id="risultato" placeholder="Risultato (es: 2-1)">
-    <button onclick="inserisciPartita()">Inserisci</button>
+    <div class="partita-form">
+        <h2>Inserisci Partita</h2>
+        <input type="text" id="squadra1" class="squadra-input" placeholder="Squadra 1">
+        <input type="number" id="gol1" class="gol-input" placeholder="Gol" min="0">
+        -
+        <input type="number" id="gol2" class="gol-input" placeholder="Gol" min="0">
+        <input type="text" id="squadra2" class="squadra-input" placeholder="Squadra 2">
+        <button onclick="inserisciPartita()">Inserisci</button>
+    </div>
 
     <h2>Partite Registrate</h2>
     <div id="listaPartite"></div>

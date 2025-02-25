@@ -10,7 +10,7 @@
         import { getFirestore, collection, addDoc, updateDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         // Configura Firebase
-       const firebaseConfig = {
+        const firebaseConfig = {
           apiKey: "AIzaSyApJJvOyDRxJLgbWMiLJmDEnR-4jSeVDVc",
           authDomain: "ore2025-a18f7.firebaseapp.com",
           projectId: "ore2025-a18f7",
@@ -34,23 +34,28 @@
                     await caricaSquadre(); // Ricarica i dropdown
                 } catch (error) {
                     console.error("Errore durante l'aggiunta della squadra:", error);
+                    alert("Errore durante l'aggiunta della squadra: " + error.message);
                 }
             }
         }
 
-        // Esponi la funzione globalmente
-        window.aggiungiSquadra = aggiungiSquadra;
-
-
         // Funzione per aggiungere giocatori
         async function aggiungiGiocatore() {
-            const squadra = document.getElementById("squadra_select").value;
+            const squadraId = document.getElementById("squadra_select").value;
             const giocatore = document.getElementById("giocatore_nome").value;
 
-            if (squadra && giocatore) {
-                await addDoc(collection(db, "squadre", squadra, "giocatori"), { nome: giocatore });
-                alert("Giocatore aggiunto!");
-                caricaGiocatori(squadra);
+            if (squadraId && giocatore) {
+                try {
+                    await addDoc(collection(db, "squadre", squadraId, "giocatori"), { nome: giocatore });
+                    alert("Giocatore aggiunto!");
+                    document.getElementById("giocatore_nome").value = ""; // Pulisce il campo input
+                    caricaGiocatori(squadraId);
+                } catch (error) {
+                    console.error("Errore durante l'aggiunta del giocatore:", error);
+                    alert("Errore durante l'aggiunta del giocatore: " + error.message);
+                }
+            } else {
+                alert("Seleziona una squadra e inserisci il nome del giocatore");
             }
         }
 
@@ -62,6 +67,7 @@
             const partitaDropdown1 = document.getElementById("squadra1");
             const partitaDropdown2 = document.getElementById("squadra2");
         
+            // Pulisce i dropdown
             squadreDropdown.innerHTML = "<option value=''>Seleziona Squadra</option>";
             partitaDropdown1.innerHTML = "<option value=''>Seleziona Squadra</option>";
             partitaDropdown2.innerHTML = "<option value=''>Seleziona Squadra</option>";
@@ -70,55 +76,88 @@
                 const querySnapshot = await getDocs(collection(db, "squadre"));
                 querySnapshot.forEach((doc) => {
                     const squadra = doc.data().nome;
-                    console.log("Squadra trovata:", squadra);
+                    const id = doc.id;
+                    console.log("Squadra trovata:", squadra, "ID:", id);
                     
-                    const option = `<option value="${doc.id}">${squadra}</option>`;
+                    const option = `<option value="${id}">${squadra}</option>`;
                     squadreDropdown.innerHTML += option;
                     partitaDropdown1.innerHTML += option;
                     partitaDropdown2.innerHTML += option;
                 });
             } catch (error) {
                 console.error("Errore nel caricamento delle squadre:", error);
+                alert("Errore nel caricamento delle squadre: " + error.message);
             }
         }
 
-
         // Funzione per caricare i giocatori della squadra selezionata
         async function caricaGiocatori(squadraId) {
+            if (!squadraId) return;
+            
             const giocatoriDropdown = document.getElementById("giocatore_select");
             giocatoriDropdown.innerHTML = "<option value=''>Seleziona Giocatore</option>";
 
-            const querySnapshot = await getDocs(collection(db, "squadre", squadraId, "giocatori"));
-            querySnapshot.forEach((doc) => {
-                const giocatore = doc.data().nome;
-                giocatoriDropdown.innerHTML += `<option value="${doc.id}">${giocatore}</option>`;
-            });
+            try {
+                const querySnapshot = await getDocs(collection(db, "squadre", squadraId, "giocatori"));
+                querySnapshot.forEach((doc) => {
+                    const giocatore = doc.data().nome;
+                    giocatoriDropdown.innerHTML += `<option value="${doc.id}">${giocatore}</option>`;
+                });
+            } catch (error) {
+                console.error("Errore nel caricamento dei giocatori:", error);
+                alert("Errore nel caricamento dei giocatori: " + error.message);
+            }
         }
 
         // Funzione per inserire una partita
         async function inserisciPartita() {
             const girone = document.getElementById("girone").value;
-            const squadra1 = document.getElementById("squadra1").value;
-            const squadra2 = document.getElementById("squadra2").value;
+            const squadra1Id = document.getElementById("squadra1").value;
+            const squadra2Id = document.getElementById("squadra2").value;
             const gol1 = document.getElementById("gol1").value;
             const gol2 = document.getElementById("gol2").value;
 
-            if (girone && squadra1 && squadra2 && gol1 !== "" && gol2 !== "") {
-                const risultato = `${gol1}-${gol2}`;
-                await addDoc(collection(db, "partite", girone, "partite"), {
-                    squadra1,
-                    squadra2,
-                    risultato
-                });
-                alert("Partita inserita!");
+            if (girone && squadra1Id && squadra2Id && gol1 !== "" && gol2 !== "") {
+                if (squadra1Id === squadra2Id) {
+                    alert("Seleziona due squadre diverse");
+                    return;
+                }
+                
+                try {
+                    const risultato = `${gol1}-${gol2}`;
+                    await addDoc(collection(db, "partite", girone, "partite"), {
+                        squadra1Id,
+                        squadra2Id,
+                        risultato,
+                        gol1: parseInt(gol1),
+                        gol2: parseInt(gol2),
+                        timestamp: new Date()
+                    });
+                    alert("Partita inserita!");
+                    
+                    // Pulisce i campi
+                    document.getElementById("gol1").value = "";
+                    document.getElementById("gol2").value = "";
+                } catch (error) {
+                    console.error("Errore durante l'inserimento della partita:", error);
+                    alert("Errore durante l'inserimento della partita: " + error.message);
+                }
+            } else {
+                alert("Compila tutti i campi");
             }
         }
+
+        // Esponi le funzioni globalmente
+        window.aggiungiSquadra = aggiungiSquadra;
+        window.aggiungiGiocatore = aggiungiGiocatore;
+        window.caricaGiocatori = caricaGiocatori;
+        window.inserisciPartita = inserisciPartita;
+        window.caricaSquadre = caricaSquadre;
 
         // Caricamento iniziale delle squadre
         document.addEventListener("DOMContentLoaded", () => {
             caricaSquadre();
         });
-
     </script>
 </head>
 <body>
@@ -131,8 +170,11 @@
     <h2>Aggiungi Giocatori</h2>
     <label for="squadra_select">Squadra:</label>
     <select id="squadra_select" onchange="caricaGiocatori(this.value)"></select>
+    <br>
     <input type="text" id="giocatore_nome" placeholder="Nome Giocatore">
     <button onclick="aggiungiGiocatore()">Aggiungi Giocatore</button>
+    <br>
+    <select id="giocatore_select"></select>
 
     <h2>Inserisci Partita</h2>
     <label for="girone">Girone:</label>

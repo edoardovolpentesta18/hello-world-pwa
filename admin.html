@@ -27,12 +27,17 @@
         async function aggiungiSquadra() {
             const squadra = document.getElementById("squadra_nome").value;
             if (squadra) {
-                await addDoc(collection(db, "squadre"), { nome: squadra });
-                alert("Squadra aggiunta!");
-                document.getElementById("squadra_nome").value = ""; // Pulisce il campo input
-                await caricaSquadre(); // Ricarica le squadre nei dropdown
+                try {
+                    await addDoc(collection(db, "squadre"), { nome: squadra });
+                    alert("Squadra aggiunta!");
+                    document.getElementById("squadra_nome").value = ""; // Pulisce il campo input
+                    await caricaSquadre(); // Ricarica i dropdown
+                } catch (error) {
+                    console.error("Errore durante l'aggiunta della squadra:", error);
+                }
             }
         }
+
 
         // Funzione per aggiungere giocatori
         async function aggiungiGiocatore() {
@@ -48,21 +53,32 @@
 
         // Funzione per caricare squadre nel dropdown
         async function caricaSquadre() {
+            console.log("Caricamento squadre...");
+            
             const squadreDropdown = document.getElementById("squadra_select");
             const partitaDropdown1 = document.getElementById("squadra1");
             const partitaDropdown2 = document.getElementById("squadra2");
+        
             squadreDropdown.innerHTML = "<option value=''>Seleziona Squadra</option>";
             partitaDropdown1.innerHTML = "<option value=''>Seleziona Squadra</option>";
             partitaDropdown2.innerHTML = "<option value=''>Seleziona Squadra</option>";
-
-            const querySnapshot = await getDocs(collection(db, "squadre"));
-            querySnapshot.forEach((doc) => {
-                const squadra = doc.data().nome;
-                squadreDropdown.innerHTML += `<option value="${doc.id}">${squadra}</option>`;
-                partitaDropdown1.innerHTML += `<option value="${doc.id}">${squadra}</option>`;
-                partitaDropdown2.innerHTML += `<option value="${doc.id}">${squadra}</option>`;
-            });
+        
+            try {
+                const querySnapshot = await getDocs(collection(db, "squadre"));
+                querySnapshot.forEach((doc) => {
+                    const squadra = doc.data().nome;
+                    console.log("Squadra trovata:", squadra);
+                    
+                    const option = `<option value="${doc.id}">${squadra}</option>`;
+                    squadreDropdown.innerHTML += option;
+                    partitaDropdown1.innerHTML += option;
+                    partitaDropdown2.innerHTML += option;
+                });
+            } catch (error) {
+                console.error("Errore nel caricamento delle squadre:", error);
+            }
         }
+
 
         // Funzione per caricare i giocatori della squadra selezionata
         async function caricaGiocatori(squadraId) {

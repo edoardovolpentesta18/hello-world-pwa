@@ -158,6 +158,24 @@
         <input type="number" id="gol2" class="gol-input" placeholder="Gol" min="0">
         <input type="text" id="squadra2" class="squadra-input" placeholder="Squadra 2">
         <button onclick="inserisciPartita()">Inserisci</button>
+
+        <h2>Aggiungi Giocatori alle Squadre</h2>
+        <input type="text" id="squadra_nome" placeholder="Nome Squadra">
+        <input type="text" id="giocatore_nome" placeholder="Nome Giocatore">
+        <button onclick="aggiungiGiocatore()">Aggiungi Giocatore</button>
+        <div id="listaGiocatori"></div>
+        
+        <h2>Marcatori e Migliori in Campo</h2>
+        <input type="text" id="marcatore" placeholder="Nome Marcatore">
+        <input type="number" id="golMarcatore" placeholder="Gol" min="1">
+        <button onclick="aggiungiMarcatore()">Aggiungi Marcatore</button>
+        <div id="listaMarcatori"></div>
+        
+        <input type="text" id="migliore" placeholder="Migliore in Campo">
+        <button onclick="aggiungiMigliore()">Aggiungi Migliore</button>
+        <div id="listaMigliori"></div>
+
+        
     </div>
 
     <h2>Partite Registrate</h2>

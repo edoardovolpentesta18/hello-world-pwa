@@ -29,7 +29,8 @@
             if (squadra) {
                 await addDoc(collection(db, "squadre"), { nome: squadra });
                 alert("Squadra aggiunta!");
-                caricaSquadre();
+                document.getElementById("squadra_nome").value = ""; // Pulisce il campo input
+                await caricaSquadre(); // Ricarica le squadre nei dropdown
             }
         }
 

@@ -3,19 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Gestione Partite</title>
+    <title>Admin Partite</title>
     <style>
-        .marcatori-container {
+        .partita-form {
+            margin: 20px 0;
+            padding: 15px;
             border: 1px solid #ddd;
-            padding: 10px;
+            border-radius: 5px;
+        }
+        .partita-item {
             margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
             background-color: #f9f9f9;
         }
-        .marcatore-item {
-            margin-bottom: 5px;
+        .gol-input {
+            width: 50px;
+            text-align: center;
         }
-        .hidden {
-            display: none;
+        .squadra-input {
+            width: 150px;
+            margin: 0 5px;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        .btn-modifica {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
         }
     </style>
     <script type="module">
@@ -37,336 +57,110 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Strutture dati per memorizzare giocatori
-        let squadreData = {}; // Contiene nome squadra per ID
-        let giocatoriData = {}; // Contiene giocatori organizzati per squadra
-
-        // Funzione per aggiungere squadre
-        async function aggiungiSquadra() {
-            const squadra = document.getElementById("squadra_nome").value;
-            if (squadra) {
-                try {
-                    await addDoc(collection(db, "squadre"), { nome: squadra });
-                    alert("Squadra aggiunta!");
-                    document.getElementById("squadra_nome").value = ""; // Pulisce il campo input
-                    await caricaSquadre(); // Ricarica i dropdown
-                } catch (error) {
-                    console.error("Errore durante l'aggiunta della squadra:", error);
-                    alert("Errore durante l'aggiunta della squadra: " + error.message);
-                }
-            }
-        }
-
-        // Funzione per aggiungere giocatori
-        async function aggiungiGiocatore() {
-            const squadraId = document.getElementById("squadra_select").value;
-            const giocatore = document.getElementById("giocatore_nome").value;
-
-            if (squadraId && giocatore) {
-                try {
-                    await addDoc(collection(db, "squadre", squadraId, "giocatori"), { nome: giocatore });
-                    alert("Giocatore aggiunto!");
-                    document.getElementById("giocatore_nome").value = ""; // Pulisce il campo input
-                    await caricaGiocatori(squadraId);
-                    // Ricarica anche la lista completa di giocatori per i marcatori
-                    await caricaTuttiGiocatori();
-                } catch (error) {
-                    console.error("Errore durante l'aggiunta del giocatore:", error);
-                    alert("Errore durante l'aggiunta del giocatore: " + error.message);
-                }
-            } else {
-                alert("Seleziona una squadra e inserisci il nome del giocatore");
-            }
-        }
-
-        // Funzione per caricare squadre nel dropdown
-        async function caricaSquadre() {
-            console.log("Caricamento squadre...");
-            
-            const squadreDropdown = document.getElementById("squadra_select");
-            const partitaDropdown1 = document.getElementById("squadra1");
-            const partitaDropdown2 = document.getElementById("squadra2");
-        
-            // Pulisce i dropdown
-            squadreDropdown.innerHTML = "<option value=''>Seleziona Squadra</option>";
-            partitaDropdown1.innerHTML = "<option value=''>Seleziona Squadra</option>";
-            partitaDropdown2.innerHTML = "<option value=''>Seleziona Squadra</option>";
-            
-            // Resetta i dati
-            squadreData = {};
-        
-            try {
-                const querySnapshot = await getDocs(collection(db, "squadre"));
-                querySnapshot.forEach((doc) => {
-                    const squadra = doc.data().nome;
-                    const id = doc.id;
-                    console.log("Squadra trovata:", squadra, "ID:", id);
-                    
-                    // Memorizza nome squadra per ID
-                    squadreData[id] = squadra;
-                    
-                    const option = `<option value="${id}">${squadra}</option>`;
-                    squadreDropdown.innerHTML += option;
-                    partitaDropdown1.innerHTML += option;
-                    partitaDropdown2.innerHTML += option;
-                });
-                
-                // Carica tutti i giocatori di tutte le squadre
-                await caricaTuttiGiocatori();
-            } catch (error) {
-                console.error("Errore nel caricamento delle squadre:", error);
-                alert("Errore nel caricamento delle squadre: " + error.message);
-            }
-        }
-
-        // Funzione per caricare i giocatori della squadra selezionata
-        async function caricaGiocatori(squadraId) {
-            if (!squadraId) return;
-            
-            const giocatoriDropdown = document.getElementById("giocatore_select");
-            giocatoriDropdown.innerHTML = "<option value=''>Seleziona Giocatore</option>";
-
-            try {
-                const querySnapshot = await getDocs(collection(db, "squadre", squadraId, "giocatori"));
-                querySnapshot.forEach((doc) => {
-                    const giocatore = doc.data().nome;
-                    giocatoriDropdown.innerHTML += `<option value="${doc.id}">${giocatore}</option>`;
-                });
-            } catch (error) {
-                console.error("Errore nel caricamento dei giocatori:", error);
-                alert("Errore nel caricamento dei giocatori: " + error.message);
-            }
-        }
-        
-        // Funzione per caricare tutti i giocatori di tutte le squadre
-        async function caricaTuttiGiocatori() {
-            console.log("Caricamento di tutti i giocatori...");
-            giocatoriData = {};
-            
-            // Per ogni squadra, carica i giocatori
-            for (const squadraId in squadreData) {
-                giocatoriData[squadraId] = [];
-                
-                try {
-                    const querySnapshot = await getDocs(collection(db, "squadre", squadraId, "giocatori"));
-                    querySnapshot.forEach((doc) => {
-                        giocatoriData[squadraId].push({
-                            id: doc.id,
-                            nome: doc.data().nome
-                        });
-                    });
-                } catch (error) {
-                    console.error(`Errore nel caricamento dei giocatori per la squadra ${squadraId}:`, error);
-                }
-            }
-            
-            console.log("Dati giocatori caricati:", giocatoriData);
-        }
-        
-        // Funzione per aggiungere campi marcatore
-        function aggiungiCampoMarcatore(squadraId, containerId) {
-            if (!squadraId || !giocatoriData[squadraId]) return;
-            
-            const container = document.getElementById(containerId);
-            const numMarcatori = container.getElementsByClassName("marcatore-item").length;
-            const id = `${containerId}_${numMarcatori}`;
-            
-            const marcatoreHTML = `
-                <div class="marcatore-item" id="${id}">
-                    <select class="marcatore-select">
-                        <option value="">Seleziona Marcatore</option>
-                        ${giocatoriData[squadraId].map(g => `<option value="${g.id}">${g.nome}</option>`).join('')}
-                    </select>
-                    <button type="button" onclick="rimuoviCampoMarcatore('${id}')">-</button>
-                </div>
-            `;
-            
-            container.insertAdjacentHTML('beforeend', marcatoreHTML);
-        }
-        
-        // Funzione per rimuovere un campo marcatore
-        function rimuoviCampoMarcatore(id) {
-            const element = document.getElementById(id);
-            if (element) element.remove();
-        }
-        
-        // Funzione per aggiornare i marcatori quando cambia la squadra
-        function aggiornaContainerMarcatori(squadraId, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = ""; // Pulisce il container
-            
-            // Se la squadra non è selezionata, nascondi il container
-            if (!squadraId) {
-                document.getElementById(`${containerId}_wrapper`).classList.add("hidden");
-                return;
-            }
-            
-            // Mostra il container
-            document.getElementById(`${containerId}_wrapper`).classList.remove("hidden");
-        }
-        
-        // Funzione per ottenere i marcatori selezionati da un container
-        function getMarcatori(containerId) {
-            const marcatori = [];
-            const container = document.getElementById(containerId);
-            const selects = container.getElementsByClassName("marcatore-select");
-            
-            for (let select of selects) {
-                const marcatoreId = select.value;
-                if (marcatoreId) {
-                    marcatori.push(marcatoreId);
-                }
-            }
-            
-            return marcatori;
-        }
-
-        // Funzione per inserire una partita
+        // Funzione per INSERIRE una partita
         async function inserisciPartita() {
             const girone = document.getElementById("girone").value;
-            const squadra1Id = document.getElementById("squadra1").value;
-            const squadra2Id = document.getElementById("squadra2").value;
-            const gol1 = parseInt(document.getElementById("gol1").value) || 0;
-            const gol2 = parseInt(document.getElementById("gol2").value) || 0;
+            const squadra1 = document.getElementById("squadra1").value;
+            const squadra2 = document.getElementById("squadra2").value;
+            const gol1 = document.getElementById("gol1").value;
+            const gol2 = document.getElementById("gol2").value;
 
-            if (!girone || !squadra1Id || !squadra2Id) {
-                alert("Seleziona girone e squadre");
-                return;
-            }
-            
-            if (squadra1Id === squadra2Id) {
-                alert("Seleziona due squadre diverse");
-                return;
-            }
-            
-            // Ottieni i marcatori
-            const marcatoriSquadra1 = getMarcatori("marcatori_squadra1");
-            const marcatoriSquadra2 = getMarcatori("marcatori_squadra2");
-            
-            // Verifica se il numero di marcatori corrisponde ai gol
-            if (marcatoriSquadra1.length !== gol1) {
-                alert(`Il numero di marcatori della squadra 1 (${marcatoriSquadra1.length}) non corrisponde al numero di gol (${gol1})`);
-                return;
-            }
-            
-            if (marcatoriSquadra2.length !== gol2) {
-                alert(`Il numero di marcatori della squadra 2 (${marcatoriSquadra2.length}) non corrisponde al numero di gol (${gol2})`);
-                return;
-            }
-            
-            try {
+            if (girone && squadra1 && squadra2 && gol1 != "" && gol2 != "") {
                 const risultato = `${gol1}-${gol2}`;
                 await addDoc(collection(db, "partite", girone, "partite"), {
-                    squadra1Id,
-                    squadra2Id,
-                    risultato,
-                    gol1,
-                    gol2,
-                    marcatoriSquadra1,
-                    marcatoriSquadra2,
-                    timestamp: new Date()
+                    squadra1,
+                    squadra2,
+                    risultato
                 });
                 alert("Partita inserita!");
-                
+                caricaPartite(); // Aggiorna la lista
                 // Pulisce i campi
+                document.getElementById("squadra1").value = "";
+                document.getElementById("squadra2").value = "";
                 document.getElementById("gol1").value = "";
                 document.getElementById("gol2").value = "";
-                document.getElementById("marcatori_squadra1").innerHTML = "";
-                document.getElementById("marcatori_squadra2").innerHTML = "";
-                document.getElementById("marcatori_squadra1_wrapper").classList.add("hidden");
-                document.getElementById("marcatori_squadra2_wrapper").classList.add("hidden");
-            } catch (error) {
-                console.error("Errore durante l'inserimento della partita:", error);
-                alert("Errore durante l'inserimento della partita: " + error.message);
+            } else {
+                alert("Compila tutti i campi!");
             }
         }
 
-        // Funzione per aggiornare i campi dei marcatori quando cambiano i gol
-        function aggiornaNumeroMarcatori(squadraId, containerId, numGol) {
-            if (!squadraId) return;
-            
-            const container = document.getElementById(containerId);
-            const numMarcatori = container.getElementsByClassName("marcatore-item").length;
-            
-            // Se ci sono più marcatori che gol, rimuovi i marcatori in eccesso
-            if (numMarcatori > numGol) {
-                const elementsToRemove = numMarcatori - numGol;
-                for (let i = 0; i < elementsToRemove; i++) {
-                    const items = container.getElementsByClassName("marcatore-item");
-                    if (items.length > 0) {
-                        items[items.length - 1].remove();
-                    }
-                }
-            } 
-            // Se ci sono meno marcatori che gol, aggiungi marcatori
-            else if (numMarcatori < numGol) {
-                const elementsToAdd = numGol - numMarcatori;
-                for (let i = 0; i < elementsToAdd; i++) {
-                    aggiungiCampoMarcatore(squadraId, containerId);
-                }
+        // Funzione per MODIFICARE una partita
+        async function modificaPartita(id, girone) {
+            const partitaDiv = document.getElementById(`partita-${id}`);
+            const squadra1 = partitaDiv.querySelector(`.squadra1-edit`).value;
+            const squadra2 = partitaDiv.querySelector(`.squadra2-edit`).value;
+            const gol1 = partitaDiv.querySelector(`.gol1-edit`).value;
+            const gol2 = partitaDiv.querySelector(`.gol2-edit`).value;
+
+            if (squadra1 && squadra2 && gol1 != "" && gol2 != "") {
+                const risultato = `${gol1}-${gol2}`;
+                const partitaRef = doc(db, "partite", girone, "partite", id);
+                await updateDoc(partitaRef, { 
+                    squadra1,
+                    squadra2,
+                    risultato 
+                });
+                alert("Partita aggiornata!");
+                caricaPartite(); // Aggiorna la lista
+            } else {
+                alert("Compila tutti i campi!");
             }
         }
 
-        // Esponi le funzioni globalmente
-        window.aggiungiSquadra = aggiungiSquadra;
-        window.aggiungiGiocatore = aggiungiGiocatore;
-        window.caricaGiocatori = caricaGiocatori;
+        // Funzione per CARICARE le partite esistenti
+        async function caricaPartite() {
+            const girone = document.getElementById("girone").value;
+            const partiteContainer = document.getElementById("listaPartite");
+            partiteContainer.innerHTML = ""; // Pulisce la lista
+
+            const querySnapshot = await getDocs(collection(db, "partite", girone, "partite"));
+            querySnapshot.forEach((doc) => {
+                const partita = doc.data();
+                const [gol1, gol2] = partita.risultato.split("-");
+                
+                const partitaElement = document.createElement("div");
+                partitaElement.className = "partita-item";
+                partitaElement.id = `partita-${doc.id}`;
+                partitaElement.innerHTML = `
+                    <input type="text" class="squadra-input squadra1-edit" value="${partita.squadra1}">
+                    <input type="number" class="gol-input gol1-edit" value="${gol1}" min="0">
+                    -
+                    <input type="number" class="gol-input gol2-edit" value="${gol2}" min="0">
+                    <input type="text" class="squadra-input squadra2-edit" value="${partita.squadra2}">
+                    <button class="btn-modifica" onclick="modificaPartita('${doc.id}', '${girone}')">
+                        Salva Modifiche
+                    </button>
+                `;
+                partiteContainer.appendChild(partitaElement);
+            });
+        }
+
+        // Espone le funzioni globalmente
         window.inserisciPartita = inserisciPartita;
-        window.caricaSquadre = caricaSquadre;
-        window.aggiungiCampoMarcatore = aggiungiCampoMarcatore;
-        window.rimuoviCampoMarcatore = rimuoviCampoMarcatore;
-        window.aggiornaContainerMarcatori = aggiornaContainerMarcatori;
-        window.aggiornaNumeroMarcatori = aggiornaNumeroMarcatori;
-
-        // Caricamento iniziale delle squadre
-        document.addEventListener("DOMContentLoaded", () => {
-            caricaSquadre();
-        });
+        window.modificaPartita = modificaPartita;
+        window.caricaPartite = caricaPartite;
     </script>
 </head>
-<body>
-    <h1>Admin - Gestione Torneo</h1>
+<body onload="caricaPartite()">
+    <h1>Admin - Risultati Partite</h1>
 
-    <h2>Aggiungi Squadra</h2>
-    <input type="text" id="squadra_nome" placeholder="Nome Squadra">
-    <button onclick="aggiungiSquadra()">Aggiungi Squadra</button>
-
-    <h2>Aggiungi Giocatori</h2>
-    <label for="squadra_select">Squadra:</label>
-    <select id="squadra_select" onchange="caricaGiocatori(this.value)"></select>
-    <br>
-    <input type="text" id="giocatore_nome" placeholder="Nome Giocatore">
-    <button onclick="aggiungiGiocatore()">Aggiungi Giocatore</button>
-    <br>
-    <select id="giocatore_select"></select>
-
-    <h2>Inserisci Partita</h2>
-    <label for="girone">Girone:</label>
-    <select id="girone">
+    <label for="girone">Scegli il girone:</label>
+    <select id="girone" onchange="caricaPartite()">
         <option value="girone_A">Girone A</option>
         <option value="girone_B">Girone B</option>
     </select>
-    <br>
-    <label for="squadra1">Squadra 1:</label>
-    <select id="squadra1" onchange="aggiornaContainerMarcatori(this.value, 'marcatori_squadra1')"></select>
-    <input type="number" id="gol1" placeholder="Gol" min="0" onchange="aggiornaNumeroMarcatori(document.getElementById('squadra1').value, 'marcatori_squadra1', parseInt(this.value) || 0)">
-    
-    <div id="marcatori_squadra1_wrapper" class="marcatori-container hidden">
-        <h4>Marcatori Squadra 1</h4>
-        <div id="marcatori_squadra1"></div>
+
+    <div class="partita-form">
+        <h2>Inserisci Partita</h2>
+        <input type="text" id="squadra1" class="squadra-input" placeholder="Squadra 1">
+        <input type="number" id="gol1" class="gol-input" placeholder="Gol" min="0">
+        -
+        <input type="number" id="gol2" class="gol-input" placeholder="Gol" min="0">
+        <input type="text" id="squadra2" class="squadra-input" placeholder="Squadra 2">
+        <button onclick="inserisciPartita()">Inserisci</button>
     </div>
-    
-    <br>
-    <label for="squadra2">Squadra 2:</label>
-    <select id="squadra2" onchange="aggiornaContainerMarcatori(this.value, 'marcatori_squadra2')"></select>
-    <input type="number" id="gol2" placeholder="Gol" min="0" onchange="aggiornaNumeroMarcatori(document.getElementById('squadra2').value, 'marcatori_squadra2', parseInt(this.value) || 0)">
-    
-    <div id="marcatori_squadra2_wrapper" class="marcatori-container hidden">
-        <h4>Marcatori Squadra 2</h4>
-        <div id="marcatori_squadra2"></div>
-    </div>
-    
-    <br>
-    <button onclick="inserisciPartita()">Inserisci Partita</button>
+
+    <h2>Partite Registrate</h2>
+    <div id="listaPartite"></div>
 </body>
 </html>

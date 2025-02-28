@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Squadre e Giocatori</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 30px;
+        }
+        .column {
+            flex: 1;
+        }
+        .form-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .squadra-item, .giocatore-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-field {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        select.input-field {
+            height: 35px;
+        }
+        button {
+            padding: 8px 15px;
+            margin: 5px 0;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .btn-aggiungi {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-elimina {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-modifica {
+            background-color: #2196F3;
+            color: white;
+        }
+        h2 {
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+            color: #333;
+        }
+        .squadra-select {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestione Squadre e Giocatori</h1>
+    
+    <div class="container">
+        <!-- Colonna Squadre -->
+        <div class="column">
+            <h2>Gestione Squadre</h2>
+            
+            <div class="form-section">
+                <h3>Aggiungi Squadra</h3>
+                <div class="input-group">
+                    <label for="nomeSquadra">Nome Squadra:</label>
+                    <input type="text" id="nomeSquadra" class="input-field" placeholder="Inserisci il nome della squadra">
+                </div>
+                <div class="input-group">
+                    <label for="categoriaSquadra">Categoria:</label>
+                    <select id="categoriaSquadra" class="input-field">
+                        <option value="Serie A">Serie A</option>
+                        <option value="Serie B">Serie B</option>
+                        <option value="Serie C">Serie C</option>
+                        <option value="Dilettanti">Dilettanti</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="cittaSquadra">Città:</label>
+                    <input type="text" id="cittaSquadra" class="input-field" placeholder="Città della squadra">
+                </div>
+                <button id="btnAggiungiSquadra" class="btn-aggiungi">Aggiungi Squadra</button>
+            </div>
+            
+            <div id="listaSquadre" class="form-section">
+                <h3>Squadre</h3>
+                <!-- Le squadre saranno aggiunte qui dinamicamente -->
+            </div>
+        </div>
+        
+        <!-- Colonna Giocatori -->
+        <div class="column">
+            <h2>Gestione Giocatori</h2>
+            
+            <div class="form-section">
+                <h3>Aggiungi Giocatore</h3>
+                <div class="input-group">
+                    <label for="nomeGiocatore">Nome:</label>
+                    <input type="text" id="nomeGiocatore" class="input-field" placeholder="Nome del giocatore">
+                </div>
+                <div class="input-group">
+                    <label for="cognomeGiocatore">Cognome:</label>
+                    <input type="text" id="cognomeGiocatore" class="input-field" placeholder="Cognome del giocatore">
+                </div>
+                <div class="input-group">
+                    <label for="ruoloGiocatore">Ruolo:</label>
+                    <select id="ruoloGiocatore" class="input-field">
+                        <option value="Portiere">Portiere</option>
+                        <option value="Difensore">Difensore</option>
+                        <option value="Centrocampista">Centrocampista</option>
+                        <option value="Attaccante">Attaccante</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="etaGiocatore">Età:</label>
+                    <input type="number" id="etaGiocatore" class="input-field" min="16" max="50" placeholder="Età">
+                </div>
+                <div class="input-group">
+                    <label for="squadraGiocatore">Squadra:</label>
+                    <select id="squadraGiocatore" class="input-field">
+                        <option value="">Seleziona una squadra</option>
+                        <!-- Le opzioni verranno aggiunte dinamicamente -->
+                    </select>
+                </div>
+                <button id="btnAggiungiGiocatore" class="btn-aggiungi">Aggiungi Giocatore</button>
+            </div>
+            
+            <div id="filtroGiocatori" class="form-section">
+                <h3>Filtra Giocatori</h3>
+                <div class="input-group">
+                    <label for="filtroSquadra">Filtra per Squadra:</label>
+                    <select id="filtroSquadra" class="squadra-select">
+                        <option value="tutte">Tutte le squadre</option>
+                        <!-- Le opzioni verranno aggiunte dinamicamente -->
+                    </select>
+                </div>
+            </div>
+            
+            <div id="listaGiocatori" class="form-section">
+                <h3>Giocatori</h3>
+                <!-- I giocatori saranno aggiunti qui dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            updateDoc, 
+            doc, 
+            getDocs, 
+            deleteDoc, 
+            query, 
+            where 
+        } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        
+        // Configura Firebase (utilizzo la tua configurazione)
+        const firebaseConfig = {
+          apiKey: "AIzaSyApJJvOyDRxJLgbWMiLJmDEnR-4jSeVDVc",
+          authDomain: "ore2025-a18f7.firebaseapp.com",
+          projectId: "ore2025-a18f7",
+          storageBucket: "ore2025-a18f7.firebasestorage.app",
+          messagingSenderId: "324736325409",
+          appId: "1:324736325409:web:2fc2868c25b253c8815060",
+          measurementId: "G-5D4EEB1C9M"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Riferimenti agli elementi DOM
+        const btnAggiungiSquadra = document.getElementById("btnAggiungiSquadra");
+        const btnAggiungiGiocatore = document.getElementById("btnAggiungiGiocatore");
+        const listaSquadre = document.getElementById("listaSquadre");
+        const listaGiocatori = document.getElementById("listaGiocatori");
+        const squadraGiocatore = document.getElementById("squadraGiocatore");
+        const filtroSquadra = document.getElementById("filtroSquadra");
+        
+        // Funzione per aggiungere una squadra
+        async function aggiungiSquadra() {
+            const nome = document.getElementById("nomeSquadra").value.trim();
+            const categoria = document.getElementById("categoriaSquadra").value;
+            const citta = document.getElementById("cittaSquadra").value.trim();
+            
+            if (nome && categoria && citta) {
+                try {
+                    await addDoc(collection(db, "squadre"), {
+                        nome,
+                        categoria,
+                        citta,
+                        timestamp: new Date()
+                    });
+                    
+                    alert("Squadra aggiunta con successo!");
+                    document.getElementById("nomeSquadra").value = "";
+                    document.getElementById("cittaSquadra").value = "";
+                    
+                    // Aggiorna le liste
+                    caricaSquadre();
+                } catch (error) {
+                    console.error("Errore nell'aggiunta della squadra:", error);
+                    alert("Si è verificato un errore durante l'aggiunta della squadra.");
+                }
+            } else {
+                alert("Compila tutti i campi per la squadra!");
+            }
+        }
+        
+        // Funzione per aggiungere un giocatore
+        async function aggiungiGiocatore() {
+            const nome = document.getElementById("nomeGiocatore").value.trim();
+            const cognome = document.getElementById("cognomeGiocatore").value.trim();
+            const ruolo = document.getElementById("ruoloGiocatore").value;
+            const eta = document.getElementById("etaGiocatore").value;
+            const squadraId = document.getElementById("squadraGiocatore").value;
+            
+            if (nome && cognome && ruolo && eta && squadraId) {
+                try {
+                    // Ottieni il nome della squadra dal select
+                    const squadraOption = document.querySelector(`#squadraGiocatore option[value="${squadraId}"]`);
+                    const squadraNome = squadraOption.textContent;
+                    
+                    await addDoc(collection(db, "giocatori"), {
+                        nome,
+                        cognome,
+                        ruolo,
+                        eta: parseInt(eta),
+                        squadraId,
+                        squadraNome,
+                        timestamp: new Date()
+                    });
+                    
+                    alert("Giocatore aggiunto con successo!");
+                    document.getElementById("nomeGiocatore").value = "";
+                    document.getElementById("cognomeGiocatore").value = "";
+                    document.getElementById("etaGiocatore").value = "";
+                    
+                    // Aggiorna la lista dei giocatori
+                    caricaGiocatori();
+                } catch (error) {
+                    console.error("Errore nell'aggiunta del giocatore:", error);
+                    alert("Si è verificato un errore durante l'aggiunta del giocatore.");
+                }
+            } else {
+                alert("Compila tutti i campi per il giocatore!");
+            }
+        }
+        
+        // Funzione per caricare le squadre
+        async function caricaSquadre() {
+            try {
+                const squadreSnapshot = await getDocs(collection(db, "squadre"));
+                
+                // Pulisci la lista delle squadre
+                listaSquadre.innerHTML = "<h3>Squadre</h3>";
+                
+                // Pulisci e reinizializza i dropdown delle squadre
+                squadraGiocatore.innerHTML = '<option value="">Seleziona una squadra</option>';
+                filtroSquadra.innerHTML = '<option value="tutte">Tutte le squadre</option>';
+                
+                if (squadreSnapshot.empty) {
+                    listaSquadre.innerHTML += "<p>Nessuna squadra presente. Aggiungine una!</p>";
+                    return;
+                }
+                
+                squadreSnapshot.forEach(doc => {
+                    const squadra = doc.data();
+                    const squadraId = doc.id;
+                    
+                    // Aggiungi alla lista delle squadre
+                    const squadraDiv = document.createElement("div");
+                    squadraDiv.className = "squadra-item";
+                    squadraDiv.innerHTML = `
+                        <h4>${squadra.nome}</h4>
+                        <p><strong>Categoria:</strong> ${squadra.categoria}</p>
+                        <p><strong>Città:</strong> ${squadra.citta}</p>
+                        <button class="btn-elimina" data-id="${squadraId}">Elimina</button>
+                    `;
+                    
+                    // Aggiungi event listener per eliminare
+                    squadraDiv.querySelector(".btn-elimina").addEventListener("click", () => {
+                        eliminaSquadra(squadraId);
+                    });
+                    
+                    listaSquadre.appendChild(squadraDiv);
+                    
+                    // Aggiungi ai dropdown
+                    const option = document.createElement("option");
+                    option.value = squadraId;
+                    option.textContent = squadra.nome;
+                    squadraGiocatore.appendChild(option.cloneNode(true));
+                    filtroSquadra.appendChild(option.cloneNode(true));
+                });
+            } catch (error) {
+                console.error("Errore nel caricamento delle squadre:", error);
+                alert("Si è verificato un errore durante il caricamento delle squadre.");
+            }
+        }
+        
+        // Funzione per caricare i giocatori
+        async function caricaGiocatori(squadraFiltro = "tutte") {
+            try {
+                let giocatoriRef;
+                
+                if (squadraFiltro !== "tutte") {
+                    giocatoriRef = query(collection(db, "giocatori"), where("squadraId", "==", squadraFiltro));
+                } else {
+                    giocatoriRef = collection(db, "giocatori");
+                }
+                
+                const giocatoriSnapshot = await getDocs(giocatoriRef);
+                
+                // Pulisci la lista dei giocatori
+                listaGiocatori.innerHTML = "<h3>Giocatori</h3>";
+                
+                if (giocatoriSnapshot.empty) {
+                    listaGiocatori.innerHTML += `<p>Nessun giocatore ${squadraFiltro !== "tutte" ? "per questa squadra" : "presente"}. Aggiungine uno!</p>`;
+                    return;
+                }
+                
+                giocatoriSnapshot.forEach(doc => {
+                    const giocatore = doc.data();
+                    const giocatoreId = doc.id;
+                    
+                    // Aggiungi alla lista dei giocatori
+                    const giocatoreDiv = document.createElement("div");
+                    giocatoreDiv.className = "giocatore-item";
+                    giocatoreDiv.innerHTML = `
+                        <h4>${giocatore.nome} ${giocatore.cognome}</h4>
+                        <p><strong>Ruolo:</strong> ${giocatore.ruolo}</p>
+                        <p><strong>Età:</strong> ${giocatore.eta}</p>
+                        <p><strong>Squadra:</strong> ${giocatore.squadraNome}</p>
+                        <button class="btn-elimina" data-id="${giocatoreId}">Elimina</button>
+                    `;
+                    
+                    // Aggiungi event listener per eliminare
+                    giocatoreDiv.querySelector(".btn-elimina").addEventListener("click", () => {
+                        eliminaGiocatore(giocatoreId);
+                    });
+                    
+                    listaGiocatori.appendChild(giocatoreDiv);
+                });
+            } catch (error) {
+                console.error("Errore nel caricamento dei giocatori:", error);
+                alert("Si è verificato un errore durante il caricamento dei giocatori.");
+            }
+        }
+        
+        // Funzione per eliminare una squadra
+        async function eliminaSquadra(squadraId) {
+            if (confirm("Sei sicuro di voler eliminare questa squadra? Tutti i giocatori associati rimarranno senza squadra.")) {
+                try {
+                    // Elimina la squadra
+                    await deleteDoc(doc(db, "squadre", squadraId));
+                    
+                    // Aggiorna i giocatori che appartengono a questa squadra
+                    const giocatoriQuery = query(collection(db, "giocatori"), where("squadraId", "==", squadraId));
+                    const giocatoriSnapshot = await getDocs(giocatoriQuery);
+                    
+                    giocatoriSnapshot.forEach(async (docGiocatore) => {
+                        await updateDoc(doc(db, "giocatori", docGiocatore.id), {
+                            squadraId: "",
+                            squadraNome: "Nessuna squadra"
+                        });
+                    });
+                    
+                    alert("Squadra eliminata con successo!");
+                    caricaSquadre();
+                    caricaGiocatori();
+                } catch (error) {
+                    console.error("Errore nell'eliminazione della squadra:", error);
+                    alert("Si è verificato un errore durante l'eliminazione della squadra.");
+                }
+            }
+        }
+        
+        // Funzione per eliminare un giocatore
+        async function eliminaGiocatore(giocatoreId) {
+            if (confirm("Sei sicuro di voler eliminare questo giocatore?")) {
+                try {
+                    await deleteDoc(doc(db, "giocatori", giocatoreId));
+                    alert("Giocatore eliminato con successo!");
+                    caricaGiocatori(filtroSquadra.value);
+                } catch (error) {
+                    console.error("Errore nell'eliminazione del giocatore:", error);
+                    alert("Si è verificato un errore durante l'eliminazione del giocatore.");
+                }
+            }
+        }
+        
+        // Event Listeners
+        btnAggiungiSquadra.addEventListener("click", aggiungiSquadra);
+        btnAggiungiGiocatore.addEventListener("click", aggiungiGiocatore);
+        filtroSquadra.addEventListener("change", () => {
+            caricaGiocatori(filtroSquadra.value);
+        });
+        
+        // Inizializzazione
+        document.addEventListener("DOMContentLoaded", () => {
+            caricaSquadre();
+            caricaGiocatori();
+        });
+    </script>
+</body>
+</html>

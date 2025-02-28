@@ -94,7 +94,8 @@
             const classifica = {};
 
             partite.forEach(partita => {
-                [partita.squadra1, partita.squadra2].forEach(squadra => {
+                // Usa squadra1Nome e squadra2Nome invece di squadra1 e squadra2
+                [partita.squadra1Nome, partita.squadra2Nome].forEach(squadra => {
                     if (!classifica[squadra]) {
                         classifica[squadra] = {
                             nome: squadra,
@@ -108,21 +109,21 @@
 
                 const [gol1, gol2] = partita.risultato.split("-").map(Number);
 
-                classifica[partita.squadra1].golFatti += gol1;
-                classifica[partita.squadra1].golSubiti += gol2;
-                classifica[partita.squadra1].partiteGiocate++;
+                classifica[partita.squadra1Nome].golFatti += gol1;
+                classifica[partita.squadra1Nome].golSubiti += gol2;
+                classifica[partita.squadra1Nome].partiteGiocate++;
 
-                classifica[partita.squadra2].golFatti += gol2;
-                classifica[partita.squadra2].golSubiti += gol1;
-                classifica[partita.squadra2].partiteGiocate++;
+                classifica[partita.squadra2Nome].golFatti += gol2;
+                classifica[partita.squadra2Nome].golSubiti += gol1;
+                classifica[partita.squadra2Nome].partiteGiocate++;
 
                 if (gol1 > gol2) {
-                    classifica[partita.squadra1].punti += 3;
+                    classifica[partita.squadra1Nome].punti += 3;
                 } else if (gol2 > gol1) {
-                    classifica[partita.squadra2].punti += 3;
+                    classifica[partita.squadra2Nome].punti += 3;
                 } else {
-                    classifica[partita.squadra1].punti += 1;
-                    classifica[partita.squadra2].punti += 1;
+                    classifica[partita.squadra1Nome].punti += 1;
+                    classifica[partita.squadra2Nome].punti += 1;
                 }
             });
 
@@ -157,7 +158,10 @@
             partiteContainer.innerHTML = "";
             
             const partite = [];
-            const querySnapshot = await getDocs(collection(db, "partite", girone, "partite"));
+            // Modificata la struttura del percorso per corrispondere con la pagina admin
+            // Estrai la lettera del girone dal valore della selezione
+            const gironeLettera = girone.slice(-1); // Prende l'ultimo carattere (A o B)
+            const querySnapshot = await getDocs(collection(db, "gironi", gironeLettera, "partite"));
             
             querySnapshot.forEach((doc) => {
                 const partita = doc.data();
@@ -165,8 +169,9 @@
                 
                 const partitaElement = document.createElement("div");
                 partitaElement.className = "partita-item";
+                // Aggiornato per usare squadra1Nome e squadra2Nome
                 partitaElement.innerHTML = `
-                    ${partita.squadra1} vs ${partita.squadra2} → <b>${partita.risultato}</b>
+                    ${partita.squadra1Nome} vs ${partita.squadra2Nome} → <b>${partita.risultato}</b>
                 `;
                 partiteContainer.appendChild(partitaElement);
             });

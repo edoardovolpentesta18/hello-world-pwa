@@ -5,43 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Partite</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
         .partita-form {
             margin: 20px 0;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            background-color: #f9f9f9;
         }
         .partita-item {
             margin: 10px 0;
             padding: 10px;
             border: 1px solid #eee;
             border-radius: 4px;
-            background-color: #f9f9f9;
+            background-color: #fff;
         }
         .gol-input {
             width: 50px;
             text-align: center;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
-        .squadra-input {
-            width: 150px;
+        .squadra-select {
+            width: 200px;
             margin: 0 5px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
         button {
-            padding: 5px 10px;
+            padding: 8px 15px;
             margin: 0 5px;
             cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
         }
-        .btn-modifica {
+        .btn-inserisci {
             background-color: #4CAF50;
             color: white;
-            border: none;
-            border-radius: 3px;
+        }
+        .btn-modifica {
+            background-color: #2196F3;
+            color: white;
+        }
+        .btn-home {
+            background-color: #607D8B;
+            color: white;
+            margin-top: 20px;
+        }
+        h1, h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+        #girone {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            margin-left: 5px;
         }
     </style>
+</head>
+<body>
+    <h1>Admin - Risultati Partite</h1>
+
+    <label for="girone">Scegli il girone:</label>
+    <select id="girone">
+        <option value="A">Girone A</option>
+        <option value="B">Girone B</option>
+        <option value="C">Girone C</option>
+        <option value="D">Girone D</option>
+    </select>
+
+    <div class="partita-form">
+        <h2>Inserisci Partita</h2>
+        <select id="squadra1" class="squadra-select">
+            <option value="">Seleziona Squadra 1</option>
+            <!-- Le squadre verranno caricate qui -->
+        </select>
+        <input type="number" id="gol1" class="gol-input" placeholder="Gol" min="0">
+        -
+        <input type="number" id="gol2" class="gol-input" placeholder="Gol" min="0">
+        <select id="squadra2" class="squadra-select">
+            <option value="">Seleziona Squadra 2</option>
+            <!-- Le squadre verranno caricate qui -->
+        </select>
+        <button id="btnInserisci" class="btn-inserisci">Inserisci</button>
+    </div>
+
+    <h2>Partite Registrate</h2>
+    <div id="listaPartite"></div>
+    
+    <button class="btn-home" onclick="window.location.href='index.html'">Torna alla home</button>
+
     <script type="module">
         // Import Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            updateDoc, 
+            doc, 
+            getDocs,
+            deleteDoc,
+            query,
+            where 
+        } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         // Configura Firebase
         const firebaseConfig = {
@@ -57,112 +135,332 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Funzione per INSERIRE una partita
-        async function inserisciPartita() {
-            const girone = document.getElementById("girone").value;
-            const squadra1 = document.getElementById("squadra1").value;
-            const squadra2 = document.getElementById("squadra2").value;
-            const gol1 = document.getElementById("gol1").value;
-            const gol2 = document.getElementById("gol2").value;
+        // Riferimenti agli elementi DOM
+        const gironeSelect = document.getElementById("girone");
+        const squadra1Select = document.getElementById("squadra1");
+        const squadra2Select = document.getElementById("squadra2");
+        const gol1Input = document.getElementById("gol1");
+        const gol2Input = document.getElementById("gol2");
+        const btnInserisci = document.getElementById("btnInserisci");
+        const listaPartite = document.getElementById("listaPartite");
 
-            if (girone && squadra1 && squadra2 && gol1 != "" && gol2 != "") {
-                const risultato = `${gol1}-${gol2}`;
-                await addDoc(collection(db, "partite", girone, "partite"), {
-                    squadra1,
-                    squadra2,
-                    risultato
-                });
-                alert("Partita inserita!");
-                caricaPartite(); // Aggiorna la lista
-                // Pulisce i campi
-                document.getElementById("squadra1").value = "";
-                document.getElementById("squadra2").value = "";
-                document.getElementById("gol1").value = "";
-                document.getElementById("gol2").value = "";
-            } else {
-                alert("Compila tutti i campi!");
-            }
-        }
-
-        // Funzione per MODIFICARE una partita
-        async function modificaPartita(id, girone) {
-            const partitaDiv = document.getElementById(`partita-${id}`);
-            const squadra1 = partitaDiv.querySelector(`.squadra1-edit`).value;
-            const squadra2 = partitaDiv.querySelector(`.squadra2-edit`).value;
-            const gol1 = partitaDiv.querySelector(`.gol1-edit`).value;
-            const gol2 = partitaDiv.querySelector(`.gol2-edit`).value;
-
-            if (squadra1 && squadra2 && gol1 != "" && gol2 != "") {
-                const risultato = `${gol1}-${gol2}`;
-                const partitaRef = doc(db, "partite", girone, "partite", id);
-                await updateDoc(partitaRef, { 
-                    squadra1,
-                    squadra2,
-                    risultato 
-                });
-                alert("Partita aggiornata!");
-                caricaPartite(); // Aggiorna la lista
-            } else {
-                alert("Compila tutti i campi!");
-            }
-        }
-
-        // Funzione per CARICARE le partite esistenti
-        async function caricaPartite() {
-            const girone = document.getElementById("girone").value;
-            const partiteContainer = document.getElementById("listaPartite");
-            partiteContainer.innerHTML = ""; // Pulisce la lista
-
-            const querySnapshot = await getDocs(collection(db, "partite", girone, "partite"));
-            querySnapshot.forEach((doc) => {
-                const partita = doc.data();
-                const [gol1, gol2] = partita.risultato.split("-");
+        // Carica le squadre dal database filtrate per girone
+        async function caricaSquadre() {
+            try {
+                const gironeAttuale = gironeSelect.value;
                 
-                const partitaElement = document.createElement("div");
-                partitaElement.className = "partita-item";
-                partitaElement.id = `partita-${doc.id}`;
-                partitaElement.innerHTML = `
-                    <input type="text" class="squadra-input squadra1-edit" value="${partita.squadra1}">
-                    <input type="number" class="gol-input gol1-edit" value="${gol1}" min="0">
-                    -
-                    <input type="number" class="gol-input gol2-edit" value="${gol2}" min="0">
-                    <input type="text" class="squadra-input squadra2-edit" value="${partita.squadra2}">
-                    <button class="btn-modifica" onclick="modificaPartita('${doc.id}', '${girone}')">
-                        Salva Modifiche
-                    </button>
-                `;
-                partiteContainer.appendChild(partitaElement);
-            });
+                // Query per ottenere solo le squadre del girone selezionato
+                const squadreRef = query(
+                    collection(db, "squadre"), 
+                    where("categoria", "==", gironeAttuale)
+                );
+                
+                const squadreSnapshot = await getDocs(squadreRef);
+                
+                // Resetta i dropdown
+                squadra1Select.innerHTML = '<option value="">Seleziona Squadra 1</option>';
+                squadra2Select.innerHTML = '<option value="">Seleziona Squadra 2</option>';
+                
+                if (squadreSnapshot.empty) {
+                    const noSquadre = document.createElement("option");
+                    noSquadre.value = "";
+                    noSquadre.textContent = "Nessuna squadra in questo girone";
+                    squadra1Select.appendChild(noSquadre);
+                    squadra2Select.appendChild(noSquadre.cloneNode(true));
+                    return;
+                }
+                
+                // Aggiungi le squadre ai dropdown
+                squadreSnapshot.forEach(doc => {
+                    const squadra = doc.data();
+                    const squadraId = doc.id;
+                    
+                    const option = document.createElement("option");
+                    option.value = squadraId;
+                    option.textContent = squadra.nome;
+                    option.dataset.nomeSquadra = squadra.nome; // Memorizza il nome per riferimento futuro
+                    
+                    squadra1Select.appendChild(option);
+                    // Clona l'opzione per il secondo dropdown
+                    squadra2Select.appendChild(option.cloneNode(true));
+                });
+            } catch (error) {
+                console.error("Errore nel caricamento delle squadre:", error);
+                alert("Si è verificato un errore durante il caricamento delle squadre.");
+            }
         }
 
-        // Espone le funzioni globalmente
-        window.inserisciPartita = inserisciPartita;
-        window.modificaPartita = modificaPartita;
-        window.caricaPartite = caricaPartite;
+        // Funzione per inserire una partita
+        async function inserisciPartita() {
+            const gironeAttuale = gironeSelect.value;
+            const squadra1Id = squadra1Select.value;
+            const squadra2Id = squadra2Select.value;
+            const gol1 = gol1Input.value;
+            const gol2 = gol2Input.value;
+
+            // Ottieni i nomi delle squadre dalle opzioni selezionate
+            const squadra1Nome = squadra1Select.options[squadra1Select.selectedIndex].text;
+            const squadra2Nome = squadra2Select.options[squadra2Select.selectedIndex].text;
+
+            if (squadra1Id && squadra2Id && gol1 !== "" && gol2 !== "") {
+                if (squadra1Id === squadra2Id) {
+                    alert("Seleziona due squadre diverse!");
+                    return;
+                }
+
+                try {
+                    const risultato = `${gol1}-${gol2}`;
+                    const collectionPath = `gironi/${gironeAttuale}/partite`;
+
+                    await addDoc(collection(db, collectionPath), {
+                        squadra1Id,
+                        squadra1Nome,
+                        squadra2Id,
+                        squadra2Nome,
+                        risultato,
+                        timestamp: new Date()
+                    });
+                    
+                    alert("Partita inserita con successo!");
+                    
+                    // Pulisci i campi
+                    squadra1Select.value = "";
+                    squadra2Select.value = "";
+                    gol1Input.value = "";
+                    gol2Input.value = "";
+                    
+                    // Aggiorna la lista delle partite
+                    caricaPartite();
+                } catch (error) {
+                    console.error("Errore nell'inserimento della partita:", error);
+                    alert("Si è verificato un errore durante l'inserimento della partita.");
+                }
+            } else {
+                alert("Compila tutti i campi!");
+            }
+        }
+
+        // Funzione per caricare le partite
+        async function caricaPartite() {
+            try {
+                const gironeAttuale = gironeSelect.value;
+                const collectionPath = `gironi/${gironeAttuale}/partite`;
+                
+                // Pulisci la lista delle partite
+                listaPartite.innerHTML = "";
+                
+                const partiteSnapshot = await getDocs(collection(db, collectionPath));
+                
+                if (partiteSnapshot.empty) {
+                    listaPartite.innerHTML = "<p>Nessuna partita registrata per questo girone.</p>";
+                    return;
+                }
+                
+                // Crea un array per ordinare le partite per timestamp
+                const partite = [];
+                partiteSnapshot.forEach(doc => {
+                    partite.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                // Ordina le partite per timestamp (dalla più recente)
+                partite.sort((a, b) => {
+                    const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+                    const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+                    return dateB - dateA;
+                });
+                
+                // Aggiungi le partite alla lista
+                partite.forEach(partita => {
+                    const [gol1, gol2] = partita.risultato.split("-");
+                    
+                    const partitaDiv = document.createElement("div");
+                    partitaDiv.className = "partita-item";
+                    partitaDiv.dataset.id = partita.id;
+                    
+                    // Carica le squadre per l'editing
+                    const squadre1HTML = createSquadreOptions(partita.squadra1Id, partita.squadra1Nome);
+                    const squadre2HTML = createSquadreOptions(partita.squadra2Id, partita.squadra2Nome);
+                    
+                    partitaDiv.innerHTML = `
+                        <select class="squadra-select squadra1-edit">
+                            ${squadre1HTML}
+                        </select>
+                        <input type="number" class="gol-input gol1-edit" value="${gol1}" min="0">
+                        -
+                        <input type="number" class="gol-input gol2-edit" value="${gol2}" min="0">
+                        <select class="squadra-select squadra2-edit">
+                            ${squadre2HTML}
+                        </select>
+                        <button class="btn-modifica" data-id="${partita.id}">Aggiorna</button>
+                        <button class="btn-elimina" data-id="${partita.id}" style="background-color: #f44336; color: white;">Elimina</button>
+                    `;
+                    
+                    // Aggiungi event listener per i pulsanti
+                    partitaDiv.querySelector(".btn-modifica").addEventListener("click", () => {
+                        modificaPartita(partita.id);
+                    });
+                    
+                    partitaDiv.querySelector(".btn-elimina").addEventListener("click", () => {
+                        eliminaPartita(partita.id);
+                    });
+                    
+                    listaPartite.appendChild(partitaDiv);
+                });
+                
+                // Carica le squadre nei dropdown di modifica
+                await aggiornaSquadreNeiDropdown();
+            } catch (error) {
+                console.error("Errore nel caricamento delle partite:", error);
+                alert("Si è verificato un errore durante il caricamento delle partite.");
+            }
+        }
+
+        // Crea opzioni per i dropdown delle squadre nelle partite già inserite
+        function createSquadreOptions(squadraSelezionataId, squadraSelezionataName) {
+            return `<option value="${squadraSelezionataId}" selected>${squadraSelezionataName}</option>`;
+        }
+
+        // Aggiorna i dropdown delle squadre nelle partite esistenti
+        async function aggiornaSquadreNeiDropdown() {
+            try {
+                const gironeAttuale = gironeSelect.value;
+                
+                // Ottieni tutte le squadre del girone attuale
+                const squadreRef = query(
+                    collection(db, "squadre"), 
+                    where("categoria", "==", gironeAttuale)
+                );
+                
+                const squadreSnapshot = await getDocs(squadreRef);
+                
+                // Per ogni dropdown di squadra nelle partite
+                const dropdowns1 = document.querySelectorAll(".squadra1-edit");
+                const dropdowns2 = document.querySelectorAll(".squadra2-edit");
+                
+                // Crea un array di tutte le squadre
+                const squadre = [];
+                squadreSnapshot.forEach(doc => {
+                    squadre.push({
+                        id: doc.id,
+                        nome: doc.data().nome
+                    });
+                });
+                
+                // Aggiorna ogni dropdown
+                dropdowns1.forEach(dropdown => {
+                    const selectedId = dropdown.value;
+                    
+                    // Aggiungi le opzioni mantenendo quella selezionata
+                    squadre.forEach(squadra => {
+                        if (squadra.id !== selectedId) {
+                            const option = document.createElement("option");
+                            option.value = squadra.id;
+                            option.textContent = squadra.nome;
+                            dropdown.appendChild(option);
+                        }
+                    });
+                });
+                
+                dropdowns2.forEach(dropdown => {
+                    const selectedId = dropdown.value;
+                    
+                    // Aggiungi le opzioni mantenendo quella selezionata
+                    squadre.forEach(squadra => {
+                        if (squadra.id !== selectedId) {
+                            const option = document.createElement("option");
+                            option.value = squadra.id;
+                            option.textContent = squadra.nome;
+                            dropdown.appendChild(option);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error("Errore nell'aggiornamento dei dropdown:", error);
+            }
+        }
+
+        // Funzione per modificare una partita
+        async function modificaPartita(partitaId) {
+            try {
+                const gironeAttuale = gironeSelect.value;
+                const partitaDiv = document.querySelector(`.partita-item[data-id="${partitaId}"]`);
+                
+                if (!partitaDiv) return;
+                
+                const squadra1Select = partitaDiv.querySelector(".squadra1-edit");
+                const squadra2Select = partitaDiv.querySelector(".squadra2-edit");
+                const gol1Input = partitaDiv.querySelector(".gol1-edit");
+                const gol2Input = partitaDiv.querySelector(".gol2-edit");
+                
+                const squadra1Id = squadra1Select.value;
+                const squadra2Id = squadra2Select.value;
+                const gol1 = gol1Input.value;
+                const gol2 = gol2Input.value;
+                
+                // Ottieni i nomi delle squadre dalle opzioni selezionate
+                const squadra1Nome = squadra1Select.options[squadra1Select.selectedIndex].text;
+                const squadra2Nome = squadra2Select.options[squadra2Select.selectedIndex].text;
+                
+                if (squadra1Id && squadra2Id && gol1 !== "" && gol2 !== "") {
+                    if (squadra1Id === squadra2Id) {
+                        alert("Seleziona due squadre diverse!");
+                        return;
+                    }
+                    
+                    const risultato = `${gol1}-${gol2}`;
+                    const partitaRef = doc(db, `gironi/${gironeAttuale}/partite`, partitaId);
+                    
+                    await updateDoc(partitaRef, {
+                        squadra1Id,
+                        squadra1Nome,
+                        squadra2Id,
+                        squadra2Nome,
+                        risultato,
+                        timestamp: new Date() // Aggiorna il timestamp per ordinamento
+                    });
+                    
+                    alert("Partita aggiornata con successo!");
+                    caricaPartite();
+                } else {
+                    alert("Compila tutti i campi!");
+                }
+            } catch (error) {
+                console.error("Errore nell'aggiornamento della partita:", error);
+                alert("Si è verificato un errore durante l'aggiornamento della partita.");
+            }
+        }
+
+        // Funzione per eliminare una partita
+        async function eliminaPartita(partitaId) {
+            if (confirm("Sei sicuro di voler eliminare questa partita?")) {
+                try {
+                    const gironeAttuale = gironeSelect.value;
+                    await deleteDoc(doc(db, `gironi/${gironeAttuale}/partite`, partitaId));
+                    alert("Partita eliminata con successo!");
+                    caricaPartite();
+                } catch (error) {
+                    console.error("Errore nell'eliminazione della partita:", error);
+                    alert("Si è verificato un errore durante l'eliminazione della partita.");
+                }
+            }
+        }
+
+        // Imposta gli event listeners
+        gironeSelect.addEventListener("change", () => {
+            caricaSquadre();
+            caricaPartite();
+        });
+        
+        btnInserisci.addEventListener("click", inserisciPartita);
+
+        // Inizializzazione
+        document.addEventListener("DOMContentLoaded", () => {
+            caricaSquadre();
+            caricaPartite();
+        });
     </script>
-</head>
-<body onload="caricaPartite()">
-    <h1>Admin - Risultati Partite</h1>
-
-    <label for="girone">Scegli il girone:</label>
-    <select id="girone" onchange="caricaPartite()">
-        <option value="girone_A">Girone A</option>
-        <option value="girone_B">Girone B</option>
-    </select>
-
-    <div class="partita-form">
-        <h2>Inserisci Partita</h2>
-        <input type="text" id="squadra1" class="squadra-input" placeholder="Squadra 1">
-        <input type="number" id="gol1" class="gol-input" placeholder="Gol" min="0">
-        -
-        <input type="number" id="gol2" class="gol-input" placeholder="Gol" min="0">
-        <input type="text" id="squadra2" class="squadra-input" placeholder="Squadra 2">
-        <button onclick="inserisciPartita()">Inserisci</button>
-    </div>
-
-    <h2>Partite Registrate</h2>
-    <div id="listaPartite"></div>
 </body>
-
-     <button onclick="window.location.href='index.html'">Torna alla home</button>
 </html>

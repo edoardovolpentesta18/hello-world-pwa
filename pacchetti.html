@@ -803,4 +803,53 @@
                 });
             });
             
-            // Event listener per
+            // Event listener per confermare l'acquisto di crediti
+            confirmCredits.addEventListener('click', function() {
+                if (selectedCreditOption) {
+                    // Simula un acquisto (in un'app reale qui ci sarebbe l'integrazione con un gateway di pagamento)
+                    credits += selectedCreditOption;
+                    updateCreditsDisplay();
+                    
+                    // Chiudi il modal
+                    creditsModal.style.display = 'none';
+                    
+                    // Reset della selezione
+                    creditOptions.forEach(opt => opt.classList.remove('selected'));
+                    selectedCreditOption = null;
+                    
+                    // Notifica l'utente
+                    alert(`Hai acquistato ${selectedCreditOption} crediti con successo!`);
+                } else {
+                    alert('Seleziona un importo di crediti da acquistare.');
+                }
+            });
+            
+            // Event listener per annullare l'acquisto di crediti
+            cancelCredits.addEventListener('click', function() {
+                // Chiudi il modal
+                creditsModal.style.display = 'none';
+                
+                // Reset della selezione
+                creditOptions.forEach(opt => opt.classList.remove('selected'));
+                selectedCreditOption = null;
+            });
+            
+            // Chiudi il modal quando si clicca all'esterno
+            window.addEventListener('click', function(event) {
+                if (event.target === creditsModal) {
+                    creditsModal.style.display = 'none';
+                    
+                    // Reset della selezione
+                    creditOptions.forEach(opt => opt.classList.remove('selected'));
+                    selectedCreditOption = null;
+                }
+            });
+            
+            // Inizializza la collezione dei giocatori se non esiste
+            if (!localStorage.getItem('foundPlayers')) {
+                localStorage.setItem('foundPlayers', JSON.stringify([]));
+            }
+        });
+    </script>
+</body>
+</html>

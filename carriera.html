@@ -172,92 +172,154 @@
     <div class="container">
         <!-- Setup Section -->
         <div id="setup-section" class="setup-section">
-            <h2>Scegli la tua squadra</h2>
-            <p>Seleziona una delle 16 squadre disponibili per iniziare la tua carriera:</p>
-            
-            <div class="team-selection" id="team-selection">
-                <!-- Squadre da selezionare -->
-                <div class="team-card" data-team="Milan">
-                    <img src="/api/placeholder/80/80" alt="Logo Milan" class="team-logo">
-                    <h3>Milan</h3>
-                    <p>Difficoltà: ★★★☆☆</p>
-                </div>
-                <div class="team-card" data-team="Inter">
-                    <img src="/api/placeholder/80/80" alt="Logo Inter" class="team-logo">
-                    <h3>Inter</h3>
-                    <p>Difficoltà: ★★★☆☆</p>
-                </div>
-                <div class="team-card" data-team="Juventus">
-                    <img src="/api/placeholder/80/80" alt="Logo Juventus" class="team-logo">
-                    <h3>Juventus</h3>
-                    <p>Difficoltà: ★★★☆☆</p>
-                </div>
-                <div class="team-card" data-team="Napoli">
-                    <img src="/api/placeholder/80/80" alt="Logo Napoli" class="team-logo">
-                    <h3>Napoli</h3>
-                    <p>Difficoltà: ★★★☆☆</p>
-                </div>
-                <div class="team-card" data-team="Roma">
-                    <img src="/api/placeholder/80/80" alt="Logo Roma" class="team-logo">
-                    <h3>Roma</h3>
-                    <p>Difficoltà: ★★★☆☆</p>
-                </div>
-                <div class="team-card" data-team="Lazio">
-                    <img src="/api/placeholder/80/80" alt="Logo Lazio" class="team-logo">
-                    <h3>Lazio</h3>
-                    <p>Difficoltà: ★★★☆☆</p>
-                </div>
-                <div class="team-card" data-team="Atalanta">
-                    <img src="/api/placeholder/80/80" alt="Logo Atalanta" class="team-logo">
-                    <h3>Atalanta</h3>
-                    <p>Difficoltà: ★★★☆☆</p>
-                </div>
-                <div class="team-card" data-team="Fiorentina">
-                    <img src="/api/placeholder/80/80" alt="Logo Fiorentina" class="team-logo">
-                    <h3>Fiorentina</h3>
-                    <p>Difficoltà: ★★★☆☆</p>
-                </div>
-                <div class="team-card" data-team="Torino">
-                    <img src="/api/placeholder/80/80" alt="Logo Torino" class="team-logo">
-                    <h3>Torino</h3>
-                    <p>Difficoltà: ★★☆☆☆</p>
-                </div>
-                <div class="team-card" data-team="Bologna">
-                    <img src="/api/placeholder/80/80" alt="Logo Bologna" class="team-logo">
-                    <h3>Bologna</h3>
-                    <p>Difficoltà: ★★☆☆☆</p>
-                </div>
-                <div class="team-card" data-team="Sassuolo">
-                    <img src="/api/placeholder/80/80" alt="Logo Sassuolo" class="team-logo">
-                    <h3>Sassuolo</h3>
-                    <p>Difficoltà: ★★☆☆☆</p>
-                </div>
-                <div class="team-card" data-team="Monza">
-                    <img src="/api/placeholder/80/80" alt="Logo Monza" class="team-logo">
-                    <h3>Monza</h3>
-                    <p>Difficoltà: ★★☆☆☆</p>
-                </div>
-                <div class="team-card" data-team="Venezia">
-                    <img src="/api/placeholder/80/80" alt="Logo Venezia" class="team-logo">
-                    <h3>Venezia</h3>
-                    <p>Difficoltà: ★☆☆☆☆</p>
-                </div>
-                <div class="team-card" data-team="Parma">
-                    <img src="/api/placeholder/80/80" alt="Logo Parma" class="team-logo">
-                    <h3>Parma</h3>
-                    <p>Difficoltà: ★☆☆☆☆</p>
-                </div>
-                <div class="team-card" data-team="Como">
-                    <img src="/api/placeholder/80/80" alt="Logo Como" class="team-logo">
-                    <h3>Como</h3>
-                    <p>Difficoltà: ★☆☆☆☆</p>
-                </div>
-                <div class="team-card" data-team="Empoli">
-                    <img src="/api/placeholder/80/80" alt="Logo Empoli" class="team-logo">
-                    <h3>Empoli</h3>
-                    <p>Difficoltà: ★☆☆☆☆</p>
-                </div>
-            </div>
+          
+          <div id="character-creation" class="character-creation">
+    <h2>Crea il tuo Manager</h2>
+    <p>Inserisci i dati del tuo personaggio:</p>
+    
+    <div class="form-group">
+        <label for="manager-name">Nome:</label>
+        <input type="text" id="manager-name" class="input-field" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="manager-surname">Cognome:</label>
+        <input type="text" id="manager-surname" class="input-field" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="manager-age">Età:</label>
+        <input type="number" id="manager-age" class="input-field" min="25" max="70" value="35" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="manager-role">Ruolo:</label>
+        <select id="manager-role" class="input-field" required>
+            <option value="Allenatore">Allenatore</option>
+            <option value="Tecnico">Tecnico</option>
+            <option value="Manager">Manager</option>
+            <option value="Direttore Sportivo">Direttore Sportivo</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="manager-nationality">Nazionalità:</label>
+        <select id="manager-nationality" class="input-field" required>
+            <option value="Italia">Italia</option>
+            <option value="Francia">Francia</option>
+            <option value="Germania">Germania</option>
+            <option value="Spagna">Spagna</option>
+            <option value="Inghilterra">Inghilterra</option>
+            <option value="Olanda">Olanda</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Brasile">Brasile</option>
+            <option value="Portogallo">Portogallo</option>
+        </select>
+    </div>
+    
+    <div class="manager-stats">
+        <h3>Statistiche Manager</h3>
+        <div class="overall-display">
+            <span>Overall:</span>
+            <span id="manager-overall">60</span>
+        </div>
+        <p class="available-teams">Puoi allenare le squadre con ★☆☆☆☆ di difficoltà</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="create-manager-btn" class="btn">Crea Manager</button>
+    </div>
+</div>
+          
+          
+          
+            <div id="team-selection" class="team-selection hidden">
+    <h2>Scegli la tua squadra</h2>
+    <p>In base al tuo overall (<span id="overall-value">60</span>), puoi scegliere tra le seguenti squadre:</p>
+    
+    <!-- Il resto del team-selection rimane uguale, ma aggiungi attributi data-difficulty -->
+    <!-- Per ogni team-card, aggiungi l'attributo data-difficulty con il valore numerico -->
+    <div class="team-card" data-team="Milan" data-difficulty="3">
+        <img src="/api/placeholder/80/80" alt="Logo Milan" class="team-logo">
+        <h3>Milan</h3>
+        <p>Difficoltà: ★★★☆☆</p>
+    </div>
+    <div class="team-card" data-team="Inter" data-difficulty="3">
+        <img src="/api/placeholder/80/80" alt="Logo Inter" class="team-logo">
+        <h3>Inter</h3>
+        <p>Difficoltà: ★★★☆☆</p>
+    </div>
+    <div class="team-card" data-team="Juventus" data-difficulty="3">
+        <img src="/api/placeholder/80/80" alt="Logo Juventus" class="team-logo">
+        <h3>Juventus</h3>
+        <p>Difficoltà: ★★★☆☆</p>
+    </div>
+    <div class="team-card" data-team="Napoli" data-difficulty="3">
+        <img src="/api/placeholder/80/80" alt="Logo Napoli" class="team-logo">
+        <h3>Napoli</h3>
+        <p>Difficoltà: ★★★☆☆</p>
+    </div>
+    <div class="team-card" data-team="Roma" data-difficulty="3">
+        <img src="/api/placeholder/80/80" alt="Logo Roma" class="team-logo">
+        <h3>Roma</h3>
+        <p>Difficoltà: ★★★☆☆</p>
+    </div>
+    <div class="team-card" data-team="Lazio" data-difficulty="3">
+        <img src="/api/placeholder/80/80" alt="Logo Lazio" class="team-logo">
+        <h3>Lazio</h3>
+        <p>Difficoltà: ★★★☆☆</p>
+    </div>
+    <div class="team-card" data-team="Atalanta" data-difficulty="3">
+        <img src="/api/placeholder/80/80" alt="Logo Atalanta" class="team-logo">
+        <h3>Atalanta</h3>
+        <p>Difficoltà: ★★★☆☆</p>
+    </div>
+    <div class="team-card" data-team="Fiorentina" data-difficulty="3">
+        <img src="/api/placeholder/80/80" alt="Logo Fiorentina" class="team-logo">
+        <h3>Fiorentina</h3>
+        <p>Difficoltà: ★★★☆☆</p>
+    </div>
+    <div class="team-card" data-team="Torino" data-difficulty="2">
+        <img src="/api/placeholder/80/80" alt="Logo Torino" class="team-logo">
+        <h3>Torino</h3>
+        <p>Difficoltà: ★★☆☆☆</p>
+    </div>
+    <div class="team-card" data-team="Bologna" data-difficulty="2">
+        <img src="/api/placeholder/80/80" alt="Logo Bologna" class="team-logo">
+        <h3>Bologna</h3>
+        <p>Difficoltà: ★★☆☆☆</p>
+    </div>
+    <div class="team-card" data-team="Sassuolo" data-difficulty="2">
+        <img src="/api/placeholder/80/80" alt="Logo Sassuolo" class="team-logo">
+        <h3>Sassuolo</h3>
+        <p>Difficoltà: ★★☆☆☆</p>
+    </div>
+    <div class="team-card" data-team="Monza" data-difficulty="2">
+        <img src="/api/placeholder/80/80" alt="Logo Monza" class="team-logo">
+        <h3>Monza</h3>
+        <p>Difficoltà: ★★☆☆☆</p>
+    </div>
+    <div class="team-card" data-team="Venezia" data-difficulty="1">
+        <img src="/api/placeholder/80/80" alt="Logo Venezia" class="team-logo">
+        <h3>Venezia</h3>
+        <p>Difficoltà: ★☆☆☆☆</p>
+    </div>
+    <div class="team-card" data-team="Parma" data-difficulty="1">
+        <img src="/api/placeholder/80/80" alt="Logo Parma" class="team-logo">
+        <h3>Parma</h3>
+        <p>Difficoltà: ★☆☆☆☆</p>
+    </div>
+    <div class="team-card" data-team="Como" data-difficulty="1">
+        <img src="/api/placeholder/80/80" alt="Logo Como" class="team-logo">
+        <h3>Como</h3>
+        <p>Difficoltà: ★☆☆☆☆</p>
+    </div>
+    <div class="team-card" data-team="Empoli" data-difficulty="1">
+        <img src="/api/placeholder/80/80" alt="Logo Empoli" class="team-logo">
+        <h3>Empoli</h3>
+        <p>Difficoltà: ★☆☆☆☆</p>
+    </div>
+</div>
             
             <div style="text-align: center; margin-top: 30px;">
                 <button id="start-btn" class="btn" disabled>Inizia Carriera</button>
@@ -478,8 +540,23 @@
             final: []
         };
         
+        
+        let managerData = {
+        name: "",
+        surname: "",
+        age: 35,
+        role: "Allenatore",
+        nationality: "Italia",
+        overall: 60
+    };
+        
         // Inizializzazione
         document.addEventListener('DOMContentLoaded', function() {
+          // Gestione creazione manager
+        document.getElementById('create-manager-btn').addEventListener('click', createManager);
+        
+        // Aggiornamento team selezionabili in base all'overall
+        updateSelectableTeams();
             // Gestione selezione squadra
             const teamCards = document.querySelectorAll('.team-card');
             teamCards.forEach(card => {
@@ -528,11 +605,101 @@
             return array;
         }
         
+        
+        // Funzione per creare il manager
+    function createManager() {
+        // Recupera i dati dal form
+        const name = document.getElementById('manager-name').value.trim();
+        const surname = document.getElementById('manager-surname').value.trim();
+        const age = parseInt(document.getElementById('manager-age').value);
+        const role = document.getElementById('manager-role').value;
+        const nationality = document.getElementById('manager-nationality').value;
+        
+        // Validazione base
+        if (!name || !surname || isNaN(age) || age < 25 || age > 70) {
+            alert("Per favore, completa tutti i campi correttamente.");
+            return;
+        }
+        
+        // Salva i dati del manager
+        managerData.name = name;
+        managerData.surname = surname;
+        managerData.age = age;
+        managerData.role = role;
+        managerData.nationality = nationality;
+        
+        // Calcola l'overall in base all'età (esempio: 35 anni è l'età ottimale)
+        let ageModifier = 0;
+        if (age >= 35 && age <= 45) {
+            ageModifier = 10;
+        } else if (age > 45 && age <= 55) {
+            ageModifier = 15;
+        } else if (age > 55) {
+            ageModifier = 20;
+        }
+        
+        managerData.overall = 60 + ageModifier;
+        
+        // Aggiorna l'interfaccia
+        document.getElementById('overall-value').textContent = managerData.overall;
+        
+        // Nascondi la sezione creazione manager e mostra la selezione squadra
+        document.getElementById('character-creation').classList.add('hidden');
+        document.getElementById('team-selection').classList.remove('hidden');
+        
+        // Aggiorna le squadre selezionabili in base all'overall
+        updateSelectableTeams();
+    }
+    
+    // Funzione per aggiornare le squadre selezionabili in base all'overall
+    function updateSelectableTeams() {
+        const teamCards = document.querySelectorAll('.team-card');
+        let maxSelectableDifficulty = 1; // Difficoltà base: 1 stella
+        
+        if (managerData.overall >= 70 && managerData.overall < 80) {
+            maxSelectableDifficulty = 2; // 2 stelle
+        } else if (managerData.overall >= 80) {
+            maxSelectableDifficulty = 3; // 3 stelle
+        }
+        
+        teamCards.forEach(card => {
+            const difficulty = parseInt(card.getAttribute('data-difficulty'));
+            if (difficulty <= maxSelectableDifficulty) {
+                card.classList.remove('disabled');
+                card.addEventListener('click', function() {
+                    // Rimuovi selezione precedente
+                    document.querySelectorAll('.team-card').forEach(c => c.classList.remove('selected'));
+                    
+                    // Aggiungi nuova selezione
+                    this.classList.add('selected');
+                    selectedTeam = this.getAttribute('data-team');
+                    
+                    // Abilita pulsante di inizio
+                    document.getElementById('start-btn').disabled = false;
+                });
+            } else {
+                card.classList.add('disabled');
+                // Rimuovi eventuale event listener
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert(`Il tuo overall (${managerData.overall}) non è sufficiente per allenare questa squadra.`);
+                });
+            }
+        });
+    }
+        
         // Inizia il torneo
         function startTournament() {
+          
+          
             // Nascondi sezione setup e mostra sezione torneo
-            document.getElementById('setup-section').classList.add('hidden');
-            document.getElementById('tournament-section').classList.remove('hidden');
+        document.getElementById('setup-section').classList.add('hidden');
+        document.getElementById('tournament-section').classList.remove('hidden');
+        
+        // Aggiorna l'intestazione del torneo con le informazioni del manager
+        document.querySelector('#tournament-section h2').textContent = 
+            `Torneo 12h - Stagione 2024/2025 - ${managerData.role} ${managerData.name} ${managerData.surname}`;
             
             // Crea una copia dell'array delle squadre e rimuovi la squadra selezionata
             let remainingTeams = teams.filter(team => team !== selectedTeam);

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missioni Giornaliere</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .credits-container {
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .credits-amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .mission-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .mission-tab {
+            padding: 12px 20px;
+            background-color: #ecf0f1;
+            cursor: pointer;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .mission-tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .mission-tab:hover:not(.active) {
+            background-color: #ddd;
+        }
+        
+        .mission-container {
+            display: none;
+        }
+        
+        .mission-container.active {
+            display: block;
+        }
+        
+        .mission-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mission-info {
+            flex-grow: 1;
+        }
+        
+        .mission-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .mission-description {
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+        
+        .mission-progress {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        
+        .mission-progress-bar {
+            height: 100%;
+            background-color: #2ecc71;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+        
+        .mission-status {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .mission-reward {
+            background-color: #f39c12;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            margin-left: 15px;
+            min-width: 100px;
+        }
+        
+        .mission-claim {
+            background-color: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            transition: background-color 0.3s;
+            margin-left: 15px;
+        }
+        
+        .mission-claim:hover {
+            background-color: #27ae60;
+        }
+        
+        .mission-claim:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .mission-claimed {
+            background-color: #95a5a6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+        
+        .back-to-home {
+            display: block;
+            margin: 20px auto;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .back-to-home:hover {
+            background-color: #34495e;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Missioni</h1>
+    </header>
+    
+    <div class="container">
+        <div class="credits-container">
+            <div>
+                <h2>I tuoi Crediti</h2>
+                <div class="credits-amount" id="credits-display">0</div>
+            </div>
+        </div>
+        
+        <div class="mission-tabs">
+            <div class="mission-tab active" data-tab="daily">Giornaliere</div>
+            <div class="mission-tab" data-tab="weekly">Settimanali</div>
+            <div class="mission-tab" data-tab="achievement">Traguardi</div>
+        </div>
+        
+        <div id="daily-missions" class="mission-container active">
+            <!-- Le missioni giornaliere verranno inserite qui tramite JavaScript -->
+        </div>
+        
+        <div id="weekly-missions" class="mission-container">
+            <!-- Le missioni settimanali verranno inserite qui tramite JavaScript -->
+        </div>
+        
+        <div id="achievement-missions" class="mission-container">
+            <!-- Gli obiettivi verranno inseriti qui tramite JavaScript -->
+        </div>
+        
+        <div class="navigation-buttons">
+            <button class="nav-button" id="to-team">Vai alla Squadra</button>
+            <button class="nav-button" id="to-packs">Vai ai Pacchetti</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementi DOM
+            const creditsDisplay = document.getElementById('credits-display');
+            const missionTabs = document.querySelectorAll('.mission-tab');
+            const missionContainers = document.querySelectorAll('.mission-container');
+            const dailyMissionsContainer = document.getElementById('daily-missions');
+            const weeklyMissionsContainer = document.getElementById('weekly-missions');
+            const achievementMissionsContainer = document.getElementById('achievement-missions');
+            const toTeamButton = document.getElementById('to-team');
+            const toPacksButton = document.getElementById('to-packs');
+            
+            // Variabili di stato
+            let credits = parseInt(localStorage.getItem('credits')) || 0;
+            
+            // Aggiorna il display dei crediti
+            function updateCreditsDisplay() {
+                creditsDisplay.textContent = credits;
+                localStorage.setItem('credits', credits);
+            }
+            
+            // Inizializza il display dei crediti
+            updateCreditsDisplay();
+            
+            // Funzione per cambiare tab
+            function changeTab(tabName) {
+                // Aggiorna classi tab
+                missionTabs.forEach(tab => {
+                    if (tab.getAttribute('data-tab') === tabName) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // Aggiorna container visibili
+                missionContainers.forEach(container => {
+                    if (container.id === tabName + '-missions') {
+                        container.classList.add('active');
+                    } else {
+                        container.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Event listener per i tab
+            missionTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    changeTab(tabName);
+                });
+            });
+            
+            // Event listener per i pulsanti di navigazione
+            toTeamButton.addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+            
+            toPacksButton.addEventListener('click', function() {
+                window.location.href = 'pacchetti.html';
+            });
+            
+            // Funzione per ottenere le missioni dallo storage o inizializzarle
+            function getMissions() {
+                let missions = JSON.parse(localStorage.getItem('missions'));
+                
+                if (!missions) {
+                    // Data corrente per il reset giornaliero/settimanale
+                    const currentDate = new Date();
+                    const todayStr = currentDate.toDateString();
+                    
+                    // Calcola la data di fine della settimana (domenica)
+                    const endOfWeek = new Date(currentDate);
+                    const dayToSunday = 7 - endOfWeek.getDay();
+                    endOfWeek.setDate(endOfWeek.getDate() + dayToSunday);
+                    const weekEndStr = endOfWeek.toDateString();
+                    
+                    missions = {
+                        daily: [
+                            {
+                                id: 'daily_login',
+                                title: 'Accesso Giornaliero',
+                                description: 'Effettua l\'accesso oggi',
+                                current: 0,
+                                target: 1,
+                                reward: 50,
+                                claimed: false,
+                                resetDate: todayStr
+                            },
+                            {
+                                id: 'daily_open_pack',
+                                title: 'Apertura Pacchetti',
+                                description: 'Apri 1 pacchetto oggi',
+                                current: 0,
+                                target: 1,
+                                reward: 100,
+                                claimed: false,
+                                resetDate: todayStr
+                            },
+                            {
+                                id: 'daily_rare_player',
+                                title: 'Trova un Giocatore Raro',
+                                description: 'Trova almeno 1 giocatore con rating 78-84 oggi',
+                                current: 0,
+                                target: 1,
+                                reward: 150,
+                                claimed: false,
+                                resetDate: todayStr
+                            }
+                        ],
+                        weekly: [
+                            {
+                                id: 'weekly_login',
+                                title: 'Fedeltà Settimanale',
+                                description: 'Effettua l\'accesso per 5 giorni questa settimana',
+                                current: 0,
+                                target: 5,
+                                reward: 500,
+                                claimed: false,
+                                resetDate: weekEndStr
+                            },
+                            {
+                                id: 'weekly_open_packs',
+                                title: 'Collezionista Settimanale',
+                                description: 'Apri 5 pacchetti questa settimana',
+                                current: 0,
+                                target: 5,
+                                reward: 300,
+                                claimed: false,
+                                resetDate: weekEndStr
+                            },
+                            {
+                                id: 'weekly_ultra_rare',
+                                title: 'Caccia ai Campioni',
+                                description: 'Trova 3 giocatori ultra rari (85+) questa settimana',
+                                current: 0,
+                                target: 3,
+                                reward: 750,
+                                claimed: false,
+                                resetDate: weekEndStr
+                            }
+                        ],
+                        achievement: [
+                            {
+                                id: 'achieve_collection_25',
+                                title: 'Collezione Iniziale',
+                                description: 'Raccogli 25 giocatori diversi',
+                                current: 0,
+                                target: 25,
+                                reward: 500,
+                                claimed: false,
+                                permanent: true
+                            },
+                            {
+                                id: 'achieve_collection_50',
+                                title: 'Collezione Intermedia',
+                                description: 'Raccogli 50 giocatori diversi',
+                                current: 0,
+                                target: 50,
+                                reward: 1000,
+                                claimed: false,
+                                permanent: true
+                            },
+                            {
+                                id: 'achieve_player_90',
+                                title: 'Leggenda',
+                                description: 'Trova un giocatore con rating 90+',
+                                current: 0,
+                                target: 1,
+                                reward: 2000,
+                                claimed: false,
+                                permanent: true
+                            },
+                            {
+                                id: 'achieve_login_streak',
+                                title: 'Fan Fedele',
+                                description: 'Effettua l\'accesso per 10 giorni consecutivi',
+                                current: 0,
+                                target: 10,
+                                reward: 1500,
+                                claimed: false,
+                                permanent: true
+                            }
+                        ],
+                        lastLogin: todayStr,
+                        loginStreak: 0
+                    };
+                    
+                    localStorage.setItem('missions', JSON.stringify(missions));
+                }
+                
+                return missions;
+            }
+            
+            // Funzione per salvare le missioni nello storage
+            function saveMissions(missions) {
+                localStorage.setItem('missions', JSON.stringify(missions));
+            }
+            
+            // Funzione per controllare e aggiornare lo stato delle missioni
+            function checkMissionUpdates() {
+                const missions = getMissions();
+                const currentDate = new Date();
+                const todayStr = currentDate.toDateString();
+                
+                // Controlla se è un nuovo giorno
+                if (missions.lastLogin !== todayStr) {
+                    // Reset missioni giornaliere
+                    missions.daily.forEach(mission => {
+                        if (mission.resetDate === missions.lastLogin) {
+                            mission.current = 0;
+                            mission.claimed = false;
+                            mission.resetDate = todayStr;
+                        }
+                    });
+                    
+                    // Gestisci accesso giornaliero
+                    const lastLoginDate = new Date(missions.lastLogin);
+                    const dayDiff = Math.floor((currentDate - lastLoginDate) / (1000 * 60 * 60 * 24));
+                    
+                    if (dayDiff === 1) {
+                        // Giorni consecutivi
+                        missions.loginStreak++;
+                    } else {
+                        // Reset streak se più di un giorno di differenza
+                        missions.loginStreak = 1;
+                    }
+                    
+                    // Aggiorna la missione di accesso giornaliero
+                    const dailyLoginMission = missions.daily.find(m => m.id === 'daily_login');
+                    if (dailyLoginMission) {
+                        dailyLoginMission.current = 1;
+                    }
+                    
+                    // Aggiorna la missione di accesso settimanale
+                    const weeklyLoginMission = missions.weekly.find(m => m.id === 'weekly_login');
+                    if (weeklyLoginMission && weeklyLoginMission.current < weeklyLoginMission.target) {
+                        weeklyLoginMission.current++;
+                    }
+                    
+                    // Aggiorna la missione di streak
+                    const loginStreakMission = missions.achievement.find(m => m.id === 'achieve_login_streak');
+                    if (loginStreakMission) {
+                        loginStreakMission.current = Math.max(loginStreakMission.current, missions.loginStreak);
+                    }
+                    
+                    // Aggiorna l'ultimo accesso
+                    missions.lastLogin = todayStr;
+                    
+                    // Controlla reset settimanale
+                    missions.weekly.forEach(mission => {
+                        const resetDate = new Date(mission.resetDate);
+                        if (currentDate > resetDate) {
+                            mission.current = 0;
+                            mission.claimed = false;
+                            
+                            // Calcola nuova data di reset (prossima domenica)
+                            const nextReset = new Date(currentDate);
+                            const dayToSunday = 7 - nextReset.getDay();
+                            nextReset.setDate(nextReset.getDate() + dayToSunday);
+                            mission.resetDate = nextReset.toDateString();
+                        }
+                    });
+                    
+                    saveMissions(missions);
+                }
+                
+                // Controlla la collezione per gli obiettivi
+                updateCollectionMissions();
+                
+                // Renderizza le missioni
+                renderMissions();
+            }
+            
+            // Funzione per aggiornare le missioni legate alla collezione
+            function updateCollectionMissions() {
+                const missions = getMissions();
+                const foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
+                
+                // Aggiorna gli obiettivi della collezione
+                const collection25Mission = missions.achievement.find(m => m.id === 'achieve_collection_25');
+                const collection50Mission = missions.achievement.find(m => m.id === 'achieve_collection_50');
+                
+                if (collection25Mission) {
+                    collection25Mission.current = Math.min(foundPlayers.length, collection25Mission.target);
+                }
+                
+                if (collection50Mission) {
+                    collection50Mission.current = Math.min(foundPlayers.length, collection50Mission.target);
+                }
+                
+                // Controlla per giocatori 90+
+                const player90Mission = missions.achievement.find(m => m.id === 'achieve_player_90');
+                if (player90Mission && player90Mission.current === 0) {
+                    const has90PlusPlayer = foundPlayers.some(player => player.rating >= 90);
+                    if (has90PlusPlayer) {
+                        player90Mission.current = 1;
+                    }
+                }
+                
+                saveMissions(missions);
+            }
+            
+            // Funzione per creare un elemento di missione
+            function createMissionElement(mission) {
+                const missionCard = document.createElement('div');
+                missionCard.className = 'mission-card';
+                
+                const missionInfo = document.createElement('div');
+                missionInfo.className = 'mission-info';
+                
+                const missionTitle = document.createElement('div');
+                missionTitle.className = 'mission-title';
+                missionTitle.textContent = mission.title;
+                
+                const missionDescription = document.createElement('div');
+                missionDescription.className = 'mission-description';
+                missionDescription.textContent = mission.description;
+                
+                const missionProgressContainer = document.createElement('div');
+                missionProgressContainer.className = 'mission-progress';
+                
+                const missionProgressBar = document.createElement('div');
+                missionProgressBar.className = 'mission-progress-bar';
+                const progressPercentage = Math.min((mission.current / mission.target) * 100, 100);
+                missionProgressBar.style.width = `${progressPercentage}%`;
+                
+                const missionStatus = document.createElement('div');
+                missionStatus.className = 'mission-status';
+                missionStatus.textContent = `Progresso: ${mission.current}/${mission.target}`;
+                
+                missionProgressContainer.appendChild(missionProgressBar);
+                
+                missionInfo.appendChild(missionTitle);
+                missionInfo.appendChild(missionDescription);
+                missionInfo.appendChild(missionProgressContainer);
+                missionInfo.appendChild(missionStatus);
+                
+                const missionReward = document.createElement('div');
+                missionReward.className = 'mission-reward';
+                missionReward.textContent = `${mission.reward} Crediti`;
+                
+                missionCard.appendChild(missionInfo);
+                missionCard.appendChild(missionReward);
+                
+                // Aggiungi il pulsante di riscatto se la missione è completata ma non ancora riscattata
+                if (mission.current >= mission.target && !mission.claimed) {
+                    const claimButton = document.createElement('button');
+                    claimButton.className = 'mission-claim';
+                    claimButton.textContent = 'Riscatta';
+                    
+                    claimButton.addEventListener('click', function() {
+                        claimMissionReward(mission.id);
+                    });
+                    
+                    missionCard.appendChild(claimButton);
+                } else if (mission.claimed) {
+                    const claimedBadge = document.createElement('div');
+                    claimedBadge.className = 'mission-claimed';
+                    claimedBadge.textContent = 'Riscattato';
+                    
+                    missionCard.appendChild(claimedBadge);
+                }
+                
+                return missionCard;
+            }
+            
+            // Funzione per riscattare la ricompensa di una missione
+            function claimMissionReward(missionId) {
+                const missions = getMissions();
+                let mission;
+                
+                // Trova la missione in tutte le categorie
+                for (const category of ['daily', 'weekly', 'achievement']) {
+                    const found = missions[category].find(m => m.id === missionId);
+                    if (found) {
+                        mission = found;
+                        break;
+                    }
+                }
+                
+                if (mission && mission.current >= mission.target && !mission.claimed) {
+                    // Aggiorna crediti
+                    credits += mission.reward;
+                    updateCreditsDisplay();
+                    
+                    // Segna come riscattata
+                    mission.claimed = true;
+                    saveMissions(missions);
+                    
+                    // Aggiorna UI
+                    renderMissions();
+                    
+                    // Notifica
+                    alert(`Hai riscattato ${mission.reward} crediti dalla missione "${mission.title}"!`);
+                }
+            }
+            
+            // Funzione per renderizzare tutte le missioni
+            function renderMissions() {
+                const missions = getMissions();
+                
+                // Svuota i container
+                dailyMissionsContainer.innerHTML = '';
+                weeklyMissionsContainer.innerHTML = '';
+                achievementMissionsContainer.innerHTML = '';
+                
+                // Renderizza missioni giornaliere
+                missions.daily.forEach(mission => {
+                    const missionElement = createMissionElement(mission);
+                    dailyMissionsContainer.appendChild(missionElement);
+                });
+                
+                // Renderizza missioni settimanali
+                missions.weekly.forEach(mission => {
+                    const missionElement = createMissionElement(mission);
+                    weeklyMissionsContainer.appendChild(missionElement);
+                });
+                
+                // Renderizza traguardi
+                missions.achievement.forEach(mission => {
+                    const missionElement = createMissionElement(mission);
+                    achievementMissionsContainer.appendChild(missionElement);
+                });
+            }
+            
+            // Funzione per registrare l'apertura di un pacchetto
+            function registerPackOpened(packageType) {
+                const missions = getMissions();
+                
+                // Aggiorna missione giornaliera di apertura pacchetti
+                const dailyOpenMission = missions.daily.find(m => m.id === 'daily_open_pack');
+                if (dailyOpenMission && dailyOpenMission.current < dailyOpenMission.target) {
+                    dailyOpenMission.current++;
+                }
+                
+                // Aggiorna missione settimanale di apertura pacchetti
+                const weeklyOpenMission = missions.weekly.find(m => m.id === 'weekly_open_packs');
+                if (weeklyOpenMission && weeklyOpenMission.current < weeklyOpenMission.target) {
+                    weeklyOpenMission.current++;
+                }
+                
+                saveMissions(missions);
+                renderMissions();
+            }
+            
+            // Funzione per registrare un nuovo giocatore raro trovato
+            function registerRarePlayerFound(rating) {
+                const missions = getMissions();
+                
+                // Per giocatori rari (78-84)
+                if (rating >= 78 && rating <= 84) {
+                    const dailyRareMission = missions.daily.find(m => m.id === 'daily_rare_player');
+                    if (dailyRareMission && dailyRareMission.current < dailyRareMission.target) {
+                        dailyRareMission.current++;
+                    }
+                }
+                
+                // Per giocatori ultra rari (85+)
+                if (rating >= 85) {
+                    const weeklyUltraRareMission = missions.weekly.find(m => m.id === 'weekly_ultra_rare');
+                    if (weeklyUltraRareMission && weeklyUltraRareMission.current < weeklyUltraRareMission.target) {
+                        weeklyUltraRareMission.current++;
+                    }
+                }
+                
+                // Per giocatori 90+
+                if (rating >= 90) {
+                    const player90Mission = missions.achievement.find(m => m.id === 'achieve_player_90');
+                    if (player90Mission && player90Mission.current < player90Mission.target) {
+                        player90Mission.current = 1;
+                    }
+                }
+                
+                saveMissions(missions);
+                renderMissions();
+            }
+            
+            // Esponi funzioni per altre pagine
+            window.missionSystem = {
+                registerPackOpened: registerPackOpened,
+                registerRarePlayerFound: registerRarePlayerFound,
+                updateMissions: checkMissionUpdates
+            };
+            
+            // Esegui il controllo delle missioni all'avvio
+            checkMissionUpdates();
+        });
+    </script>
+</body>
+</html>

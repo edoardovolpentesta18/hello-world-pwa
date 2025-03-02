@@ -998,6 +998,53 @@
                 localStorage.setItem('foundPlayers', JSON.stringify([]));
             }
         });
+
+	// Registra l'apertura di un pacchetto per le missioni
+function registerMission(packageType, players) {
+    // Se la funzione del sistema missioni esiste
+    if (window.missionSystem) {
+        // Registra apertura pacchetto
+        window.missionSystem.registerPackOpened(packageType);
+        
+        // Registra giocatori rari trovati
+        players.forEach(player => {
+            window.missionSystem.registerRarePlayerFound(player.rating);
+        });
+    }
+}
+
+// Modifica alla funzione openPackage per registrare le missioni
+function openPackage(packageType) {
+    // Costi dei pacchetti
+    const costs = {
+        'common': 200,
+        'rare': 500,
+        'legendary': 1000
+    };
+    
+    // Controlla se ci sono abbastanza crediti
+    if (credits < costs[packageType]) {
+        alert('Non hai abbastanza crediti per questo pacchetto!');
+        return;
+    }
+    
+    // Sottrai i crediti
+    credits -= costs[packageType];
+    updateCreditsDisplay();
+    
+    // Genera i giocatori nel pacchetto
+    const players = generatePackagePlayers(packageType);
+    
+    // Registra per le missioni
+    registerMission(packageType, players);
+    
+    // Crea le carte
+    createCards(players, packageType);
+    
+    // Mostra il container di apertura
+    openingContainer.style.display = 'flex';
+}	
+	    
     </script>
 </body>
 </html>

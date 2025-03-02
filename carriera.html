@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore Carriera Calcistica</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #0c2461;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #fbc531;
+        }
+        h1, h2, h3 {
+            margin: 0;
+        }
+        .setup-section, .groups-section, .tournament-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .team-selection {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .team-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .team-card.selected {
+            border: 3px solid #4cd137;
+            background-color: #f8f9fa;
+        }
+        .team-logo {
+            height: 80px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+        .btn {
+            background-color: #0c2461;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #1e3799;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .group-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .group {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .match {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .match-teams {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+        }
+        .match-result {
+            font-weight: bold;
+            margin: 0 15px;
+        }
+        .hidden {
+            display: none;
+        }
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab-btn.active {
+            background-color: white;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .knockout-bracket {
+            margin-top: 20px;
+        }
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .knockout-match {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Simulatore Carriera Calcistica</h1>
+    </header>
+    
+    <div class="container">
+        <!-- Setup Section -->
+        <div id="setup-section" class="setup-section">
+            <h2>Scegli la tua squadra</h2>
+            <p>Seleziona una delle 16 squadre disponibili per iniziare la tua carriera:</p>
+            
+            <div class="team-selection" id="team-selection">
+                <!-- Squadre da selezionare -->
+                <div class="team-card" data-team="Milan">
+                    <img src="/api/placeholder/80/80" alt="Logo Milan" class="team-logo">
+                    <h3>Milan</h3>
+                    <p>Difficoltà: ★★★☆☆</p>
+                </div>
+                <div class="team-card" data-team="Inter">
+                    <img src="/api/placeholder/80/80" alt="Logo Inter" class="team-logo">
+                    <h3>Inter</h3>
+                    <p>Difficoltà: ★★★☆☆</p>
+                </div>
+                <div class="team-card" data-team="Juventus">
+                    <img src="/api/placeholder/80/80" alt="Logo Juventus" class="team-logo">
+                    <h3>Juventus</h3>
+                    <p>Difficoltà: ★★★☆☆</p>
+                </div>
+                <div class="team-card" data-team="Napoli">
+                    <img src="/api/placeholder/80/80" alt="Logo Napoli" class="team-logo">
+                    <h3>Napoli</h3>
+                    <p>Difficoltà: ★★★☆☆</p>
+                </div>
+                <div class="team-card" data-team="Roma">
+                    <img src="/api/placeholder/80/80" alt="Logo Roma" class="team-logo">
+                    <h3>Roma</h3>
+                    <p>Difficoltà: ★★★☆☆</p>
+                </div>
+                <div class="team-card" data-team="Lazio">
+                    <img src="/api/placeholder/80/80" alt="Logo Lazio" class="team-logo">
+                    <h3>Lazio</h3>
+                    <p>Difficoltà: ★★★☆☆</p>
+                </div>
+                <div class="team-card" data-team="Atalanta">
+                    <img src="/api/placeholder/80/80" alt="Logo Atalanta" class="team-logo">
+                    <h3>Atalanta</h3>
+                    <p>Difficoltà: ★★★☆☆</p>
+                </div>
+                <div class="team-card" data-team="Fiorentina">
+                    <img src="/api/placeholder/80/80" alt="Logo Fiorentina" class="team-logo">
+                    <h3>Fiorentina</h3>
+                    <p>Difficoltà: ★★★☆☆</p>
+                </div>
+                <div class="team-card" data-team="Torino">
+                    <img src="/api/placeholder/80/80" alt="Logo Torino" class="team-logo">
+                    <h3>Torino</h3>
+                    <p>Difficoltà: ★★☆☆☆</p>
+                </div>
+                <div class="team-card" data-team="Bologna">
+                    <img src="/api/placeholder/80/80" alt="Logo Bologna" class="team-logo">
+                    <h3>Bologna</h3>
+                    <p>Difficoltà: ★★☆☆☆</p>
+                </div>
+                <div class="team-card" data-team="Sassuolo">
+                    <img src="/api/placeholder/80/80" alt="Logo Sassuolo" class="team-logo">
+                    <h3>Sassuolo</h3>
+                    <p>Difficoltà: ★★☆☆☆</p>
+                </div>
+                <div class="team-card" data-team="Monza">
+                    <img src="/api/placeholder/80/80" alt="Logo Monza" class="team-logo">
+                    <h3>Monza</h3>
+                    <p>Difficoltà: ★★☆☆☆</p>
+                </div>
+                <div class="team-card" data-team="Venezia">
+                    <img src="/api/placeholder/80/80" alt="Logo Venezia" class="team-logo">
+                    <h3>Venezia</h3>
+                    <p>Difficoltà: ★☆☆☆☆</p>
+                </div>
+                <div class="team-card" data-team="Parma">
+                    <img src="/api/placeholder/80/80" alt="Logo Parma" class="team-logo">
+                    <h3>Parma</h3>
+                    <p>Difficoltà: ★☆☆☆☆</p>
+                </div>
+                <div class="team-card" data-team="Como">
+                    <img src="/api/placeholder/80/80" alt="Logo Como" class="team-logo">
+                    <h3>Como</h3>
+                    <p>Difficoltà: ★☆☆☆☆</p>
+                </div>
+                <div class="team-card" data-team="Empoli">
+                    <img src="/api/placeholder/80/80" alt="Logo Empoli" class="team-logo">
+                    <h3>Empoli</h3>
+                    <p>Difficoltà: ★☆☆☆☆</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button id="start-btn" class="btn" disabled>Inizia Carriera</button>
+            </div>
+        </div>
+        
+        <!-- Tournament Section -->
+        <div id="tournament-section" class="tournament-section hidden">
+            <h2>Torneo 12h - Stagione 2024/2025</h2>
+            
+            <div class="tab-buttons">
+                <div class="tab-btn active" data-tab="groups">Fase a Gironi</div>
+                <div class="tab-btn" data-tab="knockout-gold">Fase Finale Gold</div>
+                <div class="tab-btn" data-tab="knockout-silver">Fase Finale Silver</div>
+            </div>
+            
+            <!-- Groups Tab -->
+            <div id="groups-tab" class="tab-content active">
+                <div class="group-container">
+                    <div class="group">
+                        <h3>Girone A</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Squadra</th>
+                                    <th>P</th>
+                                    <th>G</th>
+                                    <th>V</th>
+                                    <th>N</th>
+                                    <th>S</th>
+                                    <th>GF</th>
+                                    <th>GS</th>
+                                    <th>DR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="group-a-table">
+                                <!-- Popolato dinamicamente -->
+                            </tbody>
+                        </table>
+                        
+                        <h4 style="margin-top: 20px;">Partite</h4>
+                        <div id="group-a-matches">
+                            <!-- Popolato dinamicamente -->
+                        </div>
+                    </div>
+                    
+                    <div class="group">
+                        <h3>Girone B</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Squadra</th>
+                                    <th>P</th>
+                                    <th>G</th>
+                                    <th>V</th>
+                                    <th>N</th>
+                                    <th>S</th>
+                                    <th>GF</th>
+                                    <th>GS</th>
+                                    <th>DR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="group-b-table">
+                                <!-- Popolato dinamicamente -->
+                            </tbody>
+                        </table>
+                        
+                        <h4 style="margin-top: 20px;">Partite</h4>
+                        <div id="group-b-matches">
+                            <!-- Popolato dinamicamente -->
+                        </div>
+                    </div>
+                    
+                    <div class="group">
+                        <h3>Girone C</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Squadra</th>
+                                    <th>P</th>
+                                    <th>G</th>
+                                    <th>V</th>
+                                    <th>N</th>
+                                    <th>S</th>
+                                    <th>GF</th>
+                                    <th>GS</th>
+                                    <th>DR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="group-c-table">
+                                <!-- Popolato dinamicamente -->
+                            </tbody>
+                        </table>
+                        
+                        <h4 style="margin-top: 20px;">Partite</h4>
+                        <div id="group-c-matches">
+                            <!-- Popolato dinamicamente -->
+                        </div>
+                    </div>
+                    
+                    <div class="group">
+                        <h3>Girone D</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Squadra</th>
+                                    <th>P</th>
+                                    <th>G</th>
+                                    <th>V</th>
+                                    <th>N</th>
+                                    <th>S</th>
+                                    <th>GF</th>
+                                    <th>GS</th>
+                                    <th>DR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="group-d-table">
+                                <!-- Popolato dinamicamente -->
+                            </tbody>
+                        </table>
+                        
+                        <h4 style="margin-top: 20px;">Partite</h4>
+                        <div id="group-d-matches">
+                            <!-- Popolato dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button id="simulate-group-btn" class="btn">Simula Fase a Gironi</button>
+                </div>
+            </div>
+            
+            <!-- Gold Knockout Tab -->
+            <div id="knockout-gold-tab" class="tab-content">
+                <h3>Fase Finale Gold - Le migliori 8 squadre</h3>
+                <p>Le prime due squadre di ogni girone si qualificano per la fase finale Gold.</p>
+                
+                <div class="knockout-bracket">
+                    <h4>Quarti di Finale</h4>
+                    <div id="gold-quarters" class="round">
+                        <!-- Popolato dinamicamente -->
+                    </div>
+                    
+                    <h4>Semifinali</h4>
+                    <div id="gold-semis" class="round">
+                        <!-- Popolato dinamicamente -->
+                    </div>
+                    
+                    <h4>Finale</h4>
+                    <div id="gold-final" class="round">
+                        <!-- Popolato dinamicamente -->
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button id="simulate-gold-btn" class="btn" disabled>Simula Fase Finale Gold</button>
+                </div>
+            </div>
+            
+            <!-- Silver Knockout Tab -->
+            <div id="knockout-silver-tab" class="tab-content">
+                <h3>Fase Finale Silver - Torneo di consolazione</h3>
+                <p>Le squadre classificate al terzo e quarto posto in ogni girone partecipano alla fase finale Silver.</p>
+                
+                <div class="knockout-bracket">
+                    <h4>Quarti di Finale</h4>
+                    <div id="silver-quarters" class="round">
+                        <!-- Popolato dinamicamente -->
+                    </div>
+                    
+                    <h4>Semifinali</h4>
+                    <div id="silver-semis" class="round">
+                        <!-- Popolato dinamicamente -->
+                    </div>
+                    
+                    <h4>Finale</h4>
+                    <div id="silver-final" class="round">
+                        <!-- Popolato dinamicamente -->
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button id="simulate-silver-btn" class="btn" disabled>Simula Fase Finale Silver</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variabili globali
+        let selectedTeam = null;
+        let teams = [
+            "Milan", "Inter", "Juventus", "Napoli", "Roma", "Lazio", 
+            "Atalanta", "Fiorentina", "Torino", "Bologna", "Sassuolo", 
+            "Monza", "Venezia", "Parma", "Como", "Empoli"
+        ];
+        let groups = {
+            A: [],
+            B: [],
+            C: [],
+            D: []
+        };
+        let groupResults = {
+            A: [],
+            B: [],
+            C: [],
+            D: []
+        };
+        let goldKnockout = {
+            quarters: [],
+            semis: [],
+            final: []
+        };
+        let silverKnockout = {
+            quarters: [],
+            semis: [],
+            final: []
+        };
+        
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestione selezione squadra
+            const teamCards = document.querySelectorAll('.team-card');
+            teamCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Rimuovi selezione precedente
+                    document.querySelectorAll('.team-card').forEach(c => c.classList.remove('selected'));
+                    
+                    // Aggiungi nuova selezione
+                    this.classList.add('selected');
+                    selectedTeam = this.getAttribute('data-team');
+                    
+                    // Abilita pulsante di inizio
+                    document.getElementById('start-btn').disabled = false;
+                });
+            });
+            
+            // Gestione pulsante di inizio
+            document.getElementById('start-btn').addEventListener('click', startTournament);
+            
+            // Gestione tab
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Cambia tab attivo
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Mostra contenuto tab selezionato
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(this.getAttribute('data-tab') + '-tab').classList.add('active');
+                });
+            });
+            
+            // Gestione pulsanti simulazione
+            document.getElementById('simulate-group-btn').addEventListener('click', simulateGroups);
+            document.getElementById('simulate-gold-btn').addEventListener('click', simulateGoldKnockout);
+            document.getElementById('simulate-silver-btn').addEventListener('click', simulateSilverKnockout);
+        });
+        
+        // Funzione per mescolare un array (algoritmo Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // Inizia il torneo
+        function startTournament() {
+            // Nascondi sezione setup e mostra sezione torneo
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('tournament-section').classList.remove('hidden');
+            
+            // Crea una copia dell'array delle squadre e rimuovi la squadra selezionata
+            let remainingTeams = teams.filter(team => team !== selectedTeam);
+            
+            // Mescola le squadre rimanenti
+            remainingTeams = shuffleArray(remainingTeams);
+            
+            // Aggiungi la squadra selezionata al primo girone
+            groups.A.push(selectedTeam);
+            
+            // Distribuisci le squadre nei gironi
+            let groupKeys = ['A', 'B', 'C', 'D'];
+            let index = 0;
+            
+            // Prima riempi gli altri 3 posti nel gruppo A
+            for (let i = 0; i < 3; i++) {
+                groups.A.push(remainingTeams[index]);
+                index++;
+            }
+            
+            // Poi distribuisci le squadre rimanenti negli altri gruppi
+            for (let i = 1; i < groupKeys.length; i++) {
+                for (let j = 0; j < 4; j++) {
+                    groups[groupKeys[i]].push(remainingTeams[index]);
+                    index++;
+                }
+            }
+            
+            // Visualizza i gironi
+            displayGroups();
+        }
+        
+        // Visualizza i gironi
+        function displayGroups() {
+            for (const [group, teams] of Object.entries(groups)) {
+                const tableBody = document.getElementById(`group-${group.toLowerCase()}-table`);
+                tableBody.innerHTML = '';
+                
+                teams.forEach(team => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${team}</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+        
+        // Simula i risultati della fase a gironi
+        function simulateGroups() {
+            // Disabilita il pulsante di simulazione
+            document.getElementById('simulate-group-btn').disabled = true;
+            
+            // Inizializza i risultati dei gironi
+            for (const group of Object.keys(groups)) {
+                groupResults[group] = groups[group].map(team => ({
+                    team: team,
+                    points: 0,
+                    played: 0,
+                    won: 0,
+                    drawn: 0,
+                    lost: 0,
+                    goalsFor: 0,
+                    goalsAgainst: 0,
+                    goalDifference: 0
+                }));
+            }
+            
+            // Simula le partite in ogni girone
+            for (const [group, teams] of Object.entries(groups)) {
+                const matchesContainer = document.getElementById(`group-${group.toLowerCase()}-matches`);
+                matchesContainer.innerHTML = '';
+                
+                // Genera tutte le combinazioni di partite
+                for (let i = 0; i < teams.length; i++) {
+                    for (let j = i + 1; j < teams.length; j++) {
+                        // Simula il risultato della partita
+                        const homeTeam = teams[i];
+                        const awayTeam = teams[j];
+                        
+                        // Simulazione più favorevole per la squadra del giocatore
+                        let homeGoals, awayGoals;
+                        if (homeTeam === selectedTeam) {
+                            homeGoals = Math.floor(Math.random() * 4) + 1; // 1-4 gol
+                            awayGoals = Math.floor(Math.random() * 3); // 0-2 gol
+                        } else if (awayTeam === selectedTeam) {
+                            homeGoals = Math.floor(Math.random() * 3); // 0-2 gol
+                            awayGoals = Math.floor(Math.random() * 4) + 1; // 1-4 gol
+                        } else {
+                            homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                            awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                        }
+                        
+                        // Aggiorna le statistiche delle squadre
+                        const homeIndex = groupResults[group].findIndex(t => t.team === homeTeam);
+                        const awayIndex = groupResults[group].findIndex(t => t.team === awayTeam);
+                        
+                        // Partite giocate
+                        groupResults[group][homeIndex].played++;
+                        groupResults[group][awayIndex].played++;
+                        
+                        // Gol segnati e subiti
+                        groupResults[group][homeIndex].goalsFor += homeGoals;
+                        groupResults[group][homeIndex].goalsAgainst += awayGoals;
+                        groupResults[group][awayIndex].goalsFor += awayGoals;
+                        groupResults[group][awayIndex].goalsAgainst += homeGoals;
+                        
+                        // Differenza reti
+                        groupResults[group][homeIndex].goalDifference = 
+                            groupResults[group][homeIndex].goalsFor - groupResults[group][homeIndex].goalsAgainst;
+                        groupResults[group][awayIndex].goalDifference = 
+                            groupResults[group][awayIndex].goalsFor - groupResults[group][awayIndex].goalsAgainst;
+                        
+                        // Risultato (vittoria, pareggio, sconfitta)
+                        if (homeGoals > awayGoals) {
+                            // Vittoria in casa
+                            groupResults[group][homeIndex].won++;
+                            groupResults[group][homeIndex].points += 3;
+                            groupResults[group][awayIndex].lost++;
+                        } else if (homeGoals < awayGoals) {
+                            // Vittoria in trasferta
+                            groupResults[group][awayIndex].won++;
+                            groupResults[group][awayIndex].points += 3;
+                            groupResults[group][homeIndex].lost++;
+                        } else {
+                            // Pareggio
+                            groupResults[group][homeIndex].drawn++;
+                            groupResults[group][awayIndex].drawn++;
+                            groupResults[group][homeIndex].points += 1;
+                            groupResults[group][awayIndex].points += 1;
+                        }
+                        
+                        // Visualizza il risultato della partita
+                        const matchElement = document.createElement('div');
+                        matchElement.className = 'match';
+                        matchElement.innerHTML = `
+                            <div class="match-teams">
+                                <span>${homeTeam}</span>
+                                <span class="match-result">${homeGoals} - ${awayGoals}</span>
+                                <span>${awayTeam}</span>
+                            </div>
+                        `;
+                        matchesContainer.appendChild(matchElement);
+                    }
+                }
+                
+                // Ordina la classifica
+                groupResults[group].sort((a, b) => {
+                    if (a.points !== b.points) {
+                        return b.points - a.points; // Punti
+                    } else if (a.goalDifference !== b.goalDifference) {
+                        return b.goalDifference - a.goalDifference; // Differenza reti
+                    } else {
+                        return b.goalsFor - a.goalsFor; // Gol segnati
+                    }
+                });
+                
+                // Aggiorna la tabella del girone
+                const tableBody = document.getElementById(`group-${group.toLowerCase()}-table`);
+                tableBody.innerHTML = '';
+                
+                groupResults[group].forEach(team => {
+                    const row = document.createElement('tr');
+                    
+                    // Evidenzia la squadra del giocatore
+                    if (team.team === selectedTeam) {
+                        row.style.fontWeight = 'bold';
+                        row.style.backgroundColor = '#e6f7ff';
+                    }
+                    
+                    // Evidenzia le prime due squadre (qualificate per la fase Gold)
+                    if (groupResults[group].indexOf(team) < 2) {
+                        row.style.backgroundColor = '#d4edda';
+                    }
+                    // Evidenzia le squadre in posizione 3-4 (qualificate per la fase Silver)
+                    else if (groupResults[group].indexOf(team) < 4) {
+                        row.style.backgroundColor = '#fff3cd';
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${team.team}</td>
+                        <td>${team.points}</td>
+                        <td>${team.played}</td>
+                        <td>${team.won}</td>
+                        <td>${team.drawn}</td>
+                        <td>${team.lost}</td>
+                        <td>${team.goalsFor}</td>
+                        <td>${team.goalsAgainst}</td>
+                        <td>${team.goalDifference}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Prepara le fasi
+            
+           // <script>
+            // Abilita i pulsanti per le fasi finali
+            document.getElementById('simulate-gold-btn').disabled = false;
+            document.getElementById('simulate-silver-btn').disabled = false;
+            
+            // Prepara i quarti di finale Gold
+            setupGoldKnockout();
+            
+            // Prepara i quarti di finale Silver
+            setupSilverKnockout();
+        }
+        
+        // Prepara la fase finale Gold
+        function setupGoldKnockout() {
+            // Ottieni le prime due squadre di ogni girone
+            const qualified = {};
+            for (const [group, results] of Object.entries(groupResults)) {
+                qualified[group] = results.slice(0, 2).map(team => team.team);
+            }
+            
+            // Setup dei quarti di finale (1A vs 2B, 1C vs 2D, 1B vs 2A, 1D vs 2C)
+            goldKnockout.quarters = [
+                { home: qualified.A[0], away: qualified.B[1], homeGoals: null, awayGoals: null },
+                { home: qualified.C[0], away: qualified.D[1], homeGoals: null, awayGoals: null },
+                { home: qualified.B[0], away: qualified.A[1], homeGoals: null, awayGoals: null },
+                { home: qualified.D[0], away: qualified.C[1], homeGoals: null, awayGoals: null }
+            ];
+            
+            // Visualizza i quarti di finale
+            const quartersContainer = document.getElementById('gold-quarters');
+            quartersContainer.innerHTML = '';
+            
+            goldKnockout.quarters.forEach((match, index) => {
+                const matchElement = document.createElement('div');
+                matchElement.className = 'knockout-match';
+                matchElement.innerHTML = `
+                    <strong>Quarto ${index + 1}:</strong> ${match.home} vs ${match.away}
+                `;
+                quartersContainer.appendChild(matchElement);
+            });
+        }
+        
+        // Prepara la fase finale Silver
+        function setupSilverKnockout() {
+            // Ottieni le squadre classificate al terzo e quarto posto di ogni girone
+            const qualified = {};
+            for (const [group, results] of Object.entries(groupResults)) {
+                qualified[group] = results.slice(2, 4).map(team => team.team);
+            }
+            
+            // Setup dei quarti di finale (3A vs 4B, 3C vs 4D, 3B vs 4A, 3D vs 4C)
+            silverKnockout.quarters = [
+                { home: qualified.A[0], away: qualified.B[1], homeGoals: null, awayGoals: null },
+                { home: qualified.C[0], away: qualified.D[1], homeGoals: null, awayGoals: null },
+                { home: qualified.B[0], away: qualified.A[1], homeGoals: null, awayGoals: null },
+                { home: qualified.D[0], away: qualified.C[1], homeGoals: null, awayGoals: null }
+            ];
+            
+            // Visualizza i quarti di finale
+            const quartersContainer = document.getElementById('silver-quarters');
+            quartersContainer.innerHTML = '';
+            
+            silverKnockout.quarters.forEach((match, index) => {
+                const matchElement = document.createElement('div');
+                matchElement.className = 'knockout-match';
+                matchElement.innerHTML = `
+                    <strong>Quarto ${index + 1}:</strong> ${match.home} vs ${match.away}
+                `;
+                quartersContainer.appendChild(matchElement);
+            });
+        }
+        
+        // Simula la fase finale Gold
+        function simulateGoldKnockout() {
+            // Disabilita il pulsante di simulazione
+            document.getElementById('simulate-gold-btn').disabled = true;
+            
+            // Simula i quarti di finale
+            goldKnockout.quarters.forEach(match => {
+                // Favorisci la squadra del giocatore
+                if (match.home === selectedTeam) {
+                    match.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                    match.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                } else if (match.away === selectedTeam) {
+                    match.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                    match.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                } else {
+                    match.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                    match.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                }
+            });
+            
+            // Aggiorna la visualizzazione dei quarti di finale
+            const quartersContainer = document.getElementById('gold-quarters');
+            quartersContainer.innerHTML = '';
+            
+            goldKnockout.quarters.forEach((match, index) => {
+                const matchElement = document.createElement('div');
+                matchElement.className = 'knockout-match';
+                
+                // Evidenzia la squadra vincente
+                let winner;
+                if (match.homeGoals > match.awayGoals) {
+                    winner = match.home;
+                    matchElement.innerHTML = `
+                        <strong>Quarto ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away}
+                    `;
+                } else if (match.homeGoals < match.awayGoals) {
+                    winner = match.away;
+                    matchElement.innerHTML = `
+                        <strong>Quarto ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} <span style="font-weight: bold">${match.away}</span>
+                    `;
+                } else {
+                    // In caso di pareggio, vince la casa (per semplicità)
+                    winner = match.home;
+                    matchElement.innerHTML = `
+                        <strong>Quarto ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away} (vince ai rigori)
+                    `;
+                }
+                
+                quartersContainer.appendChild(matchElement);
+            });
+            
+            // Setup delle semifinali (vincente Q1 vs vincente Q2, vincente Q3 vs vincente Q4)
+            const semifinalists = goldKnockout.quarters.map(match => 
+                match.homeGoals > match.awayGoals || (match.homeGoals === match.awayGoals) ? match.home : match.away
+            );
+            
+            goldKnockout.semis = [
+                { home: semifinalists[0], away: semifinalists[1], homeGoals: null, awayGoals: null },
+                { home: semifinalists[2], away: semifinalists[3], homeGoals: null, awayGoals: null }
+            ];
+            
+            // Simula le semifinali
+            goldKnockout.semis.forEach(match => {
+                // Favorisci la squadra del giocatore
+                if (match.home === selectedTeam) {
+                    match.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                    match.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                } else if (match.away === selectedTeam) {
+                    match.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                    match.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                } else {
+                    match.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                    match.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                }
+            });
+            
+            // Aggiorna la visualizzazione delle semifinali
+            const semisContainer = document.getElementById('gold-semis');
+            semisContainer.innerHTML = '';
+            
+            goldKnockout.semis.forEach((match, index) => {
+                const matchElement = document.createElement('div');
+                matchElement.className = 'knockout-match';
+                
+                // Evidenzia la squadra vincente
+                let winner;
+                if (match.homeGoals > match.awayGoals) {
+                    winner = match.home;
+                    matchElement.innerHTML = `
+                        <strong>Semifinale ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away}
+                    `;
+                } else if (match.homeGoals < match.awayGoals) {
+                    winner = match.away;
+                    matchElement.innerHTML = `
+                        <strong>Semifinale ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} <span style="font-weight: bold">${match.away}</span>
+                    `;
+                } else {
+                    // In caso di pareggio, vince la casa (per semplicità)
+                    winner = match.home;
+                    matchElement.innerHTML = `
+                        <strong>Semifinale ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away} (vince ai rigori)
+                    `;
+                }
+                
+                semisContainer.appendChild(matchElement);
+            });
+            
+            // Setup della finale
+            const finalists = goldKnockout.semis.map(match => 
+                match.homeGoals > match.awayGoals || (match.homeGoals === match.awayGoals) ? match.home : match.away
+            );
+            
+            goldKnockout.final = [
+                { home: finalists[0], away: finalists[1], homeGoals: null, awayGoals: null }
+            ];
+            
+            // Simula la finale
+            const finalMatch = goldKnockout.final[0];
+            
+            // Favorisci la squadra del giocatore nella finale
+            if (finalMatch.home === selectedTeam) {
+                finalMatch.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                finalMatch.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
+            } else if (finalMatch.away === selectedTeam) {
+                finalMatch.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                finalMatch.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+            } else {
+                finalMatch.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                finalMatch.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
+            }
+            
+            // Aggiorna la visualizzazione della finale
+            const finalContainer = document.getElementById('gold-final');
+            finalContainer.innerHTML = '';
+            
+            const finalElement = document.createElement('div');
+            finalElement.className = 'knockout-match';
+            
+            // Evidenzia la squadra vincente
+            let champion;
+            if (finalMatch.homeGoals > finalMatch.awayGoals) {
+                champion = finalMatch.home;
+                finalElement.innerHTML = `
+                    <strong>FINALE:</strong> <span style="font-weight: bold">${finalMatch.home}</span> ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away}
+                `;
+            } else if (finalMatch.homeGoals < finalMatch.awayGoals) {
+                champion = finalMatch.away;
+                finalElement.innerHTML = `
+                    <strong>FINALE:</strong> ${finalMatch.home} ${finalMatch.homeGoals} - ${finalMatch.awayGoals} <span style="font-weight: bold">${finalMatch.away}</span>
+                `;
+            } else {
+                // In caso di pareggio, vince la casa (per semplicità)
+                champion = finalMatch.home;
+                finalElement.innerHTML = `
+                    <strong>FINALE:</strong> <span style="font-weight: bold">${finalMatch.home}</span> ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away} (vince ai rigori)
+                `;
+            }
+            
+            finalContainer.appendChild(finalElement);
+            
+            // Visualizza il campione
+            const champElement = document.createElement('div');
+            champElement.style.marginTop = '20px';
+            champElement.style.textAlign = 'center';
+            champElement.style.padding = '15px';
+            champElement.style.backgroundColor = '#f8f9fa';
+            champElement.style.borderRadius = '5px';
+            champElement.style.border = '2px solid gold';
+            
+            // Messaggio speciale se la squadra del giocatore ha vinto
+            if (champion === selectedTeam) {
+                champElement.innerHTML = `
+                    <h3 style="color: gold">CONGRATULAZIONI!</h3>
+                    <p style="font-size: 18px">La tua squadra, <strong>${champion}</strong>, ha vinto il torneo Gold!</p>
+                `;
+            } else {
+                champElement.innerHTML = `
+                    <h3 style="color: gold">CAMPIONE TORNEO GOLD</h3>
+                    <p style="font-size: 18px">${champion}</p>
+                `;
+            }
+            
+            finalContainer.appendChild(champElement);
+        }
+        
+        // Simula la fase finale Silver
+        function simulateSilverKnockout() {
+            // Disabilita il pulsante di simulazione
+            document.getElementById('simulate-silver-btn').disabled = true;
+            
+            // Simula i quarti di finale
+            silverKnockout.quarters.forEach(match => {
+                // Favorisci la squadra del giocatore
+                if (match.home === selectedTeam) {
+                    match.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                    match.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                } else if (match.away === selectedTeam) {
+                    match.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                    match.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                } else {
+                    match.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                    match.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                }
+            });
+            
+            // Aggiorna la visualizzazione dei quarti di finale
+            const quartersContainer = document.getElementById('silver-quarters');
+            quartersContainer.innerHTML = '';
+            
+            silverKnockout.quarters.forEach((match, index) => {
+                const matchElement = document.createElement('div');
+                matchElement.className = 'knockout-match';
+                
+                // Evidenzia la squadra vincente
+                let winner;
+                if (match.homeGoals > match.awayGoals) {
+                    winner = match.home;
+                    matchElement.innerHTML = `
+                        <strong>Quarto ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away}
+                    `;
+                } else if (match.homeGoals < match.awayGoals) {
+                    winner = match.away;
+                    matchElement.innerHTML = `
+                        <strong>Quarto ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} <span style="font-weight: bold">${match.away}</span>
+                    `;
+                } else {
+                    // In caso di pareggio, vince la casa (per semplicità)
+                    winner = match.home;
+                    matchElement.innerHTML = `
+                        <strong>Quarto ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away} (vince ai rigori)
+                    `;
+                }
+                
+                quartersContainer.appendChild(matchElement);
+            });
+            
+            // Setup delle semifinali (vincente Q1 vs vincente Q2, vincente Q3 vs vincente Q4)
+            const semifinalists = silverKnockout.quarters.map(match => 
+                match.homeGoals > match.awayGoals || (match.homeGoals === match.awayGoals) ? match.home : match.away
+            );
+            
+            silverKnockout.semis = [
+                { home: semifinalists[0], away: semifinalists[1], homeGoals: null, awayGoals: null },
+                { home: semifinalists[2], away: semifinalists[3], homeGoals: null, awayGoals: null }
+            ];
+            
+            // Simula le semifinali
+            silverKnockout.semis.forEach(match => {
+                // Favorisci la squadra del giocatore
+                if (match.home === selectedTeam) {
+                    match.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                    match.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                } else if (match.away === selectedTeam) {
+                    match.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                    match.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                } else {
+                    match.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                    match.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                }
+            });
+            
+            // Aggiorna la visualizzazione delle semifinali
+            const semisContainer = document.getElementById('silver-semis');
+            semisContainer.innerHTML = '';
+            
+            silverKnockout.semis.forEach((match, index) => {
+                const matchElement = document.createElement('div');
+                matchElement.className = 'knockout-match';
+                
+                // Evidenzia la squadra vincente
+                let winner;
+                if (match.homeGoals > match.awayGoals) {
+                    winner = match.home;
+                    matchElement.innerHTML = `
+                        <strong>Semifinale ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away}
+                    `;
+                } else if (match.homeGoals < match.awayGoals) {
+                    winner = match.away;
+                    matchElement.innerHTML = `
+                        <strong>Semifinale ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} <span style="font-weight: bold">${match.away}</span>
+                    `;
+                } else {
+                    // In caso di pareggio, vince la casa (per semplicità)
+                    winner = match.home;
+                    matchElement.innerHTML = `
+                        <strong>Semifinale ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away} (vince ai rigori)
+                    `;
+                }
+                
+                semisContainer.appendChild(matchElement);
+            });
+            
+            // Setup della finale
+            const finalists = silverKnockout.semis.map(match => 
+                match.homeGoals > match.awayGoals || (match.homeGoals === match.awayGoals) ? match.home : match.away
+            );
+            
+            silverKnockout.final = [
+                { home: finalists[0], away: finalists[1], homeGoals: null, awayGoals: null }
+            ];
+            
+            // Simula la finale
+            const finalMatch = silverKnockout.final[0];
+            
+            // Favorisci la squadra del giocatore nella finale
+            if (finalMatch.home === selectedTeam) {
+                finalMatch.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+                finalMatch.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
+            } else if (finalMatch.away === selectedTeam) {
+                finalMatch.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
+                finalMatch.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
+            } else {
+                finalMatch.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
+                finalMatch.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
+            }
+            
+            // Aggiorna la visualizzazione della finale
+            const finalContainer = document.getElementById('silver-final');
+            finalContainer.innerHTML = '';
+            
+            const finalElement = document.createElement('div');
+            finalElement.className = 'knockout-match';
+            
+            // Evidenzia la squadra vincente
+            let champion;
+            if (finalMatch.homeGoals > finalMatch.awayGoals) {
+                champion = finalMatch.home;
+                finalElement.innerHTML = `
+                    <strong>FINALE:</strong> <span style="font-weight: bold">${finalMatch.home}</span> ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away}
+                `;
+            } else if (finalMatch.homeGoals < finalMatch.awayGoals) {
+                champion = finalMatch.away;
+                finalElement.innerHTML = `
+                    <strong>FINALE:</strong> ${finalMatch.home} ${finalMatch.homeGoals} - ${finalMatch.awayGoals} <span style="font-weight: bold">${finalMatch.away}</span>
+                `;
+            } else {
+                // In caso di pareggio, vince la casa (per semplicità)
+                champion = finalMatch.home;
+                finalElement.innerHTML = `
+                    <strong>FINALE:</strong> <span style="font-weight: bold">${finalMatch.home}</span> ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away} (vince ai rigori)
+                `;
+            }
+            
+            finalContainer.appendChild(finalElement);
+            
+            // Visualizza il campione
+            const champElement = document.createElement('div');
+            champElement.style.marginTop = '20px';
+            champElement.style.textAlign = 'center';
+            champElement.style.padding = '15px';
+            champElement.style.backgroundColor = '#f8f9fa';
+            champElement.style.borderRadius = '5px';
+            champElement.style.border = '2px solid silver';
+            
+            // Messaggio speciale se la squadra del giocatore ha vinto
+            if (champion === selectedTeam) {
+                champElement.innerHTML = `
+                    <h3 style="color: #666">CONGRATULAZIONI!</h3>
+                    <p style="font-size: 18px">La tua squadra, <strong>${champion}</strong>, ha vinto il torneo Silver!</p>
+                `;
+            } else {
+                champElement.innerHTML = `
+                    <h3 style="color: #666">CAMPIONE TORNEO SILVER</h3>
+                    <p style="font-size: 18px">${champion}</p>
+                `;
+            }
+            
+            finalContainer.appendChild(champElement);
+        }
+    </script>
+</body>
+</html>

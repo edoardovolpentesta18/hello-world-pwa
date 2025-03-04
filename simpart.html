@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore Carriera Calcistica - Passo per Passo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #0c2461;
+        }
+        .btn {
+            background-color: #0c2461;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #match-result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .team-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .team-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .team-card:hover {
+            background-color: #f0f0f0;
+        }
+        .team-card.selected {
+            border-color: #4cd137;
+            background-color: #e6f7ff;
+        }
+        #match-details {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulatore Calcio - Passo per Passo</h1>
+        
+        <div id="team-selection-phase">
+            <h2>Scegli le Squadre</h2>
+            <div class="team-selection" id="home-teams">
+                <div class="team-card" data-team="Milan">Milan</div>
+                <div class="team-card" data-team="Inter">Inter</div>
+                <div class="team-card" data-team="Juventus">Juventus</div>
+                <div class="team-card" data-team="Napoli">Napoli</div>
+                <div class="team-card" data-team="Roma">Roma</div>
+                <div class="team-card" data-team="Lazio">Lazio</div>
+                <div class="team-card" data-team="Atalanta">Atalanta</div>
+                <div class="team-card" data-team="Fiorentina">Fiorentina</div>
+                <div class="team-card" data-team="Torino">Torino</div>
+            </div>
+            
+            <h2>Squadra Ospite</h2>
+            <div class="team-selection" id="away-teams">
+                <div class="team-card" data-team="Milan">Milan</div>
+                <div class="team-card" data-team="Inter">Inter</div>
+                <div class="team-card" data-team="Juventus">Juventus</div>
+                <div class="team-card" data-team="Napoli">Napoli</div>
+                <div class="team-card" data-team="Roma">Roma</div>
+                <div class="team-card" data-team="Lazio">Lazio</div>
+                <div class="team-card" data-team="Atalanta">Atalanta</div>
+                <div class="team-card" data-team="Fiorentina">Fiorentina</div>
+                <div class="team-card" data-team="Torino">Torino</div>
+            </div>
+            
+            <button id="start-match-btn" class="btn" disabled>Inizia Partita</button>
+        </div>
+        
+        <div id="match-details" style="display:none;">
+            <h2>Dettagli Partita</h2>
+            <div id="match-result"></div>
+            <button id="simulate-step-btn" class="btn">Simula Passo</button>
+            <button id="simulate-full-btn" class="btn">Simula Intera Partita</button>
+        </div>
+    </div>
+
+    <script>
+        let homeTeam = null;
+        let awayTeam = null;
+        let matchEvents = [];
+        let currentStep = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const homeTeamCards = document.querySelectorAll('#home-teams .team-card');
+            const awayTeamCards = document.querySelectorAll('#away-teams .team-card');
+            const startMatchBtn = document.getElementById('start-match-btn');
+            const simulateStepBtn = document.getElementById('simulate-step-btn');
+            const simulateFullBtn = document.getElementById('simulate-full-btn');
+            const matchDetailsDiv = document.getElementById('match-details');
+            const matchResultDiv = document.getElementById('match-result');
+
+            // Gestione selezione squadra casa
+            homeTeamCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    homeTeamCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    homeTeam = this.getAttribute('data-team');
+                    checkTeamSelection();
+                });
+            });
+
+            // Gestione selezione squadra trasferta
+            awayTeamCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    awayTeamCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    awayTeam = this.getAttribute('data-team');
+                    checkTeamSelection();
+                });
+            });
+
+            function checkTeamSelection() {
+                startMatchBtn.disabled = !(homeTeam && awayTeam && homeTeam !== awayTeam);
+            }
+
+            startMatchBtn.addEventListener('click', function() {
+                document.getElementById('team-selection-phase').style.display = 'none';
+                matchDetailsDiv.style.display = 'block';
+                simulateMatchSetup();
+            });
+
+            simulateStepBtn.addEventListener('click', simulateMatchStep);
+            simulateFullBtn.addEventListener('click', simulateFullMatch);
+
+            function simulateMatchSetup() {
+                matchEvents = [];
+                currentStep = 0;
+                matchResultDiv.innerHTML = `${homeTeam} vs ${awayTeam}`;
+                simulateMatchStep();
+            }
+
+            function simulateMatchStep() {
+                if (currentStep >= 90) {
+                    finishMatch();
+                    return;
+                }
+
+                const possibleEvents = [
+                    generatePassEvent,
+                    generateAttackEvent,
+                    generateDefenseEvent,
+                    generateNeutralEvent
+                ];
+
+                const randomEvent = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
+                const event = randomEvent(homeTeam, awayTeam);
+                
+                matchEvents.push(event);
+                updateMatchDisplay();
+                
+                currentStep += 5; // Ogni passo simula 5 minuti
+            }
+
+            function simulateFullMatch() {
+                while (currentStep < 90) {
+                    simulateMatchStep();
+                }
+            }
+
+            function generatePassEvent(home, away) {
+                return {
+                    minute: currentStep,
+                    description: `${Math.random() > 0.5 ? home : away} effettua un passaggio interessante nel centrocampo.`
+                };
+            }
+
+            function generateAttackEvent(home, away) {
+                const attackingTeam = Math.random() > 0.5 ? home : away;
+                const defendingTeam = attackingTeam === home ? away : home;
+                
+                return {
+                    minute: currentStep,
+                    description: `${attackingTeam} si avventa in attacco verso la porta di ${defendingTeam}!`
+                };
+            }
+
+            function generateDefenseEvent(home, away) {
+                const defendingTeam = Math.random() > 0.5 ? home : away;
+                const attackingTeam = defendingTeam === home ? away : home;
+                
+                return {
+                    minute: currentStep,
+                    description: `${defendingTeam} respinge un attacco pericoloso di ${attackingTeam}.`
+                };
+            }
+
+            function generateNeutralEvent(home, away) {
+                return {
+                    minute: currentStep,
+                    description: `Fase di gioco tranquilla a centrocampo tra ${home} e ${away}.`
+                };
+            }
+
+            function updateMatchDisplay() {
+                const lastEvents = matchEvents.slice(-3);
+                matchResultDiv.innerHTML = `
+                    <strong>${homeTeam} vs ${awayTeam}</strong><br>
+                    Minuto: ${currentStep}<br><br>
+                    ${lastEvents.map(event => 
+                        `Min ${event.minute}: ${event.description}`
+                    ).join('<br>')}
+                `;
+            }
+
+            function finishMatch() {
+                const homeGoals = Math.floor(Math.random() * 4);
+                const awayGoals = Math.floor(Math.random() * 4);
+
+                matchResultDiv.innerHTML = `
+                    <h3>Risultato Finale</h3>
+                    <strong>${homeTeam} ${homeGoals} - ${awayGoals} ${awayTeam}</strong>
+                `;
+
+                simulateStepBtn.disabled = true;
+                simulateFullBtn.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

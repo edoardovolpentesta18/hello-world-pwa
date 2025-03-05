@@ -42,27 +42,32 @@
             background-color: #f8f9fa;
             border-radius: 5px;
         }
-        .team-selection {
+        .team-selection, .play-style-selection {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
-        .team-card {
+        .team-card, .play-style-card {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .team-card:hover {
+        .team-card:hover, .play-style-card:hover {
             background-color: #f0f0f0;
         }
-        .team-card.selected {
+        .team-card.selected, .play-style-card.selected {
             border-color: #4cd137;
             background-color: #e6f7ff;
         }
         #match-details {
             margin-top: 20px;
+        }
+        .play-style-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -96,6 +101,62 @@
                 <div class="team-card" data-team="Fiorentina">Fiorentina</div>
                 <div class="team-card" data-team="Torino">Torino</div>
             </div>
+
+            <h2>Scegli lo Stile di Gioco Casa</h2>
+            <div class="play-style-selection" id="home-play-styles">
+                <div class="play-style-card" data-style="tiki-taka">
+                    Tiki Taka
+                    <div class="play-style-description">Possesso palla e passaggi corti</div>
+                </div>
+                <div class="play-style-card" data-style="offensivo">
+                    Offensivo
+                    <div class="play-style-description">Attacco continuo e pressing alto</div>
+                </div>
+                <div class="play-style-card" data-style="contropiede">
+                    Contropiede
+                    <div class="play-style-description">Ripartenze veloci e spazi</div>
+                </div>
+                <div class="play-style-card" data-style="difensivo">
+                    Difensivo
+                    <div class="play-style-description">Chiusura spazi e ripartenze</div>
+                </div>
+                <div class="play-style-card" data-style="possesso">
+                    Possesso
+                    <div class="play-style-description">Gestione ritmo e campo</div>
+                </div>
+                <div class="play-style-card" data-style="verticale">
+                    Verticale
+                    <div class="play-style-description">Passaggi lunghi e veloci</div>
+                </div>
+            </div>
+
+            <h2>Stile di Gioco Ospite</h2>
+            <div class="play-style-selection" id="away-play-styles">
+                <div class="play-style-card" data-style="tiki-taka">
+                    Tiki Taka
+                    <div class="play-style-description">Possesso palla e passaggi corti</div>
+                </div>
+                <div class="play-style-card" data-style="offensivo">
+                    Offensivo
+                    <div class="play-style-description">Attacco continuo e pressing alto</div>
+                </div>
+                <div class="play-style-card" data-style="contropiede">
+                    Contropiede
+                    <div class="play-style-description">Ripartenze veloci e spazi</div>
+                </div>
+                <div class="play-style-card" data-style="difensivo">
+                    Difensivo
+                    <div class="play-style-description">Chiusura spazi e ripartenze</div>
+                </div>
+                <div class="play-style-card" data-style="possesso">
+                    Possesso
+                    <div class="play-style-description">Gestione ritmo e campo</div>
+                </div>
+                <div class="play-style-card" data-style="verticale">
+                    Verticale
+                    <div class="play-style-description">Passaggi lunghi e veloci</div>
+                </div>
+            </div>
             
             <button id="start-match-btn" class="btn" disabled>Inizia Partita</button>
         </div>
@@ -109,14 +170,18 @@
     </div>
 
     <script>
-        let homeTeam = null;
-        let awayTeam = null;
-        let matchEvents = [];
-        let currentStep = 0;
-
         document.addEventListener('DOMContentLoaded', function() {
+            let homeTeam = null;
+            let awayTeam = null;
+            let homePlayStyle = null;
+            let awayPlayStyle = null;
+            let matchEvents = [];
+            let currentStep = 0;
+
             const homeTeamCards = document.querySelectorAll('#home-teams .team-card');
             const awayTeamCards = document.querySelectorAll('#away-teams .team-card');
+            const homePlayStyleCards = document.querySelectorAll('#home-play-styles .play-style-card');
+            const awayPlayStyleCards = document.querySelectorAll('#away-play-styles .play-style-card');
             const startMatchBtn = document.getElementById('start-match-btn');
             const simulateStepBtn = document.getElementById('simulate-step-btn');
             const simulateFullBtn = document.getElementById('simulate-full-btn');
@@ -143,8 +208,28 @@
                 });
             });
 
+            // Gestione selezione stile di gioco casa
+            homePlayStyleCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    homePlayStyleCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    homePlayStyle = this.getAttribute('data-style');
+                    checkTeamSelection();
+                });
+            });
+
+            // Gestione selezione stile di gioco trasferta
+            awayPlayStyleCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    awayPlayStyleCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    awayPlayStyle = this.getAttribute('data-style');
+                    checkTeamSelection();
+                });
+            });
+
             function checkTeamSelection() {
-                startMatchBtn.disabled = !(homeTeam && awayTeam && homeTeam !== awayTeam);
+                startMatchBtn.disabled = !(homeTeam && awayTeam && homeTeam !== awayTeam && homePlayStyle && awayPlayStyle);
             }
 
             startMatchBtn.addEventListener('click', function() {
@@ -159,9 +244,18 @@
             function simulateMatchSetup() {
                 matchEvents = [];
                 currentStep = 0;
-                matchResultDiv.innerHTML = `${homeTeam} vs ${awayTeam}`;
+                matchResultDiv.innerHTML = `${homeTeam} (${homePlayStyle}) vs ${awayTeam} (${awayPlayStyle})`;
                 simulateMatchStep();
             }
+
+            const playStyleWeights = {
+                'tiki-taka': { pass: 0.6, attack: 0.2, defense: 0.2 },
+                'offensivo': { pass: 0.2, attack: 0.6, defense: 0.2 },
+                'contropiede': { pass: 0.1, attack: 0.4, defense: 0.5 },
+                'difensivo': { pass: 0.2, attack: 0.1, defense: 0.7 },
+                'possesso': { pass: 0.5, attack: 0.3, defense: 0.2 },
+                'verticale': { pass: 0.3, attack: 0.5, defense: 0.2 }
+            };
 
             function simulateMatchStep() {
                 if (currentStep >= 90) {
@@ -170,14 +264,14 @@
                 }
 
                 const possibleEvents = [
-                    generatePassEvent,
-                    generateAttackEvent,
-                    generateDefenseEvent,
-                    generateNeutralEvent
+                    () => generatePassEvent(homeTeam, awayTeam, playStyleWeights[homePlayStyle], playStyleWeights[awayPlayStyle]),
+                    () => generateAttackEvent(homeTeam, awayTeam, playStyleWeights[homePlayStyle], playStyleWeights[awayPlayStyle]),
+                    () => generateDefenseEvent(homeTeam, awayTeam, playStyleWeights[homePlayStyle], playStyleWeights[awayPlayStyle]),
+                    () => generateNeutralEvent(homeTeam, awayTeam)
                 ];
 
                 const randomEvent = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
-                const event = randomEvent(homeTeam, awayTeam);
+                const event = randomEvent();
                 
                 matchEvents.push(event);
                 updateMatchDisplay();
@@ -191,44 +285,102 @@
                 }
             }
 
-            function generatePassEvent(home, away) {
+            function generatePassEvent(home, away, homeStyle, awayStyle) {
+                const passProbability = Math.random();
+                const isHomeTeam = Math.random() > 0.5;
+                const team = isHomeTeam ? home : away;
+                const otherTeam = isHomeTeam ? away : home;
+                const teamStyle = isHomeTeam ? homeStyle : awayStyle;
+
+                let description;
+                if (passProbability < teamStyle.pass) {
+                    description = `${team} effettua una serie di passaggi ${
+                        teamStyle.pass > 0.5 ? 'precisi e corti' : 'veloci e lunghi'
+                    } verso l'area di ${otherTeam}.`;
+                } else {
+                    description = `${team} perde un pallone importante nel ${
+                        teamStyle.pass < 0.3 ? 'tentativo di un passaggio lungo' : 'centrocampo'
+                    }.`;
+                }
+
                 return {
                     minute: currentStep,
-                    description: `${Math.random() > 0.5 ? home : away} effettua un passaggio interessante nel centrocampo.`
+                    description: description
                 };
             }
 
-            function generateAttackEvent(home, away) {
-                const attackingTeam = Math.random() > 0.5 ? home : away;
-                const defendingTeam = attackingTeam === home ? away : home;
-                
+            function generateAttackEvent(home, away, homeStyle, awayStyle) {
+                const isHomeTeam = Math.random() > 0.5;
+                const attackingTeam = isHomeTeam ? home : away;
+                const defendingTeam = isHomeTeam ? away : home;
+                const attackerStyle = isHomeTeam ? homeStyle : awayStyle;
+                const defenderStyle = isHomeTeam ? awayStyle : homeStyle;
+
+                const attackProbability = Math.random();
+                let description;
+
+                if (attackProbability < attackerStyle.attack && 
+                    Math.random() > defenderStyle.defense) {
+                    description = `${attackingTeam} realizza un ${
+                        attackerStyle.attack > 0.5 ? 'attacco travolgente' : 'tentativo di goal'
+                    } contro ${defendingTeam}!`;
+                } else {
+                    description = `${defendingTeam} blocca un ${
+                        attackerStyle.attack > 0.5 ? 'attacco potenziale' : 'tentativo di inserimento'
+                    } di ${attackingTeam}.`;
+                }
+
                 return {
                     minute: currentStep,
-                    description: `${attackingTeam} si avventa in attacco verso la porta di ${defendingTeam}!`
+                    description: description
                 };
             }
 
-            function generateDefenseEvent(home, away) {
-                const defendingTeam = Math.random() > 0.5 ? home : away;
-                const attackingTeam = defendingTeam === home ? away : home;
-                
+            function generateDefenseEvent(home, away, homeStyle, awayStyle) {
+                const isHomeTeam = Math.random() > 0.5;
+                const defendingTeam = isHomeTeam ? home : away;
+                const attackingTeam = isHomeTeam ? away : home;
+                const defenderStyle = isHomeTeam ? homeStyle : awayStyle;
+                const attackerStyle = isHomeTeam ? awayStyle : homeStyle;
+
+                const defenseProbability = Math.random();
+                let description;
+
+                if (defenseProbability < defenderStyle.defense && 
+                    Math.random() > attackerStyle.attack) {
+                    description = `${defendingTeam} realizza un ${
+                        defenderStyle.defense > 0.5 ? 'blocco difensivo eccezionale' : 'intervento decisivo'
+                    } contro ${attackingTeam}.`;
+                } else {
+                    description = `${attackingTeam} supera la difesa di ${defendingTeam} con ${
+                        attackerStyle.attack > 0.5 ? 'un attacco prepotente' : 'una manovra rapida'
+                    }.`;
+                }
+
                 return {
                     minute: currentStep,
-                    description: `${defendingTeam} respinge un attacco pericoloso di ${attackingTeam}.`
+                    description: description
                 };
             }
 
             function generateNeutralEvent(home, away) {
+                const neutralEvents = [
+                    `Fase di studio tra ${home} e ${away} a centrocampo.`,
+                    `Possesso palla equilibrato tra le due squadre.`,
+                    `Ritmo di gioco rallentato, entrambe le squadre valutano le mosse.`,
+                    `Gioco frammentato con continui cambi di possesso.`
+                ];
+
                 return {
                     minute: currentStep,
-                    description: `Fase di gioco tranquilla a centrocampo tra ${home} e ${away}.`
+                    description: neutralEvents[Math.floor(Math.random() * neutralEvents.length)]
                 };
             }
 
             function updateMatchDisplay() {
                 const lastEvents = matchEvents.slice(-3);
                 matchResultDiv.innerHTML = `
-                    <strong>${homeTeam} vs ${awayTeam}</strong><br>
+                    <strong>${homeTeam} (${homePlayStyle}) vs ${awayTeam} (${awayPlayStyle})</strong><br>
                     Minuto: ${currentStep}<br><br>
                     ${lastEvents.map(event => 
                         `Min ${event.minute}: ${event.description}`
@@ -237,12 +389,35 @@
             }
 
             function finishMatch() {
-                const homeGoals = Math.floor(Math.random() * 4);
-                const awayGoals = Math.floor(Math.random() * 4);
+                const styleGoalMultipliers = {
+                    'tiki-taka': 0.8,
+                    'offensivo': 1.5,
+                    'contropiede': 1.2,
+                    'difensivo': 0.5,
+                    'possesso': 1.0,
+                    'verticale': 1.3
+                };
+
+                const baseMaxGoals = 4;
+                const homeGoalMultiplier = styleGoalMultipliers[homePlayStyle];
+                const awayGoalMultiplier = styleGoalMultipliers[awayPlayStyle];
+
+                const homeGoals = Math.min(Math.floor(Math.random() * baseMaxGoals * homeGoalMultiplier), 5);
+                const awayGoals = Math.min(Math.floor(Math.random() * baseMaxGoals * awayGoalMultiplier), 5);
+
+                let resultDescription = '';
+                if (homeGoals > awayGoals) {
+                    resultDescription = `Vittoria per ${homeTeam} con un ${homePlayStyle} travolgente!`;
+                } else if (homeGoals < awayGoals) {
+                    resultDescription = `Vittoria per ${awayTeam} sfruttando al meglio il ${awayPlayStyle}!`;
+                } else {
+                    resultDescription = 'Partita equilibrata, risultato in parità!';
+                }
 
                 matchResultDiv.innerHTML = `
                     <h3>Risultato Finale</h3>
-                    <strong>${homeTeam} ${homeGoals} - ${awayGoals} ${awayTeam}</strong>
+                    <strong>${homeTeam} ${homeGoals} - ${awayGoals} ${awayTeam}</strong><br>
+                    <p>${resultDescription}</p>
                 `;
 
                 simulateStepBtn.disabled = true;

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calciomercato</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #0c2461;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #fbc531;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        .market-section, .team-players-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .player-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .btn {
+            background-color: #0c2461;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #1e3799;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Calciomercato</h1>
+    </header>
+    <div class="container">
+        <div id="team-players-section" class="team-players-section">
+            <h2>Gestione Squadra</h2>
+            <div id="team-players">
+                <!-- Popolato dinamicamente -->
+            </div>
+            <button id="release-player-btn" class="btn">Svincola Giocatore</button>
+        </div>
+        <div id="market-section" class="market-section">
+            <h2>Calciomercato</h2>
+            <div id="market-players">
+                <!-- Popolato dinamicamente -->
+            </div>
+            <button id="buy-player-btn" class="btn">Compra Giocatore</button>
+        </div>
+    </div>
+    <script>
+        let teamPlayers = [
+            { name: "Giocatore 1", value: 500000 },
+            { name: "Giocatore 2", value: 750000 },
+            // Aggiungi altri giocatori
+        ];
+
+        let marketPlayers = [
+            { name: "Calciatore 1", cost: 1000000 },
+            { name: "Calciatore 2", cost: 1500000 },
+            // Aggiungi altri calciatori
+        ];
+
+        let playerBudget = 1000000; // Budget iniziale, puoi calcolarlo dinamicamente
+
+        function displayTeamPlayers() {
+            const teamPlayersContainer = document.getElementById('team-players');
+            teamPlayersContainer.innerHTML = '';
+            teamPlayers.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player-card';
+                playerElement.innerHTML = `
+                    <h3>${player.name}</h3>
+                    <p>Valore: €${player.value}</p>
+                `;
+                teamPlayersContainer.appendChild(playerElement);
+            });
+        }
+
+        function displayMarketPlayers() {
+            const marketPlayersContainer = document.getElementById('market-players');
+            marketPlayersContainer.innerHTML = '';
+            marketPlayers.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player-card';
+                playerElement.innerHTML = `
+                    <h3>${player.name}</h3>
+                    <p>Costo: €${player.cost}</p>
+                `;
+                marketPlayersContainer.appendChild(playerElement);
+            });
+        }
+
+        document.getElementById('release-player-btn').addEventListener('click', function() {
+            // Logica per svincolare un giocatore
+            const playerToRelease = teamPlayers.pop(); // Esempio: svincola l'ultimo giocatore
+            playerBudget += playerToRelease.value;
+            displayTeamPlayers();
+        });
+
+        document.getElementById('buy-player-btn').addEventListener('click', function() {
+            // Logica per comprare un calciatore
+            const playerToBuy = marketPlayers.pop(); // Esempio: compra l'ultimo calciatore
+            if (playerBudget >= playerToBuy.cost) {
+                playerBudget -= playerToBuy.cost;
+                teamPlayers.push(playerToBuy);
+                displayTeamPlayers();
+                displayMarketPlayers();
+            } else {
+                alert("Budget insufficiente per comprare questo calciatore.");
+            }
+        });
+
+        // Inizializza le sezioni
+        displayTeamPlayers();
+        displayMarketPlayers();
+    </script>
+</body>
+</html>

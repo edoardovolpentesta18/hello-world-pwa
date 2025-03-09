@@ -28,7 +28,7 @@
         h1, h2 {
             margin: 0;
         }
-        .market-section, .team-players-section {
+        .market-section, .team-players-section, .released-players-section {
             background-color: white;
             border-radius: 8px;
             padding: 20px;
@@ -87,6 +87,12 @@
             </div>
             <button id="release-player-btn" class="btn" disabled>Svincola Giocatore</button>
         </div>
+        <div id="released-players-section" class="released-players-section">
+            <h2>Giocatori Svincolati</h2>
+            <div id="released-players">
+                <!-- Popolato dinamicamente -->
+            </div>
+        </div>
         <div id="market-section" class="market-section">
             <h2>Calciomercato</h2>
             <div id="market-players">
@@ -96,12 +102,8 @@
         </div>
     </div>
     <script>
-        let teamPlayers = [
-            { name: "Giocatore 1", value: 500000 },
-            { name: "Giocatore 2", value: 750000 },
-            // Aggiungi altri giocatori
-        ];
-
+        let teamPlayers = [];
+        let releasedPlayers = [];
         let marketPlayers = [
             { name: "Calciatore 1", cost: 1000000 },
             { name: "Calciatore 2", cost: 1500000 },
@@ -121,11 +123,25 @@
                     <p>Valore: €${player.value}</p>
                 `;
                 playerElement.addEventListener('click', function() {
-                    document.querySelectorAll('.player-card').forEach(card => card.classList.remove('selected'));
+                    document.querySelectorAll('.team-players .player-card').forEach(card => card.classList.remove('selected'));
                     playerElement.classList.add('selected');
                     document.getElementById('release-player-btn').disabled = false;
                 });
                 teamPlayersContainer.appendChild(playerElement);
+            });
+        }
+
+        function displayReleasedPlayers() {
+            const releasedPlayersContainer = document.getElementById('released-players');
+            releasedPlayersContainer.innerHTML = '';
+            releasedPlayers.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player-card';
+                playerElement.innerHTML = `
+                    <h3>${player.name}</h3>
+                    <p>Valore: €${player.value}</p>
+                `;
+                releasedPlayersContainer.appendChild(playerElement);
             });
         }
 
@@ -140,7 +156,7 @@
                     <p>Costo: €${player.cost}</p>
                 `;
                 playerElement.addEventListener('click', function() {
-                    document.querySelectorAll('.player-card').forEach(card => card.classList.remove('selected'));
+                    document.querySelectorAll('.market-players .player-card').forEach(card => card.classList.remove('selected'));
                     playerElement.classList.add('selected');
                     document.getElementById('buy-player-btn').disabled = false;
                 });
@@ -155,7 +171,9 @@
                 const player = teamPlayers.find(p => p.name === playerName);
                 playerBudget += player.value;
                 teamPlayers = teamPlayers.filter(p => p.name !== playerName);
+                releasedPlayers.push(player);
                 displayTeamPlayers();
+                displayReleasedPlayers();
                 document.getElementById('player-budget').textContent = playerBudget;
                 document.getElementById('release-player-btn').disabled = true;
             }
@@ -182,6 +200,7 @@
 
         // Inizializza le sezioni
         displayTeamPlayers();
+        displayReleasedPlayers();
         displayMarketPlayers();
     </script>
 </body>

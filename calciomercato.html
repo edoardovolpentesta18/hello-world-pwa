@@ -41,6 +41,11 @@
             padding: 15px;
             text-align: center;
             margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .player-card.selected {
+            border: 2px solid #4cd137;
+            background-color: #f8f9fa;
         }
         .btn {
             background-color: #0c2461;
@@ -59,6 +64,12 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+        .budget-display {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -66,19 +77,22 @@
         <h1>Calciomercato</h1>
     </header>
     <div class="container">
+        <div class="budget-display">
+            Saldo Disponibile: €<span id="player-budget">1000000</span>
+        </div>
         <div id="team-players-section" class="team-players-section">
             <h2>Gestione Squadra</h2>
             <div id="team-players">
                 <!-- Popolato dinamicamente -->
             </div>
-            <button id="release-player-btn" class="btn">Svincola Giocatore</button>
+            <button id="release-player-btn" class="btn" disabled>Svincola Giocatore</button>
         </div>
         <div id="market-section" class="market-section">
             <h2>Calciomercato</h2>
             <div id="market-players">
                 <!-- Popolato dinamicamente -->
             </div>
-            <button id="buy-player-btn" class="btn">Compra Giocatore</button>
+            <button id="buy-player-btn" class="btn" disabled>Compra Giocatore</button>
         </div>
     </div>
     <script>
@@ -106,6 +120,11 @@
                     <h3>${player.name}</h3>
                     <p>Valore: €${player.value}</p>
                 `;
+                playerElement.addEventListener('click', function() {
+                    document.querySelectorAll('.player-card').forEach(card => card.classList.remove('selected'));
+                    playerElement.classList.add('selected');
+                    document.getElementById('release-player-btn').disabled = false;
+                });
                 teamPlayersContainer.appendChild(playerElement);
             });
         }
@@ -120,27 +139,44 @@
                     <h3>${player.name}</h3>
                     <p>Costo: €${player.cost}</p>
                 `;
+                playerElement.addEventListener('click', function() {
+                    document.querySelectorAll('.player-card').forEach(card => card.classList.remove('selected'));
+                    playerElement.classList.add('selected');
+                    document.getElementById('buy-player-btn').disabled = false;
+                });
                 marketPlayersContainer.appendChild(playerElement);
             });
         }
 
         document.getElementById('release-player-btn').addEventListener('click', function() {
-            // Logica per svincolare un giocatore
-            const playerToRelease = teamPlayers.pop(); // Esempio: svincola l'ultimo giocatore
-            playerBudget += playerToRelease.value;
-            displayTeamPlayers();
+            const selectedPlayer = document.querySelector('.team-players .player-card.selected');
+            if (selectedPlayer) {
+                const playerName = selectedPlayer.querySelector('h3').textContent;
+                const player = teamPlayers.find(p => p.name === playerName);
+                playerBudget += player.value;
+                teamPlayers = teamPlayers.filter(p => p.name !== playerName);
+                displayTeamPlayers();
+                document.getElementById('player-budget').textContent = playerBudget;
+                document.getElementById('release-player-btn').disabled = true;
+            }
         });
 
         document.getElementById('buy-player-btn').addEventListener('click', function() {
-            // Logica per comprare un calciatore
-            const playerToBuy = marketPlayers.pop(); // Esempio: compra l'ultimo calciatore
-            if (playerBudget >= playerToBuy.cost) {
-                playerBudget -= playerToBuy.cost;
-                teamPlayers.push(playerToBuy);
-                displayTeamPlayers();
-                displayMarketPlayers();
-            } else {
-                alert("Budget insufficiente per comprare questo calciatore.");
+            const selectedPlayer = document.querySelector('.market-players .player-card.selected');
+            if (selectedPlayer) {
+                const playerName = selectedPlayer.querySelector('h3').textContent;
+                const player = marketPlayers.find(p => p.name === playerName);
+                if (playerBudget >= player.cost) {
+                    playerBudget -= player.cost;
+                    teamPlayers.push(player);
+                    marketPlayers = marketPlayers.filter(p => p.name !== playerName);
+                    displayTeamPlayers();
+                    displayMarketPlayers();
+                    document.getElementById('player-budget').textContent = playerBudget;
+                    document.getElementById('buy-player-btn').disabled = true;
+                } else {
+                    alert("Budget insufficiente per comprare questo calciatore.");
+                }
             }
         });
 

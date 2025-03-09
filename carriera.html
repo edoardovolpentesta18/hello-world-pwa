@@ -321,11 +321,11 @@
     </div>
 </div>
             
-            <div style="text-align: center; margin-top: 30px;">
+           <div style="text-align: center; margin-top: 30px;">
         <button id="start-btn" class="btn" disabled>Inizia Carriera</button>
     </div>
     <div style="text-align: center; margin-top: 20px;">
-        <a href="calciomercato.html" class="btn">Vai al Calciomercato</a>
+        <a href="calciomercato.html" class="btn" id="market-link" style="display: none;">Vai al Calciomercato</a>
     </div>
         </div>
         
@@ -679,6 +679,9 @@
                     
                     // Abilita pulsante di inizio
                     document.getElementById('start-btn').disabled = false;
+
+                    // Mostra il link al calciomercato
+                    document.getElementById('market-link').style.display = 'inline-block';
                 });
             } else {
                 card.classList.add('disabled');

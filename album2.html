@@ -248,7 +248,7 @@
 
         function isPlayerFound(player) {
             const foundPlayers = getFoundPlayers();
-            return foundPlayers.includes(player.name);
+            return foundPlayers.some(p => p.name === player.name);
         }
 
         function generatePages() {

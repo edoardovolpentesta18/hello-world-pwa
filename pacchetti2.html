@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulatore Pacchetto Figurine - Strappo Superiore</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      perspective: 1000px;
+    }
+    
+    .container {
+      position: relative;
+      width: 300px;
+      height: 450px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .packet {
+      position: relative;
+      width: 250px;
+      height: 350px;
+      background: linear-gradient(135deg, #ff9900, #ff6600);
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .packet:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
+      pointer-events: none;
+    }
+    
+    .packet-content {
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .tear-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    
+    .tear-tab {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 0 0 15px 15px;
+      cursor: pointer;
+      z-index: 5;
+    }
+    
+    .tear-tab:after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 5px;
+    }
+    
+    .tear-flap-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    
+    .tear-flap-left, .tear-flap-right {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 60px;
+      background: linear-gradient(135deg, #ff9900, #ff6600);
+      transition: transform 0.8s ease;
+      transform-origin: top center;
+      z-index: 4;
+    }
+    
+    .tear-flap-left {
+      left: 0;
+      border-radius: 10px 0 0 0;
+    }
+    
+    .tear-flap-right {
+      right: 0;
+      border-radius: 0 10px 0 0;
+    }
+    
+    .tear-flap-left:before, .tear-flap-right:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
+    }
+    
+    .tear-area.opened .tear-flap-left {
+      transform: rotateZ(45deg) translateX(-100%);
+    }
+    
+    .tear-area.opened .tear-flap-right {
+      transform: rotateZ(-45deg) translateX(100%);
+    }
+    
+    .cards {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .cards.visible {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    .card {
+      position: absolute;
+      width: 200px;
+      height: 280px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s ease;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    
+    .card-image {
+      width: 80%;
+      height: 60%;
+      background-size: cover;
+      background-position: center;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    
+    .card-name {
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .card-details {
+      color: #666;
+      font-size: 12px;
+      margin-top: 5px;
+      text-align: center;
+    }
+    
+    .card-number {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .card-shine {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(125deg, 
+        rgba(255,255,255, 0) 0%,
+        rgba(255,255,255, 0) 45%,
+        rgba(255,255,255, 0.5) 50%,
+        rgba(255,255,255, 0) 55%,
+        rgba(255,255,255, 0) 100%);
+      background-size: 200% 200%;
+      animation: shine 4s ease infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes shine {
+      0% { background-position: -100% -100%; }
+      100% { background-position: 100% 100%; }
+    }
+    
+    .instructions {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    .packet-inside {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #e6e6e6, #f2f2f2);
+      border-radius: 10px;
+      z-index: 2;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease;
+    }
+    
+    .packet-inside.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .cards-stack {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: 80%;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 3;
+    }
+    
+    .cards-stack:before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      border-radius: 3px;
+      background: linear-gradient(to bottom, #f9f9f9, #fff);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="packet" id="packet">
+      <div class="tear-area" id="tear-area">
+        <div class="tear-tab"></div>
+        <div class="tear-flap-container">
+          <div class="tear-flap-left"></div>
+          <div class="tear-flap-right"></div>
+        </div>
+      </div>
+      <div class="packet-content">
+        <p>FIGURINE<br>SPECIALI</p>
+        <p>5 CARTE</p>
+      </div>
+      <div class="packet-inside" id="packet-inside">
+        <div class="cards-stack" id="cards-stack"></div>
+      </div>
+    </div>
+    <div class="cards" id="cards">
+      <!-- Cards will be inserted here by JS -->
+    </div>
+    <div class="instructions">
+      <p>1. Clicca sulla parte superiore per strappare il pacchetto</p>
+      <p>2. Clicca sulle carte per sfogliarle</p>
+    </div>
+  </div>
+
+  <script>
+    // Card data for the pack
+    const cardData = [
+      { name: "Super Eroe", number: "123/500", details: "Carta Rara", color: "#ff5722", image: "linear-gradient(45deg, #ff5722, #ff9800)" },
+      { name: "Campione", number: "045/500", details: "Carta Comune", color: "#2196f3", image: "linear-gradient(45deg, #2196f3, #03a9f4)" },
+      { name: "Leggenda", number: "008/500", details: "Carta Ultra Rara", color: "#4caf50", image: "linear-gradient(45deg, #4caf50, #8bc34a)" },
+      { name: "Capitano", number: "256/500", details: "Carta Comune", color: "#9c27b0", image: "linear-gradient(45deg, #9c27b0, #e91e63)" },
+      { name: "Attaccante", number: "187/500", details: "Carta Rara", color: "#ffc107", image: "linear-gradient(45deg, #ffc107, #ffeb3b)" }
+    ];
+    
+    // Elements
+    const packet = document.getElementById('packet');
+    const tearArea = document.getElementById('tear-area');
+    const packetInside = document.getElementById('packet-inside');
+    const cardsStack = document.getElementById('cards-stack');
+    const cardsContainer = document.getElementById('cards');
+    
+    // Create cards
+    cardData.forEach((data, index) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.zIndex = 5 - index;
+      card.style.transform = `translateZ(${-index * 2}px)`;
+      
+      const cardImage = document.createElement('div');
+      cardImage.className = 'card-image';
+      cardImage.style.background = data.image;
+      
+      const cardName = document.createElement('div');
+      cardName.className = 'card-name';
+      cardName.textContent = data.name;
+      
+      const cardDetails = document.createElement('div');
+      cardDetails.className = 'card-details';
+      cardDetails.textContent = data.details;
+      
+      const cardNumber = document.createElement('div');
+      cardNumber.className = 'card-number';
+      cardNumber.textContent = data.number;
+      
+      const cardShine = document.createElement('div');
+      cardShine.className = 'card-shine';
+      
+      card.appendChild(cardImage);
+      card.appendChild(cardName);
+      card.appendChild(cardDetails);
+      card.appendChild(cardNumber);
+      card.appendChild(cardShine);
+      cardsContainer.appendChild(card);
+    });
+    
+    // Get all cards
+    const cards = document.querySelectorAll('.card');
+    let currentCardIndex = 0;
+    
+    // Open packet function
+    tearArea.addEventListener('click', function() {
+      this.classList.add('opened');
+      
+      // Show packet inside
+      setTimeout(() => {
+        packetInside.classList.add('visible');
+      }, 500);
+      
+      // Simulate cards appearing
+      setTimeout(() => {
+        cardsStack.style.opacity = 0;
+        packet.style.opacity = 0;
+        packet.style.visibility = 'hidden';
+        cardsContainer.classList.add('visible');
+        
+        // Set initial card positions
+        cards.forEach((card, index) => {
+          if (index === 0) {
+            card.style.transform = 'translateZ(0) rotate(0deg)';
+          } else {
+            card.style.transform = `translateZ(-${index * 2}px) rotate(0deg)`;
+          }
+        });
+      }, 1500);
+    });
+    
+    // Card flip function
+    cardsContainer.addEventListener('click', function() {
+      if (currentCardIndex < cards.length) {
+        // Add a slight random rotation to make it more natural
+        const randomRotation = Math.random() * 20 - 10;
+        
+        // Flip current card to the left
+        cards[currentCardIndex].style.transform = `translateX(-400px) rotate(${randomRotation}deg)`;
+        currentCardIndex++;
+        
+        // If there are more cards, bring the next one to front
+        if (currentCardIndex < cards.length) {
+          cards[currentCardIndex].style.transform = 'translateZ(0) rotate(0deg)';
+        } else {
+          // Reset when all cards are flipped
+          setTimeout(() => {
+            resetPacket();
+          }, 1500);
+        }
+      }
+    });
+    
+    // Reset function
+    function resetPacket() {
+      cardsContainer.classList.remove('visible');
+      
+      setTimeout(() => {
+        tearArea.classList.remove('opened');
+        packetInside.classList.remove('visible');
+        packet.style.opacity = 1;
+        packet.style.visibility = 'visible';
+        cardsStack.style.opacity = 1;
+        
+        // Reset cards
+        cards.forEach((card, index) => {
+          card.style.transform = `translateZ(${-index * 2}px)`;
+        });
+        
+        currentCardIndex = 0;
+      }, 500);
+    }
+  </script>
+</body>
+</html>

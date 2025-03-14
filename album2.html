@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Album Giocatori</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .team-navigation {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .team-navigation a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 0 5px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .team-navigation a:hover {
+            background-color: #2980b9;
+        }
+
+        .team-page {
+            display: none;
+        }
+
+        .team-page:target {
+            display: block;
+        }
+
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .player-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .player-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .player-info {
+            padding: 10px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        
+        .player-name {
+            font-weight: bold;
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .player-details {
+            font-size: 12px;
+            color: #666;
+            margin: 5px 0 0;
+        }
+        
+        .not-found {
+            filter: brightness(0.4) grayscale(1);
+            position: relative;
+        }
+        
+        .not-found::after {
+            content: "?";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation">
+           <a href="index.html">Torna alla Home</a>
+       </div>
+
+       <h1>Album Giocatori</h1>
+
+       <div class="team-navigation">
+           <a href="#team1">Real Cenacolo</a>
+           <a href="#team2">Aston Birra</a>
+           <a href="#team3">Trivellas Team</a>
+           <!-- Aggiungi altre squadre qui -->
+       </div>
+
+       <div id="team1" class="team-page">
+           <h2>Real Cenacolo</h2>
+           <div class="player-grid">
+               <!-- Carte giocatore per Real Cenacolo -->
+           </div>
+       </div>
+
+       <div id="team2" class="team-page">
+           <h2>Aston Birra</h2>
+           <div class="player-grid">
+               <!-- Carte giocatore per Aston Birra -->
+           </div>
+       </div>
+
+       <div id="team3" class="team-page">
+           <h2>Trivellas Team</h2>
+           <div class="player-grid">
+               <!-- Carte giocatore per Trivellas Team -->
+           </div>
+       </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+       const teamLinks = document.querySelectorAll('.team-navigation a');
+       const teamPages = document.querySelectorAll('.team-page');
+
+       teamLinks.forEach(link => {
+           link.addEventListener('click', function(e) {
+               e.preventDefault();
+               const targetId = this.getAttribute('href').substring(1);
+               teamPages.forEach(page => {
+                   if (page.id === targetId) {
+                       page.style.display = 'block';
+                   } else {
+                       page.style.display = 'none';
+                   }
+               });
+           });
+       });
+
+       // Show the first team page by default
+       if (teamPages.length > 0) {
+           teamPages[0].style.display = 'block';
+       }
+   });
+   </script>
+</body>
+</html>

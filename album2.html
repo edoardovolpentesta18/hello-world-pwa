@@ -6,7 +6,7 @@
     <title>Album Figurine</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #f5f5f5;
             text-align: center;
         }
@@ -15,12 +15,12 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
         .team-page {
             display: none;
@@ -31,26 +31,44 @@
         .player-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 15px;
+            padding: 20px;
         }
         .player-card {
-            background-color: white;
-            padding: 10px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+        .player-card:hover {
+            transform: scale(1.05);
+        }
+        .player-card img {
+            width: 100px;
+            height: 140px;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .player-card p {
+            font-weight: bold;
+            margin-top: 10px;
         }
         .navigation {
             margin-top: 20px;
         }
         .navigation button {
-            padding: 10px;
+            padding: 10px 15px;
             margin: 5px;
             border: none;
             background-color: #3498db;
             color: white;
             font-size: 16px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .navigation button:hover {
+            background-color: #2980b9;
         }
     </style>
 </head>
@@ -218,11 +236,20 @@
 			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/icb37dd358eed2191/version/1730456167/image.png", name: "DellOca", rarity: "Gold", rating: 80, team: "Real Cenacolo", position: "DIF", chemistry: 0 },
 			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/id3b3e15cc2942643/version/1730456176/image.png", name: "Moscardo", rarity: "Gold", rating: 79, team: "Real Cenacolo", position: "DIF", chemistry: 0 },
 			{ src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i553f6a8f982c7731/version/1730456186/image.png", name: "Parravicini C", rarity: "Gold", rating: 77, team: "Real Cenacolo", position: "CEN", chemistry: 0 },
-			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ice63bb6870cdc27a/version/1733264268/image.png", name: "De Francesco", rarity: "Gold", rating: 85, team: "Real Cenacolo", position: "POR", chemistry: 0 }
-        ];
+			{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ice63bb6870cdc27a/version/1733264268/image.png", name: "De Francesco", rarity: "Gold", rating: 85, team: "Real Cenacolo", position: "POR", chemistry: 0 }        ];
 
+        const placeholderImg = "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i549fe7ea442ca0f8/version/1734821672/image.png";
         const teams = [...new Set(players.map(player => player.team))];
         let currentPage = 0;
+
+        function getFoundPlayers() {
+            return JSON.parse(localStorage.getItem('foundPlayers')) || [];
+        }
+
+        function isPlayerFound(player) {
+            const foundPlayers = getFoundPlayers();
+            return foundPlayers.includes(player.name);
+        }
 
         function generatePages() {
             const pagesContainer = document.getElementById('pages');
@@ -233,9 +260,10 @@
                 if (index === 0) page.classList.add('active');
                 page.innerHTML = `<h2>${team}</h2><div class='player-grid'></div>`;
                 players.filter(p => p.team === team).forEach(player => {
+                    const playerFound = isPlayerFound(player);
                     const card = document.createElement('div');
                     card.classList.add('player-card');
-                    card.innerHTML = `<img src='${player.src}' alt='${player.name}'><p>${player.name}</p>`;
+                    card.innerHTML = `<img src='${playerFound ? player.src : placeholderImg}' alt='${player.name}'><p>${playerFound ? player.name : '???'}</p>`;
                     page.querySelector('.player-grid').appendChild(card);
                 });
                 pagesContainer.appendChild(page);

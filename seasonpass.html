@@ -17,7 +17,7 @@
 
   <h1>🎁 Season Pass</h1>
   <p>Accessi effettuati: <span id="loginCounter">0</span></p>
-  <p>Accessi totali salvati: <span id="accessCount">0</span></p>
+  <p>Accessi totali salvati: <span id="loginCounter">0</span></p>
 
   <div id="levelsContainer"></div>
 
@@ -31,7 +31,7 @@
         localStorage.setItem("lastLoginDate", today);
         totalLogins += 1;
         localStorage.setItem("dailyLoginCount", totalLogins);
-        localStorage.setItem("accessCount", totalLogins);  // Salva il numero totale di login
+        localStorage.setItem("loginCounter", totalLogins);  // Salva il numero totale di login
         console.log("Nuovo login giornaliero! Totale login:", totalLogins);
     } else {
         console.log("Hai già fatto login oggi. Totale login:", totalLogins);
@@ -43,8 +43,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     checkDailyLogin();
 
-    const accessCount = parseInt(localStorage.getItem('accessCount') || '0');
-    document.getElementById('accessCount').textContent = accessCount;
+    const loginCounter = parseInt(localStorage.getItem('loginCounter') || '0');
+    document.getElementById('loginCounter').textContent = loginCounter;
 });
 
 
@@ -60,13 +60,13 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Simulazione accessi (puoi poi collegarlo al login utente o memorizzarlo in localStorage)
-    const accessCount = parseInt(localStorage.getItem('accessCount') || '0');
-    document.getElementById('accessCount').textContent = accessCount;
+    const loginCounter = parseInt(localStorage.getItem('loginCounter') || '0');
+    document.getElementById('loginCounter').textContent = loginCounter;
 
     const container = document.getElementById('levelsContainer');
 
     rewardLevels.forEach(level => {
-      const unlocked = accessCount >= level;
+      const unlocked = loginCounter >= level;
       const div = document.createElement('div');
       div.className = 'level' + (unlocked ? '' : ' locked');
 

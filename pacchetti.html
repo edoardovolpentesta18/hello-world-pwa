@@ -511,31 +511,33 @@
     let selectedCreditOption = null;
     
     // Sistema pacchetti gratuiti giornalieri
-    let freePacks = parseInt(localStorage.getItem('freePacks')) || 3;
-    let lastResetDate = localStorage.getItem('lastResetDate') || '';
+	let freePacks = parseInt(localStorage.getItem('freePacks'));
+	let lastResetDate = localStorage.getItem('lastResetDate');
+	const today = new Date().toDateString();
     
     // Funzione per controllare e resettare i pacchetti gratuiti
-    function checkAndResetFreePacks() {
-        const today = new Date().toDateString();
-        
-        // Se è un nuovo giorno o primo utilizzo, resetta i pacchetti gratuiti
-        if (lastResetDate !== today) {
-            freePacks = 3;
-            lastResetDate = today;
-            
-            // Salva i valori aggiornati
-            localStorage.setItem('freePacks', freePacks);
-            localStorage.setItem('lastResetDate', lastResetDate);
-            
-            // Notifica l'utente solo se non è il primo utilizzo
-            if (lastResetDate !== '') {
-                alert('Hai ricevuto 3 nuovi pacchetti comuni gratuiti oggi!');
-            }
-        }
-        
-        // Aggiorna l'indicatore dei pacchetti gratuiti
-        updateFreePacksDisplay();
-    }
+	function checkAndResetFreePacks() {
+	    // Se è la prima volta o i valori sono invalidi, inizializza
+	    if (lastResetDate === null || isNaN(freePacks)) {
+	        freePacks = 3;
+	        lastResetDate = today;
+	        localStorage.setItem('freePacks', freePacks);
+	        localStorage.setItem('lastResetDate', lastResetDate);
+	    }
+	    // Se è un nuovo giorno, resetta i pacchetti gratuiti
+	    else if (lastResetDate !== today) {
+	        freePacks = 3;
+	        lastResetDate = today;
+	        localStorage.setItem('freePacks', freePacks);
+	        localStorage.setItem('lastResetDate', lastResetDate);
+	        
+	        // Notifica l'utente del reset giornaliero
+	        alert('Hai ricevuto 3 nuovi pacchetti comuni gratuiti oggi!');
+	    }
+	    
+	    // Aggiorna l'indicatore dei pacchetti gratuiti
+	    updateFreePacksDisplay();
+	}
     
     // Funzione per aggiornare il display dei pacchetti gratuiti
     function updateFreePacksDisplay() {

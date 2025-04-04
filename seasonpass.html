@@ -25,24 +25,25 @@
     const today = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
     const lastLogin = localStorage.getItem("lastLoginDate");
     let totalLogins = parseInt(localStorage.getItem("dailyLoginCount") || "0");
-  
+
     if (lastLogin !== today) {
-      // Primo login di oggi
-      localStorage.setItem("lastLoginDate", today);
-      totalLogins += 1;
-      localStorage.setItem("dailyLoginCount", totalLogins);
-  
-      console.log("Nuovo login giornaliero! Totale login:", totalLogins);
-      return true;
+        // Primo login di oggi
+        localStorage.setItem("lastLoginDate", today);
+        totalLogins += 1;
+        localStorage.setItem("dailyLoginCount", totalLogins);
+        console.log("Nuovo login giornaliero! Totale login:", totalLogins);
     } else {
-      console.log("Hai già fatto login oggi. Totale login:", totalLogins);
-      return false;
+        console.log("Hai già fatto login oggi. Totale login:", totalLogins);
     }
-  }
-  
-  document.addEventListener("DOMContentLoaded", () => {
+
+    // 🔥 Aggiorna il numero di login nella pagina
+    document.getElementById("loginCounter").innerText = totalLogins;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
     checkDailyLogin();
-  });
+});
+
 
 
     const rewardLevels = [1, 5, 10, 15, 20];

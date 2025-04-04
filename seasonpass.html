@@ -5,39 +5,12 @@
   <title>Season Pass</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #f0f0f0;
-    }
-    .level {
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .locked {
-      opacity: 0.5;
-    }
-    .card-img {
-      width: 134px;
-      height: auto;
-      display: block;
-      margin: 10px 0;
-    }
-    button {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 5px;
-      background: #2c7;
-      color: white;
-      cursor: pointer;
-    }
-    button:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    .level { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .locked { opacity: 0.5; }
+    .card-img { width: 100px; height: auto; display: block; margin: 10px 0; }
+    button { padding: 8px 12px; border: none; border-radius: 5px; background: #2c7; color: white; cursor: pointer; }
+    button:disabled { background: #aaa; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -48,28 +21,13 @@
   <div id="levelsContainer"></div>
 
   <script>
-    const rewardLevels = [1, 2, 3, 4, 5];
-    const cards = [
-      {
-        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iadcaca5b28bf91de/version/1742582699/image.png",
-        name: "Morotti", rarity: "Menzione Toty", rating: 93, team: "Olimpia Grisoni", position: "ATT"
-      },
-      {
-        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ideee8ed26116fc8b/version/1742582684/image.png",
-        name: "Biginato B", rarity: "Menzione Toty", rating: 94, team: "I Galacticos", position: "POR"
-      },
-      {
-        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i56d033f01ff3311a/version/1742582711/image.png",
-        name: "Zubani", rarity: "Menzione Toty", rating: 93, team: "Coprenaghen", position: "CEN"
-      },
-      {
-        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i1b9d07a731872359/version/1742582729/image.png",
-        name: "Cappelletti Leonardo", rarity: "Menzione Toty", rating: 92, team: "#FreeSimoMartino", position: "DIF"
-      },
-      {
-        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic33be63c4ec36085/version/1742582746/image.png",
-        name: "Romeo", rarity: "Menzione Toty", rating: 91, team: "I Galacticos", position: "CEN"
-      }
+    const rewardLevels = [1, 5, 10, 15, 20];
+    const rewardCards = [
+      { src: "https://image.jimcdn.com/app/cms/image/transf/none/path/sae3b384a102b7ba9/image/i33e7696dc9555470/version/1742583841/image.png", name: "Mattia Lanzarotti", rarity: "Toty", rating: 97, team: "Olimpia Grisoni", position: "ATT", chemistry: 0 },
+      { src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ideee8ed26116fc8b/version/1742582684/image.png", name: "Biginato B", rarity: "Menzione Toty", rating: 94, team: "I Galacticos", position: "POR", chemistry: 0 },
+      { src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i56d033f01ff3311a/version/1742582711/image.png", name: "Zubani", rarity: "Menzione Toty", rating: 93, team: "Coprenaghen", position: "CEN", chemistry: 0 },
+      { src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i1b9d07a731872359/version/1742582729/image.png", name: "Cappelletti Leonardo", rarity: "Menzione Toty", rating: 92, team: "#FreeSimoMartino", position: "DIF", chemistry: 0 },
+      { src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic33be63c4ec36085/version/1742582746/image.png", name: "Romeo", rarity: "Menzione Toty", rating: 91, team: "I Galacticos", position: "CEN", chemistry: 0 }
     ];
 
     function checkDailyLogin() {
@@ -87,51 +45,66 @@
       return totalLogins;
     }
 
-    function renderLevels(loginCount) {
-      const container = document.getElementById("levelsContainer");
-      container.innerHTML = "";
+    function getFoundPlayers() {
+      return JSON.parse(localStorage.getItem('foundPlayers')) || [];
+    }
+
+    function saveFoundPlayer(player) {
+      const found = getFoundPlayers();
+      const alreadyFound = found.some(p => p.name === player.name);
+      if (!alreadyFound) {
+        found.push(player);
+        localStorage.setItem('foundPlayers', JSON.stringify(found));
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const loginCount = checkDailyLogin();
+      const container = document.getElementById('levelsContainer');
 
       rewardLevels.forEach((level, index) => {
         const unlocked = loginCount >= level;
-        const card = cards[index];
+        const card = rewardCards[index];
 
-        const div = document.createElement("div");
-        div.className = "level" + (unlocked ? "" : " locked");
+        const div = document.createElement('div');
+        div.className = 'level' + (unlocked ? '' : ' locked');
 
-        const title = document.createElement("h3");
-        title.textContent = `🎯 Giorno ${level} - ${card.name}`;
+        const title = document.createElement('h3');
+        title.textContent = `🎯 Giorno ${level}`;
 
-        const img = document.createElement("img");
+        const img = document.createElement('img');
         img.src = card.src;
         img.alt = card.name;
-        img.className = "card-img";
+        img.className = 'card-img';
 
-        const info = document.createElement("p");
-        info.innerHTML = `🔹 <strong>${card.rarity}</strong><br>⭐ ${card.rating} | ${card.position}<br>⚽ ${card.team}`;
+        const cardInfo = document.createElement('p');
+        cardInfo.textContent = `${card.name} (${card.position}) - ${card.team}`;
 
-        const button = document.createElement("button");
-        button.textContent = unlocked ? "Riscatta Carta" : `Sblocca al Giorno ${level}`;
+        const button = document.createElement('button');
+        button.textContent = unlocked ? 'Riscatta Carta' : `Sblocca al Giorno ${level}`;
         button.disabled = !unlocked;
 
         if (unlocked) {
+          const isAlreadyFound = getFoundPlayers().some(p => p.name === card.name);
+          if (isAlreadyFound) {
+            button.disabled = true;
+            button.textContent = 'Riscattata';
+          }
+
           button.onclick = () => {
             alert(`Hai riscattato: ${card.name}!`);
+            saveFoundPlayer(card);
             button.disabled = true;
-            button.textContent = "Riscattata";
+            button.textContent = 'Riscattata';
           };
         }
 
         div.appendChild(title);
         div.appendChild(img);
-        div.appendChild(info);
+        div.appendChild(cardInfo);
         div.appendChild(button);
         container.appendChild(div);
       });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const loginCount = checkDailyLogin();
-      renderLevels(loginCount);
     });
   </script>
 

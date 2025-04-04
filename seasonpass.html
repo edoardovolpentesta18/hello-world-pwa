@@ -5,87 +5,133 @@
   <title>Season Pass</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
-    .level { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .locked { opacity: 0.5; }
-    .card-img { width: 100px; height: auto; display: block; margin: 10px 0; }
-    button { padding: 8px 12px; border: none; border-radius: 5px; background: #2c7; color: white; cursor: pointer; }
-    button:disabled { background: #aaa; cursor: not-allowed; }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    .level {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .locked {
+      opacity: 0.5;
+    }
+    .card-img {
+      width: 134px;
+      height: auto;
+      display: block;
+      margin: 10px 0;
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      background: #2c7;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
 
   <h1>🎁 Season Pass</h1>
-  <p>Accessi giornalieri effettuati: <span id="dailyLoginCount">0</span></p>
-  <p>Accessi totali salvati: <span id="accessCount">0</span></p>
+  <p>Accessi effettuati: <span id="loginCounter">0</span></p>
 
   <div id="levelsContainer"></div>
 
   <script>
+    const rewardLevels = [1, 2, 3, 4, 5];
+    const cards = [
+      {
+        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/iadcaca5b28bf91de/version/1742582699/image.png",
+        name: "Morotti", rarity: "Menzione Toty", rating: 93, team: "Olimpia Grisoni", position: "ATT"
+      },
+      {
+        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ideee8ed26116fc8b/version/1742582684/image.png",
+        name: "Biginato B", rarity: "Menzione Toty", rating: 94, team: "I Galacticos", position: "POR"
+      },
+      {
+        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i56d033f01ff3311a/version/1742582711/image.png",
+        name: "Zubani", rarity: "Menzione Toty", rating: 93, team: "Coprenaghen", position: "CEN"
+      },
+      {
+        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/i1b9d07a731872359/version/1742582729/image.png",
+        name: "Cappelletti Leonardo", rarity: "Menzione Toty", rating: 92, team: "#FreeSimoMartino", position: "DIF"
+      },
+      {
+        src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic33be63c4ec36085/version/1742582746/image.png",
+        name: "Romeo", rarity: "Menzione Toty", rating: 91, team: "I Galacticos", position: "CEN"
+      }
+    ];
+
     function checkDailyLogin() {
       const today = new Date().toISOString().split('T')[0];
       const lastLogin = localStorage.getItem("lastLoginDate");
-      let dailyLoginCount = parseInt(localStorage.getItem("dailyLoginCount") || "0");
+      let totalLogins = parseInt(localStorage.getItem("dailyLoginCount") || "0");
 
       if (lastLogin !== today) {
         localStorage.setItem("lastLoginDate", today);
-        dailyLoginCount += 1;
-        localStorage.setItem("dailyLoginCount", dailyLoginCount);
-        localStorage.setItem("accessCount", dailyLoginCount);
-        console.log("Nuovo login giornaliero! Totale login:", dailyLoginCount);
-      } else {
-        console.log("Hai già fatto login oggi. Totale login:", dailyLoginCount);
+        totalLogins += 1;
+        localStorage.setItem("dailyLoginCount", totalLogins);
       }
 
-      return dailyLoginCount;
+      document.getElementById("loginCounter").innerText = totalLogins;
+      return totalLogins;
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const totalLogins = checkDailyLogin();
+    function renderLevels(loginCount) {
+      const container = document.getElementById("levelsContainer");
+      container.innerHTML = "";
 
-      document.getElementById('dailyLoginCount').textContent = totalLogins;
-      document.getElementById('accessCount').textContent = totalLogins;
+      rewardLevels.forEach((level, index) => {
+        const unlocked = loginCount >= level;
+        const card = cards[index];
 
-      // Ricompense
-      const rewardLevels = [1, 5, 10, 15, 20];
-      const cards = {
-        1: '🟦 Carta Blu - Giorno 1',
-        5: '🟩 Carta Verde - Giorno 5',
-        10: '🟨 Carta Gialla - Giorno 10',
-        15: '🟧 Carta Arancione - Giorno 15',
-        20: '🟥 Carta Rossa - Giorno 20'
-      };
+        const div = document.createElement("div");
+        div.className = "level" + (unlocked ? "" : " locked");
 
-      const container = document.getElementById('levelsContainer');
+        const title = document.createElement("h3");
+        title.textContent = `🎯 Giorno ${level} - ${card.name}`;
 
-      rewardLevels.forEach(level => {
-        const unlocked = totalLogins >= level;
-        const div = document.createElement('div');
-        div.className = 'level' + (unlocked ? '' : ' locked');
+        const img = document.createElement("img");
+        img.src = card.src;
+        img.alt = card.name;
+        img.className = "card-img";
 
-        const title = document.createElement('h3');
-        title.textContent = `🎯 Giorno ${level}`;
+        const info = document.createElement("p");
+        info.innerHTML = `🔹 <strong>${card.rarity}</strong><br>⭐ ${card.rating} | ${card.position}<br>⚽ ${card.team}`;
 
-        const card = document.createElement('p');
-        card.textContent = cards[level];
-
-        const button = document.createElement('button');
-        button.textContent = unlocked ? 'Riscatta Carta' : `Sblocca al Giorno ${level}`;
+        const button = document.createElement("button");
+        button.textContent = unlocked ? "Riscatta Carta" : `Sblocca al Giorno ${level}`;
         button.disabled = !unlocked;
 
         if (unlocked) {
           button.onclick = () => {
-            alert(`Hai riscattato: ${cards[level]}!`);
+            alert(`Hai riscattato: ${card.name}!`);
             button.disabled = true;
-            button.textContent = 'Riscattata';
+            button.textContent = "Riscattata";
           };
         }
 
         div.appendChild(title);
-        div.appendChild(card);
+        div.appendChild(img);
+        div.appendChild(info);
         div.appendChild(button);
         container.appendChild(div);
       });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const loginCount = checkDailyLogin();
+      renderLevels(loginCount);
     });
   </script>
 

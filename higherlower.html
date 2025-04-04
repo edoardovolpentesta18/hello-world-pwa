@@ -79,7 +79,7 @@
     <button onclick="window.location.href='index.html'">Torna alla home</button>
 
     <script type="module">
-        import { players } from './playerData.js';
+        import { players } from './playerData.js'; // Assicurati che il file playerData.js sia corretto e nel percorso giusto
 
         document.addEventListener('DOMContentLoaded', function() {
             let credits = parseInt(localStorage.getItem('credits') || '0'); // Carica i crediti
@@ -87,16 +87,19 @@
             let highscore = localStorage.getItem('highscore') || 0;
             document.getElementById('highscore').innerText = highscore;
 
+            // Genera un indice casuale per i due giocatori
             let currentIndex = Math.floor(Math.random() * players.length);
             let nextIndex = Math.floor(Math.random() * players.length);
 
             function updateCards() {
+                // Assicurati che i dati dei giocatori siano correttamente assegnati
                 document.getElementById('img1').src = players[currentIndex].src;
                 document.getElementById('name1').innerText = players[currentIndex].name;
                 document.getElementById('rating1').innerText = players[currentIndex].rating;
 
                 document.getElementById('img2').src = players[nextIndex].src;
                 document.getElementById('name2').innerText = players[nextIndex].name;
+                document.getElementById('rating2').innerText = '?';
             }
 
             function guess(choice) {

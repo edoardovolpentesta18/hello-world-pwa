@@ -180,3 +180,6 @@ const images = [
 						{ src: "https://image.jimcdn.com/app/cms/image/transf/dimension=134x10000:format=png/path/sae3b384a102b7ba9/image/ic33be63c4ec36085/version/1742582746/image.png", name: "Romeo", rarity: "Menzione Toty", rating: 91, team: "I Galacticos", position: "CEN", chemistry: 0 }
                         
                 ];
+
+// Esporta l'array per renderlo disponibile ad altri file
+export { images };

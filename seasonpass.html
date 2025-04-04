@@ -21,6 +21,30 @@
   <div id="levelsContainer"></div>
 
   <script>
+  function checkDailyLogin() {
+    const today = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+    const lastLogin = localStorage.getItem("lastLoginDate");
+    let totalLogins = parseInt(localStorage.getItem("dailyLoginCount") || "0");
+  
+    if (lastLogin !== today) {
+      // Primo login di oggi
+      localStorage.setItem("lastLoginDate", today);
+      totalLogins += 1;
+      localStorage.setItem("dailyLoginCount", totalLogins);
+  
+      console.log("Nuovo login giornaliero! Totale login:", totalLogins);
+      return true;
+    } else {
+      console.log("Hai già fatto login oggi. Totale login:", totalLogins);
+      return false;
+    }
+  }
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    checkDailyLogin();
+  });
+
+
     const rewardLevels = [1, 5, 10, 15, 20];
     const cards = {
       1: '🟦 Carta Blu - Giorno 1',

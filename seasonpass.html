@@ -17,32 +17,36 @@
 
   <h1>🎁 Season Pass</h1>
   <p>Accessi effettuati: <span id="loginCounter">0</span></p>
+  <p>Accessi totali salvati: <span id="accessCount">0</span></p>
 
   <div id="levelsContainer"></div>
 
   <script>
   function checkDailyLogin() {
-    const today = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
     const lastLogin = localStorage.getItem("lastLoginDate");
     let totalLogins = parseInt(localStorage.getItem("dailyLoginCount") || "0");
 
     if (lastLogin !== today) {
-        // Primo login di oggi
         localStorage.setItem("lastLoginDate", today);
         totalLogins += 1;
         localStorage.setItem("dailyLoginCount", totalLogins);
+        localStorage.setItem("accessCount", totalLogins);  // Salva il numero totale di login
         console.log("Nuovo login giornaliero! Totale login:", totalLogins);
     } else {
         console.log("Hai già fatto login oggi. Totale login:", totalLogins);
     }
 
-    // 🔥 Aggiorna il numero di login nella pagina
     document.getElementById("loginCounter").innerText = totalLogins;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     checkDailyLogin();
+
+    const accessCount = parseInt(localStorage.getItem('accessCount') || '0');
+    document.getElementById('accessCount').textContent = accessCount;
 });
+
 
 
 

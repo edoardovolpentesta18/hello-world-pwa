@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Season Pass</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    .level { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .locked { opacity: 0.5; }
+    .card-img { width: 100px; height: auto; display: block; margin: 10px 0; }
+    button { padding: 8px 12px; border: none; border-radius: 5px; background: #2c7; color: white; cursor: pointer; }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <h1>🎁 Season Pass</h1>
+  <p>Accessi effettuati: <span id="accessCount">0</span></p>
+
+  <div id="levelsContainer"></div>
+
+  <script>
+    const rewardLevels = [1, 5, 10, 15, 20];
+    const cards = {
+      1: '🟦 Carta Blu - Giorno 1',
+      5: '🟩 Carta Verde - Giorno 5',
+      10: '🟨 Carta Gialla - Giorno 10',
+      15: '🟧 Carta Arancione - Giorno 15',
+      20: '🟥 Carta Rossa - Giorno 20'
+    };
+
+    // Simulazione accessi (puoi poi collegarlo al login utente o memorizzarlo in localStorage)
+    const accessCount = parseInt(localStorage.getItem('accessCount') || '0');
+    document.getElementById('accessCount').textContent = accessCount;
+
+    const container = document.getElementById('levelsContainer');
+
+    rewardLevels.forEach(level => {
+      const unlocked = accessCount >= level;
+      const div = document.createElement('div');
+      div.className = 'level' + (unlocked ? '' : ' locked');
+
+      const title = document.createElement('h3');
+      title.textContent = `🎯 Giorno ${level}`;
+
+      const card = document.createElement('p');
+      card.textContent = cards[level];
+
+      const button = document.createElement('button');
+      button.textContent = unlocked ? 'Riscatta Carta' : `Sblocca al Giorno ${level}`;
+      button.disabled = !unlocked;
+
+      if (unlocked) {
+        button.onclick = () => {
+          alert(`Hai riscattato: ${cards[level]}!`);
+          button.disabled = true;
+          button.textContent = 'Riscattata';
+        };
+      }
+
+      div.appendChild(title);
+      div.appendChild(card);
+      div.appendChild(button);
+      container.appendChild(div);
+    });
+  </script>
+
+</body>
+</html>

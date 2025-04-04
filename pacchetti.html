@@ -493,358 +493,409 @@
         	console.log(images);            
 
             
-            // Elementi DOM
-            const creditsDisplay = document.getElementById('credits-display');
-            const addCreditsBtn = document.getElementById('add-credits-btn');
-            const buyButtons = document.querySelectorAll('.buy-button');
-            const openingContainer = document.getElementById('opening-container');
-            const cardsContainer = document.getElementById('cards-container');
-            const closeOpening = document.getElementById('close-opening');
-            const backToHome = document.getElementById('back-to-home');
-            const creditsModal = document.getElementById('credits-modal');
-            const confirmCredits = document.getElementById('confirm-credits');
-            const cancelCredits = document.getElementById('cancel-credits');
-            const creditOptions = document.querySelectorAll('.credit-option');
+                // Elementi DOM
+    const creditsDisplay = document.getElementById('credits-display');
+    const addCreditsBtn = document.getElementById('add-credits-btn');
+    const buyButtons = document.querySelectorAll('.buy-button');
+    const openingContainer = document.getElementById('opening-container');
+    const cardsContainer = document.getElementById('cards-container');
+    const closeOpening = document.getElementById('close-opening');
+    const backToHome = document.getElementById('back-to-home');
+    const creditsModal = document.getElementById('credits-modal');
+    const confirmCredits = document.getElementById('confirm-credits');
+    const cancelCredits = document.getElementById('cancel-credits');
+    const creditOptions = document.querySelectorAll('.credit-option');
+    
+    // Variabili di stato
+    let credits = parseInt(localStorage.getItem('credits')) || 1000;
+    let selectedCreditOption = null;
+    
+    // Sistema pacchetti gratuiti giornalieri
+    let freePacks = parseInt(localStorage.getItem('freePacks')) || 3;
+    let lastResetDate = localStorage.getItem('lastResetDate') || '';
+    
+    // Funzione per controllare e resettare i pacchetti gratuiti
+    function checkAndResetFreePacks() {
+        const today = new Date().toDateString();
+        
+        // Se è un nuovo giorno o primo utilizzo, resetta i pacchetti gratuiti
+        if (lastResetDate !== today) {
+            freePacks = 3;
+            lastResetDate = today;
             
-            // Variabili di stato
-            let credits = parseInt(localStorage.getItem('credits')) || 1000;
-            let selectedCreditOption = null;
+            // Salva i valori aggiornati
+            localStorage.setItem('freePacks', freePacks);
+            localStorage.setItem('lastResetDate', lastResetDate);
             
-            // Aggiorna il display dei crediti
-            function updateCreditsDisplay() {
-                creditsDisplay.textContent = credits;
-                localStorage.setItem('credits', credits);
+            // Notifica l'utente solo se non è il primo utilizzo
+            if (lastResetDate !== '') {
+                alert('Hai ricevuto 3 nuovi pacchetti comuni gratuiti oggi!');
+            }
+        }
+        
+        // Aggiorna l'indicatore dei pacchetti gratuiti
+        updateFreePacksDisplay();
+    }
+    
+    // Funzione per aggiornare il display dei pacchetti gratuiti
+    function updateFreePacksDisplay() {
+        // Aggiorna il testo sul pulsante del pacchetto comune
+        const commonPackButton = document.querySelector('[data-package="common"]');
+        if (freePacks > 0) {
+            commonPackButton.textContent = `Acquista (${freePacks} gratuiti)`;
+        } else {
+            commonPackButton.textContent = 'Acquista';
+        }
+    }
+    
+    // Esegui il controllo all'avvio
+    checkAndResetFreePacks();
+    
+    // Aggiorna il display dei crediti
+    function updateCreditsDisplay() {
+        creditsDisplay.textContent = credits;
+        localStorage.setItem('credits', credits);
+    }
+    
+    // Inizializza il display dei crediti
+    updateCreditsDisplay();
+    
+    // Funzione per determinare la rarità del giocatore
+    function getPlayerRarity(rating) {
+        if (rating <= 77) return { class: 'common', text: 'Comune' };
+        if (rating <= 84) return { class: 'rare', text: 'Raro' };
+        if (rating <= 87) return { class: 'ultra-rare', text: 'Ultra Raro' };
+        return { class: 'legendary', text: 'Leggendario' };
+    }
+    
+    // Funzione per ottenere un giocatore casuale in base alla rarità
+    function getRandomPlayer(minRating = 70, maxRating = 99) {
+        const eligiblePlayers = images.filter(player => 
+            player.rating >= minRating && player.rating <= maxRating
+        );
+        
+        if (eligiblePlayers.length === 0) {
+            return images[Math.floor(Math.random() * images.length)];
+        }
+        
+        return eligiblePlayers[Math.floor(Math.random() * eligiblePlayers.length)];
+    }
+    
+    // Funzione per generare i giocatori in un pacchetto
+    function generatePackagePlayers(packageType) {
+        let players = [];
+        
+        switch (packageType) {
+            case 'common':
+                // 3 giocatori, alta probabilità di comuni
+                for (let i = 0; i < 3; i++) {
+                    const random = Math.random();
+                    if (random < 0.8) {
+                        // 80% chance per giocatori comuni (rating <= 77)
+                        players.push(getRandomPlayer(70, 77));
+                    } else if (random < 0.95) {
+                        // 15% chance per giocatori rari (rating 78-84)
+                        players.push(getRandomPlayer(78, 84));
+                    } else {
+                        // 5% chance per giocatori molto rari
+                        players.push(getRandomPlayer(85, 99));
+                    }
+                }
+                break;
+                
+            case 'rare':
+                // 5 giocatori, almeno 1 raro garantito
+                // Aggiungi 1 giocatore raro garantito (rating >= 78)
+                players.push(getRandomPlayer(78, 99));
+                
+                // Aggiungi altri 4 giocatori con distribuzione
+                for (let i = 0; i < 4; i++) {
+                    const random = Math.random();
+                    if (random < 0.7) {
+                        // 70% chance per giocatori comuni
+                        players.push(getRandomPlayer(70, 77));
+                    } else if (random < 0.9) {
+                        // 20% chance per giocatori rari
+                        players.push(getRandomPlayer(78, 84));
+                    } else {
+                        // 10% chance per giocatori molto rari
+                        players.push(getRandomPlayer(85, 99));
+                    }
+                }
+                break;
+                
+            case 'legendary':
+                // 7 giocatori, almeno 1 ultra raro garantito
+                // Aggiungi 1 giocatore ultra raro garantito (rating >= 85)
+                players.push(getRandomPlayer(85, 99));
+                
+                // Garantisci almeno 1 giocatore raro
+                players.push(getRandomPlayer(78, 84));
+                
+                // Aggiungi altri 5 giocatori con distribuzione
+                for (let i = 0; i < 5; i++) {
+                    const random = Math.random();
+                    if (random < 0.6) {
+                        // 60% chance per giocatori comuni
+                        players.push(getRandomPlayer(70, 77));
+                    } else if (random < 0.9) {
+                        // 30% chance per giocatori rari
+                        players.push(getRandomPlayer(78, 84));
+                    } else {
+                        // 10% chance per giocatori molto rari
+                        players.push(getRandomPlayer(85, 99));
+                    }
+                }
+                break;
+        }
+        
+        // Mescola l'array per non rivelare la posizione dei giocatori garantiti
+        return shuffleArray(players);
+    }
+    
+    // Funzione per mescolare un array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Registra l'apertura di un pacchetto per le missioni
+    function registerMission(packageType, players) {
+        // Se la funzione del sistema missioni esiste
+        if (window.missionSystem) {
+            // Registra apertura pacchetto
+            window.missionSystem.registerPackOpened(packageType);
+            
+            // Registra giocatori rari trovati
+            players.forEach(player => {
+                window.missionSystem.registerRarePlayerFound(player.rating);
+            });
+        }
+    }        
+    
+    // Funzione per aprire un pacchetto
+    function openPackage(packageType) {
+        // Costi dei pacchetti
+        const costs = {
+            'common': 200,
+            'rare': 500,
+            'legendary': 1000
+        };
+        
+        // Gestisci pacchetti comuni gratuiti
+        let useFreepack = false;
+        if (packageType === 'common' && freePacks > 0) {
+            useFreepack = true;
+            freePacks--;
+            localStorage.setItem('freePacks', freePacks);
+            updateFreePacksDisplay();
+        }
+        // Se non è un pacchetto gratuito, controlla i crediti
+        else if (credits < costs[packageType]) {
+            alert('Non hai abbastanza crediti per questo pacchetto!');
+            return;
+        }
+        // Altrimenti, sottrai i crediti
+        else {
+            credits -= costs[packageType];
+            updateCreditsDisplay();
+        }
+        
+        // Genera i giocatori nel pacchetto
+        const players = generatePackagePlayers(packageType);
+
+        // Registra per le missioni
+        registerMission(packageType, players);    
+        
+        // Crea le carte
+        createCards(players, packageType, useFreepack);
+        
+        // Mostra il container di apertura
+        openingContainer.style.display = 'flex';
+    }
+    
+    // Funzione per creare le carte
+    function createCards(players, packageType, isFree = false) {
+        // Pulisci il container
+        cardsContainer.innerHTML = '';
+        
+        // Aggiorna il testo informativo
+        const openingInfo = document.getElementById('opening-info');
+        switch (packageType) {
+            case 'common':
+                openingInfo.textContent = isFree ? 
+                    'Pacchetto Comune Gratuito - Scegli le carte per rivelarle!' : 
+                    'Pacchetto Comune - Scegli le carte per rivelarle!';
+                break;
+            case 'rare':
+                openingInfo.textContent = 'Pacchetto Raro - Almeno 1 giocatore raro garantito!';
+                break;
+            case 'legendary':
+                openingInfo.textContent = 'Pacchetto Leggendario - Almeno 1 giocatore ultra raro garantito!';
+                break;
+        }
+        
+        // Crea una carta per ogni giocatore
+        players.forEach(player => {
+            const cardPlaceholder = document.createElement('div');
+            cardPlaceholder.className = 'card-placeholder';
+            
+            const cardInner = document.createElement('div');
+            cardInner.className = 'card-inner';
+            
+            const cardFront = document.createElement('div');
+            cardFront.className = 'card-front';
+            cardFront.innerHTML = '<span>?</span>';
+            
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-back';
+            
+            // Crea l'immagine del giocatore
+            const playerImg = document.createElement('img');
+            playerImg.src = player.src;
+            playerImg.alt = player.name;
+            cardBack.appendChild(playerImg);
+            
+            // Aggiungi l'indicatore di rarità
+            const rarityInfo = getPlayerRarity(player.rating);
+            const rarityIndicator = document.createElement('div');
+            rarityIndicator.className = `rarity-indicator ${rarityInfo.class}`;
+            rarityIndicator.textContent = `${player.rating} - ${rarityInfo.text}`;
+            cardBack.appendChild(rarityIndicator);
+            
+            // Assembla la carta
+            cardInner.appendChild(cardFront);
+            cardInner.appendChild(cardBack);
+            cardPlaceholder.appendChild(cardInner);
+            
+            // Aggiungi effetti speciali in base alla rarità
+            if (player.rating >= 85) {
+                cardPlaceholder.classList.add('glow');
             }
             
-            // Inizializza il display dei crediti
+            // Event listener per girare la carta
+            cardPlaceholder.addEventListener('click', function() {
+                if (!this.classList.contains('flipped')) {
+                    this.classList.add('flipped');
+                    
+                    // Aggiungi il giocatore alla collezione
+                    addPlayerToCollection(player);
+                    
+                    // Effetto shake per carte rare
+                    if (player.rating >= 78) {
+                        setTimeout(() => {
+                            this.classList.add('shake');
+                            setTimeout(() => {
+                                this.classList.remove('shake');
+                            }, 500);
+                        }, 400);
+                    }
+                }
+            });
+            
+            cardsContainer.appendChild(cardPlaceholder);
+        });
+    }
+    
+    // Funzione per aggiungere un giocatore alla collezione
+    function addPlayerToCollection(player) {
+        // Recupera i giocatori trovati dallo storage
+        let foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
+        
+        // Controlla se il giocatore è già nella collezione
+        if (!foundPlayers.some(p => p.name === player.name)) {
+            foundPlayers.push(player);
+            localStorage.setItem('foundPlayers', JSON.stringify(foundPlayers));
+        }
+    }
+    
+    // Event listener per i pulsanti di acquisto pacchetto
+    buyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const packageType = this.getAttribute('data-package');
+            openPackage(packageType);
+        });
+    });
+    
+    // Event listener per chiudere l'apertura dei pacchetti
+    closeOpening.addEventListener('click', function() {
+        openingContainer.style.display = 'none';
+    });
+    
+    // Event listener per tornare alla pagina principale
+    backToHome.addEventListener('click', function() {
+        window.location.href = 'index.html';
+    });
+    
+    // Event listener per aprire il modal dei crediti
+    addCreditsBtn.addEventListener('click', function() {
+        creditsModal.style.display = 'flex';
+    });
+    
+    // Event listener per le opzioni di crediti
+    creditOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Rimuovi la classe selected da tutte le opzioni
+            creditOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Aggiungi la classe selected all'opzione cliccata
+            this.classList.add('selected');
+            
+            // Salva l'importo selezionato
+            selectedCreditOption = parseInt(this.getAttribute('data-amount'));
+        });
+    });
+    
+    // Event listener per confermare l'acquisto di crediti
+    confirmCredits.addEventListener('click', function() {
+        if (selectedCreditOption) {
+            // Simula un acquisto (in un'app reale qui ci sarebbe l'integrazione con un gateway di pagamento)
+            credits += selectedCreditOption;
             updateCreditsDisplay();
             
-            // Funzione per determinare la rarità del giocatore
-            function getPlayerRarity(rating) {
-                if (rating <= 77) return { class: 'common', text: 'Comune' };
-                if (rating <= 84) return { class: 'rare', text: 'Raro' };
-                if (rating <= 87) return { class: 'ultra-rare', text: 'Ultra Raro' };
-                return { class: 'legendary', text: 'Leggendario' };
-            }
+            // Chiudi il modal
+            creditsModal.style.display = 'none';
             
-            // Funzione per ottenere un giocatore casuale in base alla rarità
-            function getRandomPlayer(minRating = 70, maxRating = 99) {
-                const eligiblePlayers = images.filter(player => 
-                    player.rating >= minRating && player.rating <= maxRating
-                );
-                
-                if (eligiblePlayers.length === 0) {
-                    return images[Math.floor(Math.random() * images.length)];
-                }
-                
-                return eligiblePlayers[Math.floor(Math.random() * eligiblePlayers.length)];
-            }
+            // Reset della selezione
+            creditOptions.forEach(opt => opt.classList.remove('selected'));
+            selectedCreditOption = null;
             
-            // Funzione per generare i giocatori in un pacchetto
-            function generatePackagePlayers(packageType) {
-                let players = [];
-                
-                switch (packageType) {
-                    case 'common':
-                        // 3 giocatori, alta probabilità di comuni
-                        for (let i = 0; i < 3; i++) {
-                            const random = Math.random();
-                            if (random < 0.8) {
-                                // 80% chance per giocatori comuni (rating <= 77)
-                                players.push(getRandomPlayer(70, 77));
-                            } else if (random < 0.95) {
-                                // 15% chance per giocatori rari (rating 78-84)
-                                players.push(getRandomPlayer(78, 84));
-                            } else {
-                                // 5% chance per giocatori molto rari
-                                players.push(getRandomPlayer(85, 99));
-                            }
-                        }
-                        break;
-                        
-                    case 'rare':
-                        // 5 giocatori, almeno 1 raro garantito
-                        // Aggiungi 1 giocatore raro garantito (rating >= 78)
-                        players.push(getRandomPlayer(78, 99));
-                        
-                        // Aggiungi altri 4 giocatori con distribuzione
-                        for (let i = 0; i < 4; i++) {
-                            const random = Math.random();
-                            if (random < 0.7) {
-                                // 70% chance per giocatori comuni
-                                players.push(getRandomPlayer(70, 77));
-                            } else if (random < 0.9) {
-                                // 20% chance per giocatori rari
-                                players.push(getRandomPlayer(78, 84));
-                            } else {
-                                // 10% chance per giocatori molto rari
-                                players.push(getRandomPlayer(85, 99));
-                            }
-                        }
-                        break;
-                        
-                    case 'legendary':
-                        // 7 giocatori, almeno 1 ultra raro garantito
-                        // Aggiungi 1 giocatore ultra raro garantito (rating >= 85)
-                        players.push(getRandomPlayer(85, 99));
-                        
-                        // Garantisci almeno 1 giocatore raro
-                        players.push(getRandomPlayer(78, 84));
-                        
-                        // Aggiungi altri 5 giocatori con distribuzione
-                        for (let i = 0; i < 5; i++) {
-                            const random = Math.random();
-                            if (random < 0.6) {
-                                // 60% chance per giocatori comuni
-                                players.push(getRandomPlayer(70, 77));
-                            } else if (random < 0.9) {
-                                // 30% chance per giocatori rari
-                                players.push(getRandomPlayer(78, 84));
-                            } else {
-                                // 10% chance per giocatori molto rari
-                                players.push(getRandomPlayer(85, 99));
-                            }
-                        }
-                        break;
-                }
-                
-                // Mescola l'array per non rivelare la posizione dei giocatori garantiti
-                return shuffleArray(players);
-            }
+            // Notifica l'utente
+            alert(`Hai acquistato ${selectedCreditOption} crediti con successo!`);
+        } else {
+            alert('Seleziona un importo di crediti da acquistare.');
+        }
+    });
+    
+    // Event listener per annullare l'acquisto di crediti
+    cancelCredits.addEventListener('click', function() {
+        // Chiudi il modal
+        creditsModal.style.display = 'none';
+        
+        // Reset della selezione
+        creditOptions.forEach(opt => opt.classList.remove('selected'));
+        selectedCreditOption = null;
+    });
+    
+    // Chiudi il modal quando si clicca all'esterno
+    window.addEventListener('click', function(event) {
+        if (event.target === creditsModal) {
+            creditsModal.style.display = 'none';
             
-            // Funzione per mescolare un array
-            function shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
-            }
-
-
-			// Registra l'apertura di un pacchetto per le missioni
-		function registerMission(packageType, players) {
-		    // Se la funzione del sistema missioni esiste
-		    if (window.missionSystem) {
-		        // Registra apertura pacchetto
-		        window.missionSystem.registerPackOpened(packageType);
-		        
-		        // Registra giocatori rari trovati
-		        players.forEach(player => {
-		            window.missionSystem.registerRarePlayerFound(player.rating);
-		        });
-		    }
-		}		
-            
-            // Funzione per aprire un pacchetto
-            function openPackage(packageType) {
-                // Costi dei pacchetti
-                const costs = {
-                    'common': 200,
-                    'rare': 500,
-                    'legendary': 1000
-                };
-                
-                // Controlla se ci sono abbastanza crediti
-                if (credits < costs[packageType]) {
-                    alert('Non hai abbastanza crediti per questo pacchetto!');
-                    return;
-                }
-                
-                // Sottrai i crediti
-                credits -= costs[packageType];
-                updateCreditsDisplay();
-                
-                // Genera i giocatori nel pacchetto
-                const players = generatePackagePlayers(packageType);
-
-		// Registra per le missioni
-   		registerMission(packageType, players);    
-                
-                // Crea le carte
-                createCards(players, packageType);
-                
-                // Mostra il container di apertura
-                openingContainer.style.display = 'flex';
-            }
-            
-            // Funzione per creare le carte
-            function createCards(players, packageType) {
-                // Pulisci il container
-                cardsContainer.innerHTML = '';
-                
-                // Aggiorna il testo informativo
-                const openingInfo = document.getElementById('opening-info');
-                switch (packageType) {
-                    case 'common':
-                        openingInfo.textContent = 'Pacchetto Comune - Scegli le carte per rivelarle!';
-                        break;
-                    case 'rare':
-                        openingInfo.textContent = 'Pacchetto Raro - Almeno 1 giocatore raro garantito!';
-                        break;
-                    case 'legendary':
-                        openingInfo.textContent = 'Pacchetto Leggendario - Almeno 1 giocatore ultra raro garantito!';
-                        break;
-                }
-                
-                // Crea una carta per ogni giocatore
-                players.forEach(player => {
-                    const cardPlaceholder = document.createElement('div');
-                    cardPlaceholder.className = 'card-placeholder';
-                    
-                    const cardInner = document.createElement('div');
-                    cardInner.className = 'card-inner';
-                    
-                    const cardFront = document.createElement('div');
-                    cardFront.className = 'card-front';
-                    cardFront.innerHTML = '<span>?</span>';
-                    
-                    const cardBack = document.createElement('div');
-                    cardBack.className = 'card-back';
-                    
-                    // Crea l'immagine del giocatore
-                    const playerImg = document.createElement('img');
-                    playerImg.src = player.src;
-                    playerImg.alt = player.name;
-                    cardBack.appendChild(playerImg);
-                    
-                    // Aggiungi l'indicatore di rarità
-                    const rarityInfo = getPlayerRarity(player.rating);
-                    const rarityIndicator = document.createElement('div');
-                    rarityIndicator.className = `rarity-indicator ${rarityInfo.class}`;
-                    rarityIndicator.textContent = `${player.rating} - ${rarityInfo.text}`;
-                    cardBack.appendChild(rarityIndicator);
-                    
-                    // Assembla la carta
-                    cardInner.appendChild(cardFront);
-                    cardInner.appendChild(cardBack);
-                    cardPlaceholder.appendChild(cardInner);
-                    
-                    // Aggiungi effetti speciali in base alla rarità
-                    if (player.rating >= 85) {
-                        cardPlaceholder.classList.add('glow');
-                    }
-                    
-                    // Event listener per girare la carta
-                    cardPlaceholder.addEventListener('click', function() {
-                        if (!this.classList.contains('flipped')) {
-                            this.classList.add('flipped');
-                            
-                            // Aggiungi il giocatore alla collezione
-                            addPlayerToCollection(player);
-                            
-                            // Effetto shake per carte rare
-                            if (player.rating >= 78) {
-                                setTimeout(() => {
-                                    this.classList.add('shake');
-                                    setTimeout(() => {
-                                        this.classList.remove('shake');
-                                    }, 500);
-                                }, 400);
-                            }
-                        }
-                    });
-                    
-                    cardsContainer.appendChild(cardPlaceholder);
-                });
-            }
-            
-            // Funzione per aggiungere un giocatore alla collezione
-            function addPlayerToCollection(player) {
-                // Recupera i giocatori trovati dallo storage
-                let foundPlayers = JSON.parse(localStorage.getItem('foundPlayers')) || [];
-                
-                // Controlla se il giocatore è già nella collezione
-                if (!foundPlayers.some(p => p.name === player.name)) {
-                    foundPlayers.push(player);
-                    localStorage.setItem('foundPlayers', JSON.stringify(foundPlayers));
-                }
-            }
-            
-            // Event listener per i pulsanti di acquisto pacchetto
-            buyButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const packageType = this.getAttribute('data-package');
-                    openPackage(packageType);
-                });
-            });
-            
-            // Event listener per chiudere l'apertura dei pacchetti
-            closeOpening.addEventListener('click', function() {
-                openingContainer.style.display = 'none';
-            });
-            
-            // Event listener per tornare alla pagina principale
-            backToHome.addEventListener('click', function() {
-                window.location.href = 'index.html';
-            });
-            
-            // Event listener per aprire il modal dei crediti
-            addCreditsBtn.addEventListener('click', function() {
-                creditsModal.style.display = 'flex';
-            });
-            
-            // Event listener per le opzioni di crediti
-            creditOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    // Rimuovi la classe selected da tutte le opzioni
-                    creditOptions.forEach(opt => opt.classList.remove('selected'));
-                    
-                    // Aggiungi la classe selected all'opzione cliccata
-                    this.classList.add('selected');
-                    
-                    // Salva l'importo selezionato
-                    selectedCreditOption = parseInt(this.getAttribute('data-amount'));
-                });
-            });
-            
-            // Event listener per confermare l'acquisto di crediti
-            confirmCredits.addEventListener('click', function() {
-                if (selectedCreditOption) {
-                    // Simula un acquisto (in un'app reale qui ci sarebbe l'integrazione con un gateway di pagamento)
-                    credits += selectedCreditOption;
-                    updateCreditsDisplay();
-                    
-                    // Chiudi il modal
-                    creditsModal.style.display = 'none';
-                    
-                    // Reset della selezione
-                    creditOptions.forEach(opt => opt.classList.remove('selected'));
-                    selectedCreditOption = null;
-                    
-                    // Notifica l'utente
-                    alert(`Hai acquistato ${selectedCreditOption} crediti con successo!`);
-                } else {
-                    alert('Seleziona un importo di crediti da acquistare.');
-                }
-            });
-            
-            // Event listener per annullare l'acquisto di crediti
-            cancelCredits.addEventListener('click', function() {
-                // Chiudi il modal
-                creditsModal.style.display = 'none';
-                
-                // Reset della selezione
-                creditOptions.forEach(opt => opt.classList.remove('selected'));
-                selectedCreditOption = null;
-            });
-            
-            // Chiudi il modal quando si clicca all'esterno
-            window.addEventListener('click', function(event) {
-                if (event.target === creditsModal) {
-                    creditsModal.style.display = 'none';
-                    
-                    // Reset della selezione
-                    creditOptions.forEach(opt => opt.classList.remove('selected'));
-                    selectedCreditOption = null;
-                }
-            });
-            
-            // Inizializza la collezione dei giocatori se non esiste
-            if (!localStorage.getItem('foundPlayers')) {
-                localStorage.setItem('foundPlayers', JSON.stringify([]));
-            }
-        });	
+            // Reset della selezione
+            creditOptions.forEach(opt => opt.classList.remove('selected'));
+            selectedCreditOption = null;
+        }
+    });
+    
+    // Inizializza la collezione dei giocatori se non esiste
+    if (!localStorage.getItem('foundPlayers')) {
+        localStorage.setItem('foundPlayers', JSON.stringify([]));
+    }
+});	
 	    
     </script>
 </body>

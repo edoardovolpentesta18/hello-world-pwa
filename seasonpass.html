@@ -16,82 +16,76 @@
 <body>
 
   <h1>🎁 Season Pass</h1>
-  <p>Accessi effettuati: <span id="loginCounter">0</span></p>
-  <p>Accessi totali salvati: <span id="loginCounter">0</span></p>
+  <p>Accessi giornalieri effettuati: <span id="dailyLoginCount">0</span></p>
+  <p>Accessi totali salvati: <span id="accessCount">0</span></p>
 
   <div id="levelsContainer"></div>
 
   <script>
-  function checkDailyLogin() {
-    const today = new Date().toISOString().split('T')[0];
-    const lastLogin = localStorage.getItem("lastLoginDate");
-    let totalLogins = parseInt(localStorage.getItem("dailyLoginCount") || "0");
+    function checkDailyLogin() {
+      const today = new Date().toISOString().split('T')[0];
+      const lastLogin = localStorage.getItem("lastLoginDate");
+      let dailyLoginCount = parseInt(localStorage.getItem("dailyLoginCount") || "0");
 
-    if (lastLogin !== today) {
+      if (lastLogin !== today) {
         localStorage.setItem("lastLoginDate", today);
-        totalLogins += 1;
-        localStorage.setItem("dailyLoginCount", totalLogins);
-        localStorage.setItem("loginCounter", totalLogins);  // Salva il numero totale di login
-        console.log("Nuovo login giornaliero! Totale login:", totalLogins);
-    } else {
-        console.log("Hai già fatto login oggi. Totale login:", totalLogins);
-    }
-
-    document.getElementById("loginCounter").innerText = totalLogins;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    checkDailyLogin();
-
-    const loginCounter = parseInt(localStorage.getItem('loginCounter') || '0');
-    document.getElementById('loginCounter').textContent = loginCounter;
-});
-
-
-
-
-    const rewardLevels = [1, 5, 10, 15, 20];
-    const cards = {
-      1: '🟦 Carta Blu - Giorno 1',
-      5: '🟩 Carta Verde - Giorno 5',
-      10: '🟨 Carta Gialla - Giorno 10',
-      15: '🟧 Carta Arancione - Giorno 15',
-      20: '🟥 Carta Rossa - Giorno 20'
-    };
-
-    // Simulazione accessi (puoi poi collegarlo al login utente o memorizzarlo in localStorage)
-    const loginCounter = parseInt(localStorage.getItem('loginCounter') || '0');
-    document.getElementById('loginCounter').textContent = loginCounter;
-
-    const container = document.getElementById('levelsContainer');
-
-    rewardLevels.forEach(level => {
-      const unlocked = loginCounter >= level;
-      const div = document.createElement('div');
-      div.className = 'level' + (unlocked ? '' : ' locked');
-
-      const title = document.createElement('h3');
-      title.textContent = `🎯 Giorno ${level}`;
-
-      const card = document.createElement('p');
-      card.textContent = cards[level];
-
-      const button = document.createElement('button');
-      button.textContent = unlocked ? 'Riscatta Carta' : `Sblocca al Giorno ${level}`;
-      button.disabled = !unlocked;
-
-      if (unlocked) {
-        button.onclick = () => {
-          alert(`Hai riscattato: ${cards[level]}!`);
-          button.disabled = true;
-          button.textContent = 'Riscattata';
-        };
+        dailyLoginCount += 1;
+        localStorage.setItem("dailyLoginCount", dailyLoginCount);
+        localStorage.setItem("accessCount", dailyLoginCount);
+        console.log("Nuovo login giornaliero! Totale login:", dailyLoginCount);
+      } else {
+        console.log("Hai già fatto login oggi. Totale login:", dailyLoginCount);
       }
 
-      div.appendChild(title);
-      div.appendChild(card);
-      div.appendChild(button);
-      container.appendChild(div);
+      return dailyLoginCount;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const totalLogins = checkDailyLogin();
+
+      document.getElementById('dailyLoginCount').textContent = totalLogins;
+      document.getElementById('accessCount').textContent = totalLogins;
+
+      // Ricompense
+      const rewardLevels = [1, 5, 10, 15, 20];
+      const cards = {
+        1: '🟦 Carta Blu - Giorno 1',
+        5: '🟩 Carta Verde - Giorno 5',
+        10: '🟨 Carta Gialla - Giorno 10',
+        15: '🟧 Carta Arancione - Giorno 15',
+        20: '🟥 Carta Rossa - Giorno 20'
+      };
+
+      const container = document.getElementById('levelsContainer');
+
+      rewardLevels.forEach(level => {
+        const unlocked = totalLogins >= level;
+        const div = document.createElement('div');
+        div.className = 'level' + (unlocked ? '' : ' locked');
+
+        const title = document.createElement('h3');
+        title.textContent = `🎯 Giorno ${level}`;
+
+        const card = document.createElement('p');
+        card.textContent = cards[level];
+
+        const button = document.createElement('button');
+        button.textContent = unlocked ? 'Riscatta Carta' : `Sblocca al Giorno ${level}`;
+        button.disabled = !unlocked;
+
+        if (unlocked) {
+          button.onclick = () => {
+            alert(`Hai riscattato: ${cards[level]}!`);
+            button.disabled = true;
+            button.textContent = 'Riscattata';
+          };
+        }
+
+        div.appendChild(title);
+        div.appendChild(card);
+        div.appendChild(button);
+        container.appendChild(div);
+      });
     });
   </script>
 

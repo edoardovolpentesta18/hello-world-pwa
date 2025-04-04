@@ -77,71 +77,71 @@
     <p>Record: <span id="highscore">0</span></p>
 
     <button onclick="window.location.href='index.html'">Torna alla home</button>
-    
+
     <script type="module">
-	import { images } from './playerData.js';
+        import { players } from './playerData.js';
+
         document.addEventListener('DOMContentLoaded', function() {
-		// Ora puoi usare l'array images qui
-        	console.log(images); 
-        
-        let score = 0;
-        let highscore = localStorage.getItem('highscore') || 0;
-        document.getElementById('highscore').innerText = highscore;
-        
-        let currentIndex = Math.floor(Math.random() * players.length);
-        let nextIndex = Math.floor(Math.random() * players.length);
-        
-        function updateCards() {
-            document.getElementById('img1').src = players[currentIndex].src;
-            document.getElementById('name1').innerText = players[currentIndex].name;
-            document.getElementById('rating1').innerText = players[currentIndex].rating;
-            
-            //document.getElementById('img2').src = players[nextIndex].src;
-            document.getElementById('name2').innerText = players[nextIndex].name;
-        }
-        
-        function guess(choice) {
-            let correct = (choice === 'higher' && players[nextIndex].rating >= players[currentIndex].rating) ||
-                          (choice === 'lower' && players[nextIndex].rating <= players[currentIndex].rating);
-            
-            if (correct) {
-                score++;
-                if (score > highscore) {
-                    highscore = score;
-                    localStorage.setItem('highscore', highscore);
-                    document.getElementById('highscore').innerText = highscore;
-                }
-            } else {
-                alert(`Hai perso! ${players[nextIndex].name} ha un rating di ${players[nextIndex].rating}.`);
-                score = 0;
+            let credits = parseInt(localStorage.getItem('credits') || '0'); // Carica i crediti
+            let score = 0;
+            let highscore = localStorage.getItem('highscore') || 0;
+            document.getElementById('highscore').innerText = highscore;
+
+            let currentIndex = Math.floor(Math.random() * players.length);
+            let nextIndex = Math.floor(Math.random() * players.length);
+
+            function updateCards() {
+                document.getElementById('img1').src = players[currentIndex].src;
+                document.getElementById('name1').innerText = players[currentIndex].name;
+                document.getElementById('rating1').innerText = players[currentIndex].rating;
+
+                document.getElementById('img2').src = players[nextIndex].src;
+                document.getElementById('name2').innerText = players[nextIndex].name;
             }
-            
-            currentIndex = nextIndex;
-            nextIndex = Math.floor(Math.random() * players.length);
-            
+
+            function guess(choice) {
+                let correct = (choice === 'higher' && players[nextIndex].rating >= players[currentIndex].rating) ||
+                              (choice === 'lower' && players[nextIndex].rating <= players[currentIndex].rating);
+
+                if (correct) {
+                    score++;
+                    credits += 10;  // Aggiungi 10 crediti ogni volta che si vince
+                    if (score > highscore) {
+                        highscore = score;
+                        localStorage.setItem('highscore', highscore);
+                        document.getElementById('highscore').innerText = highscore;
+                    }
+                    localStorage.setItem('credits', credits);  // Salva i crediti in localStorage
+                } else {
+                    alert(`Hai perso! ${players[nextIndex].name} ha un rating di ${players[nextIndex].rating}.`);
+                    score = 0;
+                }
+
+                currentIndex = nextIndex;
+                nextIndex = Math.floor(Math.random() * players.length);
+
+                updateCards();
+                document.getElementById('rating2').innerText = '?';
+                document.getElementById('score').innerText = score;
+            }
+
             updateCards();
-            document.getElementById('rating2').innerText = '?';
-            document.getElementById('score').innerText = score;
-        }
-        
-        updateCards();
-        
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker registrato'))
-                    .catch(err => console.log('Service Worker non registrato', err));
-            });
-        }
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('sw.js')
+                        .then(reg => console.log('Service Worker registrato'))
+                        .catch(err => console.log('Service Worker non registrato', err));
+                });
+            }
+        });
     </script>
 
-
-	<script>
-function toggleMenu() {
-    const menu = document.getElementById('menu');
-    menu.style.display = menu.style.display === "none" ? "block" : "none";
-}
-</script>
-
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+    </script>
 </body>
 </html>

@@ -557,6 +557,27 @@
         document.addEventListener('DOMContentLoaded', function() {
           // Gestione creazione manager
         document.getElementById('create-manager-btn').addEventListener('click', createManager);
+
+        const statsFromConference = localStorage.getItem('managerStats');
+        const teamFromStorage = localStorage.getItem('selectedTeam');
+        const managerFromStorage = localStorage.getItem('managerData');
+        
+        if (statsFromConference && teamFromStorage && managerFromStorage) {
+            selectedTeam = teamFromStorage;
+            managerData = JSON.parse(managerFromStorage);
+        
+            // Puoi anche sommare i valori se vuoi usarli:
+            const conferenzaStats = JSON.parse(statsFromConference);
+            // esempio: managerData.overall += conferenzaStats.ego;
+        
+            initTorneo();
+        
+            // Pulisci localStorage se vuoi
+            localStorage.removeItem('selectedTeam');
+            localStorage.removeItem('managerData');
+            localStorage.removeItem('managerStats');
+        }
+
         
         // Aggiornamento team selezionabili in base all'overall
         updateSelectableTeams();
@@ -695,8 +716,15 @@
         });
     }
         
-        // Inizia il torneo
         function startTournament() {
+            // Salva tutto su localStorage
+            localStorage.setItem('selectedTeam', selectedTeam);
+            localStorage.setItem('managerData', JSON.stringify(managerData));
+            window.location.href = 'conferenza.html';
+        }
+
+        // Inizia il torneo
+        function initTorneo() {
           
           
             // Nascondi sezione setup e mostra sezione torneo

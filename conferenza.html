@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conferenza Stampa</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #0c2461;
+    }
+    .question {
+      margin-top: 30px;
+    }
+    .answers button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #0c2461;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .answers button:hover {
+      background-color: #1e3799;
+    }
+    #prosegui {
+      margin-top: 30px;
+      display: none;
+      background-color: #44bd32;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Conferenza Stampa Iniziale</h1>
+    <div id="interview">
+      <!-- Le domande verranno generate via JS -->
+    </div>
+    <button id="prosegui" onclick="proseguiAllaCarriera()">Prosegui alla Carriera</button>
+  </div>
+
+  <script>
+    const domande = [
+      {
+        testo: "Qual è il tuo obiettivo principale per questa stagione?",
+        risposte: [
+          { testo: "Voglio vincere tutto!", effetti: { ego: 2, squadra: -1, tifosi: 2 } },
+          { testo: "Costruire una squadra solida e crescere passo dopo passo.", effetti: { ego: 0, squadra: 2, tifosi: 1 } }
+        ]
+      },
+      {
+        testo: "Come gestirai i momenti difficili?",
+        risposte: [
+          { testo: "Mi prenderò tutte le responsabilità, è il mio ruolo.", effetti: { ego: -1, squadra: 2, tifosi: 1 } },
+          { testo: "Farò valere la mia autorità, serve disciplina.", effetti: { ego: 2, squadra: -1, tifosi: 0 } }
+        ]
+      },
+      {
+        testo: "Cosa vuoi dire ai tifosi in questo momento?",
+        risposte: [
+          { testo: "Sosteneteci sempre, daremo tutto in campo.", effetti: { ego: 0, squadra: 1, tifosi: 3 } },
+          { testo: "Vedrete un calcio spettacolare, promesso!", effetti: { ego: 1, squadra: 0, tifosi: 2 } }
+        ]
+      }
+    ];
+
+    let step = 0;
+    let stats = { ego: 0, squadra: 0, tifosi: 0 };
+
+    function mostraDomanda() {
+      const d = domande[step];
+      const contenitore = document.getElementById('interview');
+      contenitore.innerHTML = `
+        <div class="question">
+          <h3>${d.testo}</h3>
+          <div class="answers">
+            ${d.risposte.map((r, i) => `<button onclick="rispondi(${i})">${r.testo}</button>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function rispondi(index) {
+      const effetti = domande[step].risposte[index].effetti;
+      stats.ego += effetti.ego;
+      stats.squadra += effetti.squadra;
+      stats.tifosi += effetti.tifosi;
+      step++;
+
+      if (step < domande.length) {
+        mostraDomanda();
+      } else {
+        document.getElementById('interview').innerHTML = `
+          <h2>Conferenza Conclusa!</h2>
+          <p><strong>Ego:</strong> ${stats.ego} | <strong>Squadra:</strong> ${stats.squadra} | <strong>Tifosi:</strong> ${stats.tifosi}</p>
+        `;
+        document.getElementById('prosegui').style.display = 'block';
+      }
+    }
+
+    function proseguiAllaCarriera() {
+      localStorage.setItem('managerStats', JSON.stringify(stats));
+      window.location.href = 'carriera.html';
+    }
+
+    mostraDomanda();
+  </script>
+</body>
+</html>

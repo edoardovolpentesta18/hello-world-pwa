@@ -532,6 +532,14 @@
             C: [],
             D: []
         };
+        let groupMatchdays = {
+             A: [],
+             B: [],
+             C: [],
+             D: []
+        };
+        let currentMatchdayIndex = 0;
+
         let goldKnockout = {
             quarters: [],
             semis: [],
@@ -790,165 +798,154 @@
             }
         }
         
-        // Simula i risultati della fase a gironi
         function simulateGroups() {
-            // Disabilita il pulsante di simulazione
-            document.getElementById('simulate-group-btn').disabled = true;
-            
-            // Inizializza i risultati dei gironi
-            for (const group of Object.keys(groups)) {
-                groupResults[group] = groups[group].map(team => ({
-                    team: team,
-                    points: 0,
-                    played: 0,
-                    won: 0,
-                    drawn: 0,
-                    lost: 0,
-                    goalsFor: 0,
-                    goalsAgainst: 0,
-                    goalDifference: 0
-                }));
-            }
-            
-            // Simula le partite in ogni girone
-            for (const [group, teams] of Object.entries(groups)) {
-                const matchesContainer = document.getElementById(`group-${group.toLowerCase()}-matches`);
-                matchesContainer.innerHTML = '';
-                
-                // Genera tutte le combinazioni di partite
-                for (let i = 0; i < teams.length; i++) {
-                    for (let j = i + 1; j < teams.length; j++) {
-                        // Simula il risultato della partita
-                        const homeTeam = teams[i];
-                        const awayTeam = teams[j];
-                        
-                        // Simulazione più favorevole per la squadra del giocatore
-                        let homeGoals, awayGoals;
-                        if (homeTeam === selectedTeam) {
-                            homeGoals = Math.floor(Math.random() * 4) + 1; // 1-4 gol
-                            awayGoals = Math.floor(Math.random() * 3); // 0-2 gol
-                        } else if (awayTeam === selectedTeam) {
-                            homeGoals = Math.floor(Math.random() * 3); // 0-2 gol
-                            awayGoals = Math.floor(Math.random() * 4) + 1; // 1-4 gol
-                        } else {
-                            homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                            awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                        }
-                        
-                        // Aggiorna le statistiche delle squadre
-                        const homeIndex = groupResults[group].findIndex(t => t.team === homeTeam);
-                        const awayIndex = groupResults[group].findIndex(t => t.team === awayTeam);
-                        
-                        // Partite giocate
-                        groupResults[group][homeIndex].played++;
-                        groupResults[group][awayIndex].played++;
-                        
-                        // Gol segnati e subiti
-                        groupResults[group][homeIndex].goalsFor += homeGoals;
-                        groupResults[group][homeIndex].goalsAgainst += awayGoals;
-                        groupResults[group][awayIndex].goalsFor += awayGoals;
-                        groupResults[group][awayIndex].goalsAgainst += homeGoals;
-                        
-                        // Differenza reti
-                        groupResults[group][homeIndex].goalDifference = 
-                            groupResults[group][homeIndex].goalsFor - groupResults[group][homeIndex].goalsAgainst;
-                        groupResults[group][awayIndex].goalDifference = 
-                            groupResults[group][awayIndex].goalsFor - groupResults[group][awayIndex].goalsAgainst;
-                        
-                        // Risultato (vittoria, pareggio, sconfitta)
-                        if (homeGoals > awayGoals) {
-                            // Vittoria in casa
-                            groupResults[group][homeIndex].won++;
-                            groupResults[group][homeIndex].points += 3;
-                            groupResults[group][awayIndex].lost++;
-                        } else if (homeGoals < awayGoals) {
-                            // Vittoria in trasferta
-                            groupResults[group][awayIndex].won++;
-                            groupResults[group][awayIndex].points += 3;
-                            groupResults[group][homeIndex].lost++;
-                        } else {
-                            // Pareggio
-                            groupResults[group][homeIndex].drawn++;
-                            groupResults[group][awayIndex].drawn++;
-                            groupResults[group][homeIndex].points += 1;
-                            groupResults[group][awayIndex].points += 1;
-                        }
-                        
-                        // Visualizza il risultato della partita
-                        const matchElement = document.createElement('div');
-                        matchElement.className = 'match';
-                        matchElement.innerHTML = `
-                            <div class="match-teams">
-                                <span>${homeTeam}</span>
-                                <span class="match-result">${homeGoals} - ${awayGoals}</span>
-                                <span>${awayTeam}</span>
-                            </div>
-                        `;
-                        matchesContainer.appendChild(matchElement);
-                    }
-                }
-                
-                // Ordina la classifica
-                groupResults[group].sort((a, b) => {
-                    if (a.points !== b.points) {
-                        return b.points - a.points; // Punti
-                    } else if (a.goalDifference !== b.goalDifference) {
-                        return b.goalDifference - a.goalDifference; // Differenza reti
-                    } else {
-                        return b.goalsFor - a.goalsFor; // Gol segnati
-                    }
-                });
-                
-                // Aggiorna la tabella del girone
-                const tableBody = document.getElementById(`group-${group.toLowerCase()}-table`);
-                tableBody.innerHTML = '';
-                
-                groupResults[group].forEach(team => {
-                    const row = document.createElement('tr');
-                    
-                    // Evidenzia la squadra del giocatore
-                    if (team.team === selectedTeam) {
-                        row.style.fontWeight = 'bold';
-                        row.style.backgroundColor = '#e6f7ff';
-                    }
-                    
-                    // Evidenzia le prime due squadre (qualificate per la fase Gold)
-                    if (groupResults[group].indexOf(team) < 2) {
-                        row.style.backgroundColor = '#d4edda';
-                    }
-                    // Evidenzia le squadre in posizione 3-4 (qualificate per la fase Silver)
-                    else if (groupResults[group].indexOf(team) < 4) {
-                        row.style.backgroundColor = '#fff3cd';
-                    }
-                    
-                    row.innerHTML = `
-                        <td>${team.team}</td>
-                        <td>${team.points}</td>
-                        <td>${team.played}</td>
-                        <td>${team.won}</td>
-                        <td>${team.drawn}</td>
-                        <td>${team.lost}</td>
-                        <td>${team.goalsFor}</td>
-                        <td>${team.goalsAgainst}</td>
-                        <td>${team.goalDifference}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
-            
-            // Prepara le fasi
-            
-           // <script>
-            // Abilita i pulsanti per le fasi finali
-            document.getElementById('simulate-gold-btn').disabled = false;
-            document.getElementById('simulate-silver-btn').disabled = false;
-            
-            // Prepara i quarti di finale Gold
-            setupGoldKnockout();
-            
-            // Prepara i quarti di finale Silver
-            setupSilverKnockout();
-        }
+  document.getElementById('simulate-group-btn').textContent = 'Simula Giornata 1';
+
+  // Inizializza le statistiche
+  for (const group of Object.keys(groups)) {
+    groupResults[group] = groups[group].map(team => ({
+      team: team,
+      points: 0,
+      played: 0,
+      won: 0,
+      drawn: 0,
+      lost: 0,
+      goalsFor: 0,
+      goalsAgainst: 0,
+      goalDifference: 0
+    }));
+
+    // Genera tutte le combinazioni di partite (round-robin)
+    const teams = groups[group];
+    const fixtures = [];
+    for (let i = 0; i < teams.length; i++) {
+      for (let j = i + 1; j < teams.length; j++) {
+        fixtures.push({ home: teams[i], away: teams[j], group });
+      }
+    }
+
+    // Raggruppa per giornate (semplice round-robin: 3 giornate con 2 match ciascuna)
+    groupMatchdays[group] = [
+      fixtures.slice(0, 2),
+      fixtures.slice(2, 4),
+      fixtures.slice(4, 6)
+    ];
+  }
+
+  // Disabilita il pulsante solo quando finite le giornate
+  document.getElementById('simulate-group-btn').addEventListener('click', simulateNextMatchday);
+}
+
+
+function simulateNextMatchday() {
+  if (currentMatchdayIndex >= 3) return;
+
+  for (const group of Object.keys(groupMatchdays)) {
+    const dayMatches = groupMatchdays[group][currentMatchdayIndex];
+    const matchesContainer = document.getElementById(`group-${group.toLowerCase()}-matches`);
+
+    dayMatches.forEach(match => {
+      let homeGoals, awayGoals;
+      if (match.home === selectedTeam) {
+        homeGoals = Math.floor(Math.random() * 4) + 1;
+        awayGoals = Math.floor(Math.random() * 3);
+      } else if (match.away === selectedTeam) {
+        homeGoals = Math.floor(Math.random() * 3);
+        awayGoals = Math.floor(Math.random() * 4) + 1;
+      } else {
+        homeGoals = Math.floor(Math.random() * 4);
+        awayGoals = Math.floor(Math.random() * 4);
+      }
+
+      const homeIndex = groupResults[group].findIndex(t => t.team === match.home);
+      const awayIndex = groupResults[group].findIndex(t => t.team === match.away);
+
+      // aggiorna statistiche
+      groupResults[group][homeIndex].played++;
+      groupResults[group][awayIndex].played++;
+      groupResults[group][homeIndex].goalsFor += homeGoals;
+      groupResults[group][homeIndex].goalsAgainst += awayGoals;
+      groupResults[group][awayIndex].goalsFor += awayGoals;
+      groupResults[group][awayIndex].goalsAgainst += homeGoals;
+
+      if (homeGoals > awayGoals) {
+        groupResults[group][homeIndex].won++;
+        groupResults[group][homeIndex].points += 3;
+        groupResults[group][awayIndex].lost++;
+      } else if (awayGoals > homeGoals) {
+        groupResults[group][awayIndex].won++;
+        groupResults[group][awayIndex].points += 3;
+        groupResults[group][homeIndex].lost++;
+      } else {
+        groupResults[group][homeIndex].drawn++;
+        groupResults[group][awayIndex].drawn++;
+        groupResults[group][homeIndex].points += 1;
+        groupResults[group][awayIndex].points += 1;
+      }
+
+      // stampa risultato
+      const matchElement = document.createElement('div');
+      matchElement.className = 'match';
+      matchElement.innerHTML = `
+        <div class="match-teams">
+          <span>${match.home}</span>
+          <span class="match-result">${homeGoals} - ${awayGoals}</span>
+          <span>${match.away}</span>
+        </div>`;
+      matchesContainer.appendChild(matchElement);
+    });
+
+    // ordina e aggiorna classifica
+    groupResults[group].sort((a, b) => {
+      if (a.points !== b.points) return b.points - a.points;
+      if (a.goalDifference !== b.goalDifference) return b.goalDifference - a.goalDifference;
+      return b.goalsFor - a.goalsFor;
+    });
+
+    const tableBody = document.getElementById(`group-${group.toLowerCase()}-table`);
+    tableBody.innerHTML = '';
+    groupResults[group].forEach(team => {
+      const row = document.createElement('tr');
+      if (team.team === selectedTeam) {
+        row.style.fontWeight = 'bold';
+        row.style.backgroundColor = '#e6f7ff';
+      }
+      if (groupResults[group].indexOf(team) < 2) {
+        row.style.backgroundColor = '#d4edda';
+      } else if (groupResults[group].indexOf(team) < 4) {
+        row.style.backgroundColor = '#fff3cd';
+      }
+
+      row.innerHTML = `
+        <td>${team.team}</td>
+        <td>${team.points}</td>
+        <td>${team.played}</td>
+        <td>${team.won}</td>
+        <td>${team.drawn}</td>
+        <td>${team.lost}</td>
+        <td>${team.goalsFor}</td>
+        <td>${team.goalsAgainst}</td>
+        <td>${team.goalDifference}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  currentMatchdayIndex++;
+  if (currentMatchdayIndex < 3) {
+    document.getElementById('simulate-group-btn').textContent = `Simula Giornata ${currentMatchdayIndex + 1}`;
+  } else {
+    document.getElementById('simulate-group-btn').textContent = 'Fase a Gironi Conclusa!';
+    document.getElementById('simulate-group-btn').disabled = true;
+
+    // abilita i bottoni delle fasi finali
+    document.getElementById('simulate-gold-btn').disabled = false;
+    document.getElementById('simulate-silver-btn').disabled = false;
+    setupGoldKnockout();
+    setupSilverKnockout();
+  }
+}
+
         
         // Prepara la fase finale Gold
         function setupGoldKnockout() {

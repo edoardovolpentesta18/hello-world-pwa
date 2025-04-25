@@ -550,6 +550,9 @@
             semis: [],
             final: []
         };
+        let goldStage = 0; // 0 = quarti, 1 = semifinali, 2 = finale
+        let silverStage = 0;
+
         
         
         let managerData = {
@@ -1009,373 +1012,102 @@ function simulateNextMatchday() {
         
         // Simula la fase finale Gold
         function simulateGoldKnockout() {
-            // Disabilita il pulsante di simulazione
-            document.getElementById('simulate-gold-btn').disabled = true;
-            
-            // Simula i quarti di finale
-            goldKnockout.quarters.forEach(match => {
-                // Favorisci la squadra del giocatore
-                if (match.home === selectedTeam) {
-                    match.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                    match.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                } else if (match.away === selectedTeam) {
-                    match.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                    match.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                } else {
-                    match.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                    match.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                }
-            });
-            
-            // Aggiorna la visualizzazione dei quarti di finale
-            const quartersContainer = document.getElementById('gold-quarters');
-            quartersContainer.innerHTML = '';
-            
-            goldKnockout.quarters.forEach((match, index) => {
-                const matchElement = document.createElement('div');
-                matchElement.className = 'knockout-match';
-                
-                // Evidenzia la squadra vincente
-                let winner;
-                if (match.homeGoals > match.awayGoals) {
-                    winner = match.home;
-                    matchElement.innerHTML = `
-                        <strong>Quarto ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away}
-                    `;
-                } else if (match.homeGoals < match.awayGoals) {
-                    winner = match.away;
-                    matchElement.innerHTML = `
-                        <strong>Quarto ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} <span style="font-weight: bold">${match.away}</span>
-                    `;
-                } else {
-                    // In caso di pareggio, vince la casa (per semplicità)
-                    winner = match.home;
-                    matchElement.innerHTML = `
-                        <strong>Quarto ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away} (vince ai rigori)
-                    `;
-                }
-                
-                quartersContainer.appendChild(matchElement);
-            });
-            
-            // Setup delle semifinali (vincente Q1 vs vincente Q2, vincente Q3 vs vincente Q4)
-            const semifinalists = goldKnockout.quarters.map(match => 
-                match.homeGoals > match.awayGoals || (match.homeGoals === match.awayGoals) ? match.home : match.away
-            );
-            
-            goldKnockout.semis = [
-                { home: semifinalists[0], away: semifinalists[1], homeGoals: null, awayGoals: null },
-                { home: semifinalists[2], away: semifinalists[3], homeGoals: null, awayGoals: null }
-            ];
-            
-            // Simula le semifinali
-            goldKnockout.semis.forEach(match => {
-                // Favorisci la squadra del giocatore
-                if (match.home === selectedTeam) {
-                    match.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                    match.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                } else if (match.away === selectedTeam) {
-                    match.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                    match.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                } else {
-                    match.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                    match.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                }
-            });
-            
-            // Aggiorna la visualizzazione delle semifinali
-            const semisContainer = document.getElementById('gold-semis');
-            semisContainer.innerHTML = '';
-            
-            goldKnockout.semis.forEach((match, index) => {
-                const matchElement = document.createElement('div');
-                matchElement.className = 'knockout-match';
-                
-                // Evidenzia la squadra vincente
-                let winner;
-                if (match.homeGoals > match.awayGoals) {
-                    winner = match.home;
-                    matchElement.innerHTML = `
-                        <strong>Semifinale ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away}
-                    `;
-                } else if (match.homeGoals < match.awayGoals) {
-                    winner = match.away;
-                    matchElement.innerHTML = `
-                        <strong>Semifinale ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} <span style="font-weight: bold">${match.away}</span>
-                    `;
-                } else {
-                    // In caso di pareggio, vince la casa (per semplicità)
-                    winner = match.home;
-                    matchElement.innerHTML = `
-                        <strong>Semifinale ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away} (vince ai rigori)
-                    `;
-                }
-                
-                semisContainer.appendChild(matchElement);
-            });
-            
-            // Setup della finale
-            const finalists = goldKnockout.semis.map(match => 
-                match.homeGoals > match.awayGoals || (match.homeGoals === match.awayGoals) ? match.home : match.away
-            );
-            
-            goldKnockout.final = [
-                { home: finalists[0], away: finalists[1], homeGoals: null, awayGoals: null }
-            ];
-            
-            // Simula la finale
-            const finalMatch = goldKnockout.final[0];
-            
-            // Favorisci la squadra del giocatore nella finale
-            if (finalMatch.home === selectedTeam) {
-                finalMatch.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                finalMatch.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
-            } else if (finalMatch.away === selectedTeam) {
-                finalMatch.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                finalMatch.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-            } else {
-                finalMatch.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                finalMatch.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
-            }
-            
-            // Aggiorna la visualizzazione della finale
-            const finalContainer = document.getElementById('gold-final');
-            finalContainer.innerHTML = '';
-            
-            const finalElement = document.createElement('div');
-            finalElement.className = 'knockout-match';
-            
-            // Evidenzia la squadra vincente
-            let champion;
-            if (finalMatch.homeGoals > finalMatch.awayGoals) {
-                champion = finalMatch.home;
-                finalElement.innerHTML = `
-                    <strong>FINALE:</strong> <span style="font-weight: bold">${finalMatch.home}</span> ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away}
-                `;
-            } else if (finalMatch.homeGoals < finalMatch.awayGoals) {
-                champion = finalMatch.away;
-                finalElement.innerHTML = `
-                    <strong>FINALE:</strong> ${finalMatch.home} ${finalMatch.homeGoals} - ${finalMatch.awayGoals} <span style="font-weight: bold">${finalMatch.away}</span>
-                `;
-            } else {
-                // In caso di pareggio, vince la casa (per semplicità)
-                champion = finalMatch.home;
-                finalElement.innerHTML = `
-                    <strong>FINALE:</strong> <span style="font-weight: bold">${finalMatch.home}</span> ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away} (vince ai rigori)
-                `;
-            }
-            
-            finalContainer.appendChild(finalElement);
-            
-            // Visualizza il campione
-            const champElement = document.createElement('div');
-            champElement.style.marginTop = '20px';
-            champElement.style.textAlign = 'center';
-            champElement.style.padding = '15px';
-            champElement.style.backgroundColor = '#f8f9fa';
-            champElement.style.borderRadius = '5px';
-            champElement.style.border = '2px solid gold';
-            
-            // Messaggio speciale se la squadra del giocatore ha vinto
-            if (champion === selectedTeam) {
-                champElement.innerHTML = `
-                    <h3 style="color: gold">CONGRATULAZIONI!</h3>
-                    <p style="font-size: 18px">La tua squadra, <strong>${champion}</strong>, ha vinto il torneo Gold!</p>
-                `;
-            } else {
-                champElement.innerHTML = `
-                    <h3 style="color: gold">CAMPIONE TORNEO GOLD</h3>
-                    <p style="font-size: 18px">${champion}</p>
-                `;
-            }
-            
-            finalContainer.appendChild(champElement);
-        }
+  if (goldStage === 0) {
+    // Simula QUARTI
+    goldKnockout.quarters.forEach(match => simulateKnockoutMatch(match));
+
+    displayKnockoutMatches(goldKnockout.quarters, 'gold-quarters', 'Quarto');
+
+    const semifinalists = goldKnockout.quarters.map(m => winnerOf(m));
+    goldKnockout.semis = [
+      { home: semifinalists[0], away: semifinalists[1], homeGoals: null, awayGoals: null },
+      { home: semifinalists[2], away: semifinalists[3], homeGoals: null, awayGoals: null }
+    ];
+    goldStage = 1;
+    document.getElementById('simulate-gold-btn').textContent = 'Simula Semifinali';
+
+  } else if (goldStage === 1) {
+    // Simula SEMIFINALI
+    goldKnockout.semis.forEach(match => simulateKnockoutMatch(match));
+
+    displayKnockoutMatches(goldKnockout.semis, 'gold-semis', 'Semifinale');
+
+    const finalists = goldKnockout.semis.map(m => winnerOf(m));
+    goldKnockout.final = [
+      { home: finalists[0], away: finalists[1], homeGoals: null, awayGoals: null }
+    ];
+    goldStage = 2;
+    document.getElementById('simulate-gold-btn').textContent = 'Simula Finale';
+
+  } else if (goldStage === 2) {
+    // Simula FINALE
+    const finalMatch = goldKnockout.final[0];
+    simulateKnockoutMatch(finalMatch);
+
+    const container = document.getElementById('gold-final');
+    container.innerHTML = '';
+    const winner = winnerOf(finalMatch);
+
+    const finalElement = document.createElement('div');
+    finalElement.className = 'knockout-match';
+    finalElement.innerHTML = `
+      <strong>FINALE:</strong> ${finalMatch.home} ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away}
+      <br><strong>Campione:</strong> <span style="color:gold;font-weight:bold">${winner}</span>
+    `;
+    container.appendChild(finalElement);
+
+    document.getElementById('simulate-gold-btn').disabled = true;
+  }
+}
+
         
         // Simula la fase finale Silver
         function simulateSilverKnockout() {
-            // Disabilita il pulsante di simulazione
-            document.getElementById('simulate-silver-btn').disabled = true;
-            
-            // Simula i quarti di finale
-            silverKnockout.quarters.forEach(match => {
-                // Favorisci la squadra del giocatore
-                if (match.home === selectedTeam) {
-                    match.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                    match.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                } else if (match.away === selectedTeam) {
-                    match.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                    match.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                } else {
-                    match.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                    match.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                }
-            });
-            
-            // Aggiorna la visualizzazione dei quarti di finale
-            const quartersContainer = document.getElementById('silver-quarters');
-            quartersContainer.innerHTML = '';
-            
-            silverKnockout.quarters.forEach((match, index) => {
-                const matchElement = document.createElement('div');
-                matchElement.className = 'knockout-match';
-                
-                // Evidenzia la squadra vincente
-                let winner;
-                if (match.homeGoals > match.awayGoals) {
-                    winner = match.home;
-                    matchElement.innerHTML = `
-                        <strong>Quarto ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away}
-                    `;
-                } else if (match.homeGoals < match.awayGoals) {
-                    winner = match.away;
-                    matchElement.innerHTML = `
-                        <strong>Quarto ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} <span style="font-weight: bold">${match.away}</span>
-                    `;
-                } else {
-                    // In caso di pareggio, vince la casa (per semplicità)
-                    winner = match.home;
-                    matchElement.innerHTML = `
-                        <strong>Quarto ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away} (vince ai rigori)
-                    `;
-                }
-                
-                quartersContainer.appendChild(matchElement);
-            });
-            
-            // Setup delle semifinali (vincente Q1 vs vincente Q2, vincente Q3 vs vincente Q4)
-            const semifinalists = silverKnockout.quarters.map(match => 
-                match.homeGoals > match.awayGoals || (match.homeGoals === match.awayGoals) ? match.home : match.away
-            );
-            
-            silverKnockout.semis = [
-                { home: semifinalists[0], away: semifinalists[1], homeGoals: null, awayGoals: null },
-                { home: semifinalists[2], away: semifinalists[3], homeGoals: null, awayGoals: null }
-            ];
-            
-            // Simula le semifinali
-            silverKnockout.semis.forEach(match => {
-                // Favorisci la squadra del giocatore
-                if (match.home === selectedTeam) {
-                    match.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                    match.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                } else if (match.away === selectedTeam) {
-                    match.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                    match.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                } else {
-                    match.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                    match.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                }
-            });
-            
-            // Aggiorna la visualizzazione delle semifinali
-            const semisContainer = document.getElementById('silver-semis');
-            semisContainer.innerHTML = '';
-            
-            silverKnockout.semis.forEach((match, index) => {
-                const matchElement = document.createElement('div');
-                matchElement.className = 'knockout-match';
-                
-                // Evidenzia la squadra vincente
-                let winner;
-                if (match.homeGoals > match.awayGoals) {
-                    winner = match.home;
-                    matchElement.innerHTML = `
-                        <strong>Semifinale ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away}
-                    `;
-                } else if (match.homeGoals < match.awayGoals) {
-                    winner = match.away;
-                    matchElement.innerHTML = `
-                        <strong>Semifinale ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} <span style="font-weight: bold">${match.away}</span>
-                    `;
-                } else {
-                    // In caso di pareggio, vince la casa (per semplicità)
-                    winner = match.home;
-                    matchElement.innerHTML = `
-                        <strong>Semifinale ${index + 1}:</strong> <span style="font-weight: bold">${match.home}</span> ${match.homeGoals} - ${match.awayGoals} ${match.away} (vince ai rigori)
-                    `;
-                }
-                
-                semisContainer.appendChild(matchElement);
-            });
-            
-            // Setup della finale
-            const finalists = silverKnockout.semis.map(match => 
-                match.homeGoals > match.awayGoals || (match.homeGoals === match.awayGoals) ? match.home : match.away
-            );
-            
-            silverKnockout.final = [
-                { home: finalists[0], away: finalists[1], homeGoals: null, awayGoals: null }
-            ];
-            
-            // Simula la finale
-            const finalMatch = silverKnockout.final[0];
-            
-            // Favorisci la squadra del giocatore nella finale
-            if (finalMatch.home === selectedTeam) {
-                finalMatch.homeGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-                finalMatch.awayGoals = Math.floor(Math.random() * 2); // 0-1 gol
-            } else if (finalMatch.away === selectedTeam) {
-                finalMatch.homeGoals = Math.floor(Math.random() * 2); // 0-1 gol
-                finalMatch.awayGoals = Math.floor(Math.random() * 3) + 1; // 1-3 gol
-            } else {
-                finalMatch.homeGoals = Math.floor(Math.random() * 4); // 0-3 gol
-                finalMatch.awayGoals = Math.floor(Math.random() * 4); // 0-3 gol
-            }
-            
-            // Aggiorna la visualizzazione della finale
-            const finalContainer = document.getElementById('silver-final');
-            finalContainer.innerHTML = '';
-            
-            const finalElement = document.createElement('div');
-            finalElement.className = 'knockout-match';
-            
-            // Evidenzia la squadra vincente
-            let champion;
-            if (finalMatch.homeGoals > finalMatch.awayGoals) {
-                champion = finalMatch.home;
-                finalElement.innerHTML = `
-                    <strong>FINALE:</strong> <span style="font-weight: bold">${finalMatch.home}</span> ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away}
-                `;
-            } else if (finalMatch.homeGoals < finalMatch.awayGoals) {
-                champion = finalMatch.away;
-                finalElement.innerHTML = `
-                    <strong>FINALE:</strong> ${finalMatch.home} ${finalMatch.homeGoals} - ${finalMatch.awayGoals} <span style="font-weight: bold">${finalMatch.away}</span>
-                `;
-            } else {
-                // In caso di pareggio, vince la casa (per semplicità)
-                champion = finalMatch.home;
-                finalElement.innerHTML = `
-                    <strong>FINALE:</strong> <span style="font-weight: bold">${finalMatch.home}</span> ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away} (vince ai rigori)
-                `;
-            }
-            
-            finalContainer.appendChild(finalElement);
-            
-            // Visualizza il campione
-            const champElement = document.createElement('div');
-            champElement.style.marginTop = '20px';
-            champElement.style.textAlign = 'center';
-            champElement.style.padding = '15px';
-            champElement.style.backgroundColor = '#f8f9fa';
-            champElement.style.borderRadius = '5px';
-            champElement.style.border = '2px solid silver';
-            
-            // Messaggio speciale se la squadra del giocatore ha vinto
-            if (champion === selectedTeam) {
-                champElement.innerHTML = `
-                    <h3 style="color: #666">CONGRATULAZIONI!</h3>
-                    <p style="font-size: 18px">La tua squadra, <strong>${champion}</strong>, ha vinto il torneo Silver!</p>
-                `;
-            } else {
-                champElement.innerHTML = `
-                    <h3 style="color: #666">CAMPIONE TORNEO SILVER</h3>
-                    <p style="font-size: 18px">${champion}</p>
-                `;
-            }
-            
-            finalContainer.appendChild(champElement);
-        }
+  if (silverStage === 0) {
+    silverKnockout.quarters.forEach(match => simulateKnockoutMatch(match));
+    displayKnockoutMatches(silverKnockout.quarters, 'silver-quarters', 'Quarto');
+
+    const semifinalists = silverKnockout.quarters.map(m => winnerOf(m));
+    silverKnockout.semis = [
+      { home: semifinalists[0], away: semifinalists[1], homeGoals: null, awayGoals: null },
+      { home: semifinalists[2], away: semifinalists[3], homeGoals: null, awayGoals: null }
+    ];
+    silverStage = 1;
+    document.getElementById('simulate-silver-btn').textContent = 'Simula Semifinali';
+
+  } else if (silverStage === 1) {
+    silverKnockout.semis.forEach(match => simulateKnockoutMatch(match));
+    displayKnockoutMatches(silverKnockout.semis, 'silver-semis', 'Semifinale');
+
+    const finalists = silverKnockout.semis.map(m => winnerOf(m));
+    silverKnockout.final = [
+      { home: finalists[0], away: finalists[1], homeGoals: null, awayGoals: null }
+    ];
+    silverStage = 2;
+    document.getElementById('simulate-silver-btn').textContent = 'Simula Finale';
+
+  } else if (silverStage === 2) {
+    const finalMatch = silverKnockout.final[0];
+    simulateKnockoutMatch(finalMatch);
+
+    const container = document.getElementById('silver-final');
+    container.innerHTML = '';
+    const winner = winnerOf(finalMatch);
+
+    const finalElement = document.createElement('div');
+    finalElement.className = 'knockout-match';
+    finalElement.innerHTML = `
+      <strong>FINALE:</strong> ${finalMatch.home} ${finalMatch.homeGoals} - ${finalMatch.awayGoals} ${finalMatch.away}
+      <br><strong>Campione:</strong> <span style="color:silver;font-weight:bold">${winner}</span>
+    `;
+    container.appendChild(finalElement);
+
+    document.getElementById('simulate-silver-btn').disabled = true;
+  }
+}
+        
+
+
     </script>
 </body>
 </html>

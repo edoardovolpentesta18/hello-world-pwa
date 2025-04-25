@@ -804,7 +804,6 @@
         function simulateGroups() {
   document.getElementById('simulate-group-btn').textContent = 'Simula Giornata 1';
 
-  // Inizializza le statistiche
   for (const group of Object.keys(groups)) {
     groupResults[group] = groups[group].map(team => ({
       team: team,
@@ -818,26 +817,27 @@
       goalDifference: 0
     }));
 
-    // Genera tutte le combinazioni di partite (round-robin)
+    // Crea calendario round-robin corretto
     const teams = groups[group];
-    const fixtures = [];
-    for (let i = 0; i < teams.length; i++) {
-      for (let j = i + 1; j < teams.length; j++) {
-        fixtures.push({ home: teams[i], away: teams[j], group });
-      }
-    }
-
-    // Raggruppa per giornate (semplice round-robin: 3 giornate con 2 match ciascuna)
     groupMatchdays[group] = [
-      fixtures.slice(0, 2),
-      fixtures.slice(2, 4),
-      fixtures.slice(4, 6)
+      [
+        { home: teams[0], away: teams[1] },
+        { home: teams[2], away: teams[3] }
+      ],
+      [
+        { home: teams[0], away: teams[2] },
+        { home: teams[1], away: teams[3] }
+      ],
+      [
+        { home: teams[0], away: teams[3] },
+        { home: teams[1], away: teams[2] }
+      ]
     ];
   }
 
-  // Disabilita il pulsante solo quando finite le giornate
   document.getElementById('simulate-group-btn').addEventListener('click', simulateNextMatchday);
 }
+
 
 
 function simulateNextMatchday() {

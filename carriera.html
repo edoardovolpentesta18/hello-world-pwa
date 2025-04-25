@@ -1106,6 +1106,39 @@ function simulateNextMatchday() {
   }
 }
         
+function simulateKnockoutMatch(match) {
+  if (match.home === selectedTeam) {
+    match.homeGoals = Math.floor(Math.random() * 3) + 1;
+    match.awayGoals = Math.floor(Math.random() * 2);
+  } else if (match.away === selectedTeam) {
+    match.homeGoals = Math.floor(Math.random() * 2);
+    match.awayGoals = Math.floor(Math.random() * 3) + 1;
+  } else {
+    match.homeGoals = Math.floor(Math.random() * 4);
+    match.awayGoals = Math.floor(Math.random() * 4);
+  }
+}
+
+function winnerOf(match) {
+  if (match.homeGoals > match.awayGoals) return match.home;
+  if (match.awayGoals > match.homeGoals) return match.away;
+  return match.home; // pareggio -> passa casa
+}
+
+function displayKnockoutMatches(matches, containerId, label) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  matches.forEach((match, index) => {
+    const winner = winnerOf(match);
+    const element = document.createElement('div');
+    element.className = 'knockout-match';
+    element.innerHTML = `
+      <strong>${label} ${index + 1}:</strong> ${match.home} ${match.homeGoals} - ${match.awayGoals} ${match.away}
+      <br><em>Passa: <strong>${winner}</strong></em>
+    `;
+    container.appendChild(element);
+  });
+}
 
 
     </script>

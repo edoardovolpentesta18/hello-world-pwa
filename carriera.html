@@ -841,7 +841,7 @@
 
 
 function simulateNextMatchday() {
-  if (currentMatchdayIndex >= 3) return;
+  if (currentMatchdayIndex >= 3) return; // massimo 3 giornate nei gironi a 4 squadre
 
   for (const group of Object.keys(groupMatchdays)) {
     const dayMatches = groupMatchdays[group][currentMatchdayIndex];
@@ -849,6 +849,7 @@ function simulateNextMatchday() {
 
     dayMatches.forEach(match => {
       let homeGoals, awayGoals;
+      
       if (match.home === selectedTeam) {
         homeGoals = Math.floor(Math.random() * 4) + 1;
         awayGoals = Math.floor(Math.random() * 3);
@@ -860,16 +861,22 @@ function simulateNextMatchday() {
         awayGoals = Math.floor(Math.random() * 4);
       }
 
+      // Trova gli indici delle squadre
       const homeIndex = groupResults[group].findIndex(t => t.team === match.home);
       const awayIndex = groupResults[group].findIndex(t => t.team === match.away);
 
-      // aggiorna statistiche
+      // ✅ Aggiorna CUMULANDO
       groupResults[group][homeIndex].played++;
       groupResults[group][awayIndex].played++;
+
       groupResults[group][homeIndex].goalsFor += homeGoals;
       groupResults[group][homeIndex].goalsAgainst += awayGoals;
+
       groupResults[group][awayIndex].goalsFor += awayGoals;
       groupResults[group][awayIndex].goalsAgainst += homeGoals;
+
+      groupResults[group][homeIndex].goalDifference = groupResults[group][homeIndex].goalsFor - groupResults[group][homeIndex].goalsAgainst;
+      groupResults[group][awayIndex].goalDifference = groupResults[group][awayIndex].goalsFor - groupResults[group][awayIndex].goalsAgainst;
 
       if (homeGoals > awayGoals) {
         groupResults[group][homeIndex].won++;
@@ -886,7 +893,7 @@ function simulateNextMatchday() {
         groupResults[group][awayIndex].points += 1;
       }
 
-      // stampa risultato
+      // Visualizza la partita della giornata
       const matchElement = document.createElement('div');
       matchElement.className = 'match';
       matchElement.innerHTML = `
@@ -898,13 +905,14 @@ function simulateNextMatchday() {
       matchesContainer.appendChild(matchElement);
     });
 
-    // ordina e aggiorna classifica
+    // 🏆 Dopo ogni giornata: ORDINA la classifica
     groupResults[group].sort((a, b) => {
-      if (a.points !== b.points) return b.points - a.points;
-      if (a.goalDifference !== b.goalDifference) return b.goalDifference - a.goalDifference;
+      if (b.points !== a.points) return b.points - a.points;
+      if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
       return b.goalsFor - a.goalsFor;
     });
 
+    // Aggiorna la classifica a schermo
     const tableBody = document.getElementById(`group-${group.toLowerCase()}-table`);
     tableBody.innerHTML = '';
     groupResults[group].forEach(team => {
@@ -934,20 +942,23 @@ function simulateNextMatchday() {
     });
   }
 
+  // 🔁 Avanza giornata
   currentMatchdayIndex++;
+
   if (currentMatchdayIndex < 3) {
     document.getElementById('simulate-group-btn').textContent = `Simula Giornata ${currentMatchdayIndex + 1}`;
   } else {
     document.getElementById('simulate-group-btn').textContent = 'Fase a Gironi Conclusa!';
     document.getElementById('simulate-group-btn').disabled = true;
 
-    // abilita i bottoni delle fasi finali
     document.getElementById('simulate-gold-btn').disabled = false;
     document.getElementById('simulate-silver-btn').disabled = false;
+
     setupGoldKnockout();
     setupSilverKnockout();
   }
 }
+
 
         
         // Prepara la fase finale Gold

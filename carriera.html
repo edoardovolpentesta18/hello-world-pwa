@@ -803,6 +803,9 @@
         
         function simulateGroups() {
   document.getElementById('simulate-group-btn').textContent = 'Simula Giornata 1';
+  
+  // Rimuovi subito l'eventuale vecchio listener per non risimulare
+  document.getElementById('simulate-group-btn').removeEventListener('click', simulateGroups);
 
   for (const group of Object.keys(groups)) {
     groupResults[group] = groups[group].map(team => ({
@@ -817,7 +820,6 @@
       goalDifference: 0
     }));
 
-    // Crea calendario round-robin corretto
     const teams = groups[group];
     groupMatchdays[group] = [
       [
@@ -835,8 +837,10 @@
     ];
   }
 
+  // Ora collega il pulsante solo a simulateNextMatchday
   document.getElementById('simulate-group-btn').addEventListener('click', simulateNextMatchday);
 }
+
 
 
 

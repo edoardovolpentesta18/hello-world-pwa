@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Squadre</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Outline&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #3C3C3B; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { 
+            padding: 10px 20px; 
+            margin: 10px; 
+            font-size: 16px;
+            background-color: #93D2F4;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #mini-square {
+            width: min(450px, 90vw);
+            height: 70px; 
+            background-color: #93D2F4; 
+            color: white; 
+            font-size: clamp(36px, 5vw, 50px);
+            font-weight: bold; 
+            font-family: 'Bungee Outline', cursive; 
+            text-align: center; 
+            line-height: 75px; 
+            border-radius: 10px; 
+            border: 2px solid #93D2F4;
+            margin-bottom: 20px;
+        }
+        .ranking-container { display: flex; flex-direction: column; align-items: center; }
+        .ranking-box {
+            display: flex; align-items: center; 
+            background-color: white; border-radius: 20px;
+            padding: 10px; width: 80vw; max-width: 600px;
+            border: 2px solid #27ae60; margin: 10px;
+            justify-content: space-between;
+        }
+        .team-info { display: flex; align-items: center; }
+        .team-logo { width: 20px; height: 20px; border-radius: 50%; margin-right: 10px; }
+        .team-name { font-size: 15px; font-weight: bold; color: #000; }
+        .rank-number { font-size: 20px; font-weight: bold; color: #27ae60; margin-right: 10px; }
+        .score { font-size: 15px; color: #800000; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="mini-square">Ranking</div>
+
+    <div class="ranking-container" id="ranking-list">
+        <!-- Il ranking verrà popolato qui con JavaScript -->
+    </div>
+
+    <button onclick="window.location.href='index.html'">Torna alla home</button>
+
+    <script>
+        const teams = [
+            { name: "Olimpia Grisoni", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/if8723666e0d42dff/version/1734995993/image.png", score: 1253 },
+            { name: "Coprenaghen", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/idafc1e9275a28272/version/1734995993/image.png", score: 1082 },
+            { name: "#FreeSimoMartino", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/ib3328bd7d4ca106c/version/1734995993/image.png", score: 1029 },
+            { name: "Equipe Blanc", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i06703793d869bbed/version/1734995993/image.png", score: 752 },
+            { name: "I Coglionazzi", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i2586cd9cb74ff8f0/version/1734995993/image.png", score: 699 },
+            { name: "Sbronzi di Riace", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i6230a60ec1a67f31/version/1735650293/image.png", score: 445 },
+            { name: "Napoletano Dream Team", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i00e9557e6a6a609f/version/1734995993/image.png", score: 441 },
+            { name: "I Galacticos", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/id4a85c22b08b55f1/version/1734995993/image.png", score: 413 },
+            { name: "Real Madrink", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/if41ac29c7495f5f0/version/1736689366/image.png", score: 295 },
+            { name: "Dos Santos Casa Blanca", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/idaacc6a09912818f/version/1734995993/image.png", score: 293 },
+            { name: "Loyalty", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i3512d28475bff857/version/1736689333/image.png", score: 203 },
+            { name: "PRAH", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i1f81c76d03540a78/version/1735650224/image.png", score: 199 },
+            { name: "Ceppi Imbiancature", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i00a518d3438955cf/version/1734995993/image.png", score: 177 },
+            { name: "Real Cenacolo", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i36be987fd73178cf/version/1734995993/image.png", score: 158 },
+            { name: "Indifferente F.C.", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/ic7790e793cb94296/version/1734995993/image.png", score: 108 },
+            { name: "Aston Birra", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i528b4ca7faad8ec9/version/1734995993/image.png", score: 101 },
+            { name: "I pupi al guinzaglio", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i2590e609e9a52112/version/1734995993/image.png", score: 99 },
+            { name: "Trivellas Team", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i5b66533942f930cc/version/1734995993/image.png", score: 52 },
+            { name: "ICV", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/ib21f6f4937e9d112/version/1737749649/image.png", score: 45 },
+            { name: "Bomber Team", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/i397dc34621451e91/version/1734995993/image.png", score: 43 },
+            { name: "Big Lentate", logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=114x114:mode=crop:format=png/path/sae3b384a102b7ba9/image/ic65b72bbc07f70ae/version/1734995993/image.png", score: 10 }
+
+        ];
+
+        function loadRanking() {
+            const rankingContainer = document.getElementById('ranking-list');
+            rankingContainer.innerHTML = teams.map((team, index) => `
+                <div class="ranking-box">
+                    <div class="team-info">
+                        <div class="rank-number">${index + 1}</div>
+                        <img src="${team.logo}" alt="Logo" class="team-logo">
+                        <div class="team-name">${team.name}</div>
+                    </div>
+                    <div class="score">${team.score}</div>
+                </div>
+            `).join('');
+        }
+
+        loadRanking();
+    </script>
+</body>
+</html>

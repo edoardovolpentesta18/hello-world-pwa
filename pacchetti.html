@@ -505,6 +505,14 @@
     const confirmCredits = document.getElementById('confirm-credits');
     const cancelCredits = document.getElementById('cancel-credits');
     const creditOptions = document.querySelectorAll('.credit-option');
+
+    // Richiama ora dal server
+	async function getServerDate() {
+	  const res = await fetch('https://worldtimeapi.org/api/timezone/Europe/Rome');
+	  const data = await res.json();
+	  return data.datetime.split('T')[0]; // YYYY-MM-DD
+	}
+			
     
     // Variabili di stato
     let credits = parseInt(localStorage.getItem('credits')) || 1000;
@@ -513,7 +521,8 @@
     // Sistema pacchetti gratuiti giornalieri
 	let freePacks = parseInt(localStorage.getItem('freePacks'));
 	let lastResetDate = localStorage.getItem('lastResetDate');
-	const today = new Date().toDateString();
+	const today = await getServerDate(); // invece di new Date().toDateString()
+
     
     // Funzione per controllare e resettare i pacchetti gratuiti
 	function checkAndResetFreePacks() {

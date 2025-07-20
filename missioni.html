@@ -78,15 +78,44 @@
         }
         
         .mission-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.mission-reward,
+.mission-claimed,
+.mission-claim {
+    flex-shrink: 0;
+    word-break: break-word;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .mission-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .mission-info {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .mission-reward,
+    .mission-claimed,
+    .mission-claim {
+        width: 100%;
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+}
         
         .mission-info {
             flex-grow: 1;

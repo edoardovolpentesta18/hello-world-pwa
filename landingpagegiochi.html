@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madfut UI Clone</title>
+    <style>
+        body {
+            background-color: black;
+            background-image: url('https://i.pinimg.com/736x/47/f4/17/47f417ad029c793e34d24d929f63eee5.jpg');
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 90vw;
+            max-width: 400px;
+        }
+        .button {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .button:hover {
+            background-color: #444;
+        }
+        .button.pack {
+            grid-column: span 3;
+            background-size: contain;
+            background-position: center;
+        }
+        .button.box {
+            grid-column: span 1;
+            background-size: contain;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button onclick="window.location.href='tenable.html'" class = "button box">TENABLE</button>
+        <button onclick="window.location.href='squadre.html'" class = "button box">SQUADRE</button>
+        <button onclick="window.location.href='squadre.html'" class = "button box">SQUADRE</button>    
+        <button onclick="window.location.href='index.html'" class = "button box">Home</button>
+    </div>
+</body>
+</html>

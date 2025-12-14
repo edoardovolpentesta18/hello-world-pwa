@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Football Tenable</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0b132b;
+    color: #fff;
+    text-align: center;
+    padding: 30px;
+}
+
+h1 {
+    margin-bottom: 5px;
+}
+
+#weekly {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+
+#question {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+}
+
+#lives {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+input {
+    padding: 12px;
+    font-size: 1.1rem;
+    width: 280px;
+    text-align: center;
+    border-radius: 6px;
+    border: none;
+}
+
+button {
+    margin-left: 10px;
+    padding: 12px 18px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    background: #1abc9c;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #16a085;
+}
+
+#answers {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.answer {
+    padding: 10px;
+    background: #1c2541;
+    border-radius: 6px;
+    opacity: 0.4;
+}
+
+.answer.correct {
+    background: #2ecc71;
+    opacity: 1;
+    font-weight: bold;
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 1.2rem;
+}
+
+#score {
+    margin-top: 10px;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⚽ Football Tenable</h1>
+<div id="weekly">📅 Ogni settimana un nuovo quiz</div>
+
+<div id="question">Chi sono i migliori giocatori?</div>
+
+<div id="lives">❤️ ❤️ ❤️</div>
+
+<input type="text" id="guess" placeholder="Scrivi un nome">
+<button onclick="checkAnswer()">OK</button>
+
+<div id="message"></div>
+<div id="score"></div>
+
+<div id="answers"></div>
+
+<script>
+const correctAnswers = [
+    "Messi",
+    "Ronaldo",
+    "Mbappé",
+    "Neymar",
+    "Modrić",
+    "De Bruyne",
+    "Lewandowski",
+    "Salah",
+    "Kane",
+    "Bellingham"
+];
+
+let foundAnswers = [];
+let lives = 3;
+
+// crea box risposte
+const answersContainer = document.getElementById("answers");
+correctAnswers.forEach(() => {
+    const div = document.createElement("div");
+    div.className = "answer";
+    div.textContent = "?????";
+    answersContainer.appendChild(div);
+});
+
+function updateLives() {
+    document.getElementById("lives").textContent = "❤️ ".repeat(lives);
+}
+
+function showScore() {
+    const score = foundAnswers.length + lives;
+    document.getElementById("score").textContent =
+        `🏆 Punteggio finale: ${score}`;
+}
+
+function checkAnswer() {
+    const input = document.getElementById("guess");
+    const value = input.value.trim().toLowerCase();
+    input.value = "";
+
+    if (!value) return;
+
+    let found = false;
+
+    correctAnswers.forEach((name, index) => {
+        if (name.toLowerCase() === value && !foundAnswers.includes(name)) {
+            foundAnswers.push(name);
+            answersContainer.children[index].textContent = name;
+            answersContainer.children[index].classList.add("correct");
+            found = true;
+        }
+    });
+
+    if (!found) {
+        lives--;
+        updateLives();
+        document.getElementById("message").textContent = "❌ Risposta sbagliata!";
+    } else {
+        document.getElementById("message").textContent = "✅ Risposta corretta!";
+    }
+
+    // vittoria
+    if (foundAnswers.length === correctAnswers.length) {
+        document.getElementById("message").textContent = "🎉 Hai vinto!";
+        input.disabled = true;
+        showScore();
+    }
+
+    // game over
+    if (lives === 0) {
+        document.getElementById("message").textContent = "💀 Game Over";
+        input.disabled = true;
+        showAllAnswers();
+        showScore();
+    }
+}
+
+function showAllAnswers() {
+    correctAnswers.forEach((name, index) => {
+        answersContainer.children[index].textContent = name;
+        answersContainer.children[index].classList.add("correct");
+    });
+}
+
+// invio con ENTER
+document.getElementById("guess").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") checkAnswer();
+});
+</script>
+
+</body>
+</html>
